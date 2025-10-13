@@ -1,73 +1,66 @@
-# React + TypeScript + Vite
+# Shoppy — Frontend (TypeScript + React + Vite)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This repository contains the frontend for Shoppy — a collection of administrative single-page applications used by the Shoppy platform. It's built with React, TypeScript, Vite and simple tooling to keep developer onboarding fast.
 
-Currently, two official plugins are available:
+## What this repo is
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- A monolithic frontend app containing multiple admin pages (Users, Reklamacije, Nabavke, Odsustva, Otpad, Racuni, and more).
+- Focused on internal administrative UIs, forms, and data tables that talk to backend HTTP APIs.
+- it's intended to be run locally or deployed as static assets behind the Shoppy backend.
 
-## React Compiler
+## Tech stack
 
-The React Compiler is currently not compatible with SWC. See [this issue](https://github.com/vitejs/vite-plugin-react/issues/428) for tracking the progress.
+- React 18+ with functional components and hooks
+- TypeScript
+- Vite for fast development and production builds
+- ESLint + TypeScript rules
+- PostCSS for styles
 
-## Expanding the ESLint configuration
+## Quickstart (local development)
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+1. Install dependencies
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm ci
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+2. Start the dev server with HMR
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm run dev
 ```
+
+3. Build for production
+
+```bash
+npm run build
+```
+
+4. Preview production build locally
+
+```bash
+npm run preview
+```
+
+## Environment and configuration
+
+- Configuration values are stored in `src/config/Config.ts`.
+- Auth and protected routes are implemented using context and custom hooks in `src/Context` and `src/hooks`.
+- Axios instances (including private/authenticated clients) live in `src/hooks`.
+
+If the app needs environment-specific API URLs, set them in an `.env` file at the project root.
+
+## Project structure (important files)
+
+- `src/main.tsx` — app entry
+- `src/App.tsx` — main app component and route mounting
+- `src/components` — reusable UI components (Navbar, Modal, Spinner, etc.)
+- `src/Context/AuthContext.tsx` — authentication context
+- `src/hooks/useAxiosPrivate.ts` — authenticated axios instance hook
+- `src/pages` — feature pages grouped by domain (Users, Nabavke, Odsustva, Otpad, Reklamacije, Racuni, ...)
+- `public/` — static assets
+- `vite.config.ts`, `tsconfig.*`, `eslint.config.js` — toolchain config
+
+## License
+
+This repo contains internal Shoppy code. Check with the project owners for licensing and distribution.
