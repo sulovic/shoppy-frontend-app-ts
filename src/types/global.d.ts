@@ -1,13 +1,13 @@
 // Shared types
 
-export type User = {
+declare type User = {
   ime_prezime: string;
   email: string;
   role_id: 1001 | 3001 | 5001;
   role: string;
 };
 
-export type AuthUser = {
+declare type AuthUser = {
   user: string;
   email: string;
   role_id: 1001 | 3001 | 5001;
@@ -16,13 +16,19 @@ export type AuthUser = {
   superAdmin: boolean;
 };
 
-export type DecodedAccessToken = {
+declare type DecodedAccessToken = {
   exp: number;
   user: AuthUser;
 };
 
-export type LoginData = {};
+declare type AppLink = {
+  label: string;
+  image: string;
+  desc: string;
+  href: string;
+  minRole: number;
+};
 
-export type AccessToken = string | null;
+declare type AccessToken = string | null;
 
-export type PrivilegesMap = Record<string, number>;
+declare type PrivilegesMap = Record<string, number>;

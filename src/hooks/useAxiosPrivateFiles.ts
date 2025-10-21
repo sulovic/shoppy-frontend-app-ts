@@ -1,13 +1,14 @@
 import { useEffect } from "react";
 import axios from "axios";
-import { useAuth } from "../Context/AuthContext";
+import type { InternalAxiosRequestConfig, AxiosError, AxiosHeaders } from "axios";
+import { useAuth } from "../hooks/useAuth";
 
 const axiosPrivate = axios.create({
   headers: {
     "Content-Type": "multipart/form-data",
   },
   withCredentials: true,
-  baseURL: process.env.REACT_APP_API_BASE_URL,
+  baseURL: import.meta.env.VITE_APP_API_BASE_URL,
 });
 
 const useAxiosPrivateFiles = () => {
@@ -15,35 +16,41 @@ const useAxiosPrivateFiles = () => {
 
   useEffect(() => {
     // Request interceptor to add Authorization header
+
     const requestIntercept = axiosPrivate.interceptors.request.use(
-      (config: any) => {
-        config.headers = config.headers ?? {};
-        if (!config.headers["Authorization"]) {
-          config.headers["Authorization"] = `Bearer ${accessToken}`;
+      (config: InternalAxiosRequestConfig) => {
+        const headers = config.headers ?? {};
+
+        if (!headers.has("Authorization")) {
+          headers.set("Authorization", `Bearer ${accessToken}`);
         }
         return config;
       },
-      (error) => Promise.reject(error),
+      (error) => Promise.reject(error)
     );
 
     // Response interceptor to handle token refresh
+
     const responseIntercept = axiosPrivate.interceptors.response.use(
       (response) => response,
-      async (error: any) => {
-        const prevRequest = error?.config as any | undefined;
+      async (error: AxiosError) => {
+        const prevRequest = error?.config as InternalAxiosRequestConfig & { sent?: boolean };
         if (error?.response?.status === 403 && prevRequest && !prevRequest.sent) {
           prevRequest.sent = true;
           try {
             const newAccessToken = await refreshAccessToken();
-            prevRequest.headers = prevRequest.headers ?? {};
-            prevRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
+
+            const headers: AxiosHeaders = prevRequest.headers;
+            if (!headers.has("Authorization")) {
+              headers.set("Authorization", `Bearer ${newAccessToken}`);
+            }
             return axiosPrivate(prevRequest);
           } catch (refreshError) {
             return Promise.reject(refreshError);
           }
         }
         return Promise.reject(error);
-      },
+      }
     );
 
     // Cleanup interceptors on unmount

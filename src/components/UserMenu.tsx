@@ -1,24 +1,24 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useAuth } from "../Context/AuthContext";
+import { useAuth } from "../hooks/useAuth";
 import { GoogleLogin, type CredentialResponse } from "@react-oauth/google";
 import Modal from "./Modal";
 import { toast } from "react-toastify";
 
-const UserMenu = ({ Links = [] }) => {
+const UserMenu = ({ Links = [] }: { Links: AppLink[] }) => {
   const { authUser, handleLogin, handleLogoutOK } = useAuth();
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [menuHidden, setMenuHidden] = useState(true);
   const navigate = useNavigate();
   const currentLocation = useLocation();
-  const menuRef = useRef(null);
+  const menuRef = useRef<HTMLDivElement | null>(null);
 
   const toggleMenuHidden = () => {
     setMenuHidden(!menuHidden);
   };
 
-  const handleClickOutside = (e) => {
-    if (menuRef.current && !menuRef.current.contains(e.target)) {
+  const handleClickOutside = (e: MouseEvent) => {
+    if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
       setMenuHidden(true);
     }
   };
@@ -30,8 +30,8 @@ const UserMenu = ({ Links = [] }) => {
     };
   }, []);
 
-  const handleErrorGoogleLogin = (err) => {
-    toast.error(`UPS!!! Došlo je do greške prilikom prijave: ${err} `, {
+  const handleErrorGoogleLogin = () => {
+    toast.error(`UPS!!! Došlo je do greške prilikom prijave`, {
       position: "top-center",
     });
   };
@@ -115,8 +115,8 @@ const UserMenu = ({ Links = [] }) => {
                   onSuccess={(res) => {
                     handleGoogleLoginSuccess(res);
                   }}
-                  onError={(err) => {
-                    handleErrorGoogleLogin(err);
+                  onError={() => {
+                    handleErrorGoogleLogin();
                   }}
                   shape={"pill"}
                 />

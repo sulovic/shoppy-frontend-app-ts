@@ -1,34 +1,13 @@
-import React from "react";
-import AppMenu from "../../components/AppMenu";
-import { Link } from "react-router-dom";
-
-const Administrator: React.FC = () => {
-  return (
-    <div>
-      <AppMenu />
-      <div className="p-4">
-        <h3>Administracija odsustava</h3>
-        <ul>
-          <li><Link to="dodeljivanje">Dodeljivanje odsustva</Link></li>
-          <li><Link to="odobravanje">Odobravanje odsustva</Link></li>
-          <li><Link to="stampa">Štampa rešenja</Link></li>
-        </ul>
-      </div>
-    </div>
-  );
-};
-
-export default Administrator;
 import React, { useState, useEffect } from "react";
 import moment from "moment";
 import DatePicker from "react-datepicker";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
-import { useAuth } from "../../Context/AuthContext";
+import { useAuth } from "../../hooks/useAuth";
 import Modal from "../../components/Modal";
 import { toast } from "react-toastify";
 import Spinner from "../../components/Spinner";
-import Kalendar from "./KalendarComponent.jsx/Kalendar";
+import Kalendar from "./KalendarComponent/Kalendar";
 import Pagination from "../../components/Pagination";
 
 const Administrator: React.FC = () => {
@@ -51,7 +30,10 @@ const Administrator: React.FC = () => {
       const response = await axiosPrivate.get("users");
       setUsers(response?.data);
     } catch (error: any) {
-      toast.error(`UPS!!! Došlo je do greške: ${error} `, { position: toast.POSITION.TOP_CENTER });
+      toast.error(`UPS!!! Došlo je do greške: ${error} `, {
+        position: "top-center",
+        autoClose: 3000,
+      });
     } finally {
       setShowSpinner(false);
     }
@@ -132,8 +114,16 @@ const Administrator: React.FC = () => {
 
   const calculateRaspolozivoGodisnji = (dodeljeno: any[], iskorisceno: any[]) => {
     let raspolozivo = 0;
-    dodeljeno.forEach((row) => { if (row?.vrstaOdsustva === "GODISNJI_ODMOR") { raspolozivo = raspolozivo + row?.brojDana; } });
-    iskorisceno.forEach((row) => { if (row?.vrstaOdsustva === "GODISNJI_ODMOR") { raspolozivo = raspolozivo - row?.brojDana; } });
+    dodeljeno.forEach((row) => {
+      if (row?.vrstaOdsustva === "GODISNJI_ODMOR") {
+        raspolozivo = raspolozivo + row?.brojDana;
+      }
+    });
+    iskorisceno.forEach((row) => {
+      if (row?.vrstaOdsustva === "GODISNJI_ODMOR") {
+        raspolozivo = raspolozivo - row?.brojDana;
+      }
+    });
     return raspolozivo;
   };
 
@@ -141,10 +131,21 @@ const Administrator: React.FC = () => {
 
   const calculateDays = (obj: any) => {
     const { start, end } = obj;
-    if (start === null || end === null) { obj.brojDana = 0; return obj; }
-    let totalDays = 0; let currentDate = new Date(obj.start);
-    while (currentDate <= end) { const dayOfWeek = currentDate.getDay(); if (dayOfWeek !== 0 && dayOfWeek !== 6) { totalDays++; } currentDate.setDate(currentDate.getDate() + 1); }
-    obj.brojDana = totalDays; return obj;
+    if (start === null || end === null) {
+      obj.brojDana = 0;
+      return obj;
+    }
+    let totalDays = 0;
+    let currentDate = new Date(obj.start);
+    while (currentDate <= end) {
+      const dayOfWeek = currentDate.getDay();
+      if (dayOfWeek !== 0 && dayOfWeek !== 6) {
+        totalDays++;
+      }
+      currentDate.setDate(currentDate.getDate() + 1);
+    }
+    obj.brojDana = totalDays;
+    return obj;
   };
 
   return (
@@ -159,7 +160,12 @@ const Administrator: React.FC = () => {
                 <div>
                   <label htmlFor="user">Zaposleni </label>
                   <select id="user" aria-label="Odaberi zaposlenog" required value={selectedUser?.user} onChange={handleChangeUser}>
-                    {users && users.map((user, index) => (<option key={index} value={user?.ime_prezime}>{user?.ime_prezime}</option>))}
+                    {users &&
+                      users.map((user, index) => (
+                        <option key={index} value={user?.ime_prezime}>
+                          {user?.ime_prezime}
+                        </option>
+                      ))}
                   </select>
                 </div>
                 <div>
@@ -174,14 +180,44 @@ const Administrator: React.FC = () => {
                 </div>
                 <div>
                   <label htmlFor="start">Početak odsustva</label>
-                  <DatePicker id="start" locale="sr-Latn" autoComplete="off" maxDate={novoOdsustvo?.end} selected={novoOdsustvo?.start} onChange={(date) => { setNovoOdsustvo((prev: any) => { const newData = { ...prev, start: new Date(date) }; return calculateDays(newData); }); }} dateFormat="dd - MM - yyyy" required />
+                  <DatePicker
+                    id="start"
+                    locale="sr-Latn"
+                    autoComplete="off"
+                    maxDate={novoOdsustvo?.end}
+                    selected={novoOdsustvo?.start}
+                    onChange={(date) => {
+                      setNovoOdsustvo((prev: any) => {
+                        const newData = { ...prev, start: new Date(date) };
+                        return calculateDays(newData);
+                      });
+                    }}
+                    dateFormat="dd - MM - yyyy"
+                    required
+                  />
                 </div>
                 <div>
                   <label htmlFor="end">Zavr1etak odsustva</label>
-                  <DatePicker id="end" locale="sr-Latn" autoComplete="off" selected={novoOdsustvo?.end} minDate={novoOdsustvo?.start} onChange={(date) => { setNovoOdsustvo((prev: any) => { const newData = { ...prev, end: new Date((date as Date).setHours(23)) }; return calculateDays(newData); }); }} dateFormat="dd - MM - yyyy" required />
+                  <DatePicker
+                    id="end"
+                    locale="sr-Latn"
+                    autoComplete="off"
+                    selected={novoOdsustvo?.end}
+                    minDate={novoOdsustvo?.start}
+                    onChange={(date) => {
+                      setNovoOdsustvo((prev: any) => {
+                        const newData = { ...prev, end: new Date((date as Date).setHours(23)) };
+                        return calculateDays(newData);
+                      });
+                    }}
+                    dateFormat="dd - MM - yyyy"
+                    required
+                  />
                 </div>
                 <div className="col-span-2 mt-2 flex flex-row-reverse gap-2">
-                  <button type="submit" className="button button-sky" disabled={novoOdsustvo?.vrstaOdsustva === "GODISNJI_ODMOR" && raspolozivoGodisnji < calculateDays(novoOdsustvo)?.brojDana}>Dodaj odsustvo: {calculateDays(novoOdsustvo)?.brojDana} dana</button>
+                  <button type="submit" className="button button-sky" disabled={novoOdsustvo?.vrstaOdsustva === "GODISNJI_ODMOR" && raspolozivoGodisnji < calculateDays(novoOdsustvo)?.brojDana}>
+                    Dodaj odsustvo: {calculateDays(novoOdsustvo)?.brojDana} dana
+                  </button>
                 </div>
               </div>
             </form>
@@ -201,17 +237,44 @@ const Administrator: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {selectedUserOdsustva?.length ? (selectedUserOdsustva.map((row, index) => (
-                    <tr key={index} className="border-b bg-white text-center hover:!bg-zinc-100 dark:border-zinc-700 dark:bg-zinc-800">
-                      <td key={`start_${index}`}>{row?.start ? moment(row?.start).format("DD-MM-YYYY") : ""}</td>
-                      <td key={`end_${index}`}>{row?.end ? moment(row?.end).format("DD-MM-YYYY") : ""}</td>
-                      <td key={`vrstaOdsustva_${index}`}>{row?.vrstaOdsustva}</td>
-                      <td key={`brojDana_${index}`}>{row?.brojDana}</td>
-                      <td key={`odobreno_${index}`}><input type="checkbox" checked={row?.odobreno} disabled className="h-4 w-4 appearance-auto rounded border-zinc-300 bg-zinc-100 p-2 text-zinc-600 focus:ring-2 focus:ring-zinc-500 dark:border-zinc-600 dark:bg-zinc-700 dark:ring-offset-zinc-800 dark:focus:ring-zinc-600" /></td>
-                      <td key={`print_${index}`} className="text-center"><button type="button" className="button button-sky" aria-label="Od1tampaj" disabled={row?.vrstaOdsustva !== "GODISNJI_ODMOR" || !row?.odobreno} onClick={() => window.open(`/odsustva/resenje-odmor/${row?.id}`, "_blank")}>Od1tampaj</button></td>
-                      <td key={`delete_${index}`} className="text-center"><button type="button" className="button button-red" aria-label="Delete" disabled={!authUser?.superAdmin} onClick={() => handleDelete(row)}>Obri1i</button></td>
+                  {selectedUserOdsustva?.length ? (
+                    selectedUserOdsustva.map((row, index) => (
+                      <tr key={index} className="border-b bg-white text-center hover:!bg-zinc-100 dark:border-zinc-700 dark:bg-zinc-800">
+                        <td key={`start_${index}`}>{row?.start ? moment(row?.start).format("DD-MM-YYYY") : ""}</td>
+                        <td key={`end_${index}`}>{row?.end ? moment(row?.end).format("DD-MM-YYYY") : ""}</td>
+                        <td key={`vrstaOdsustva_${index}`}>{row?.vrstaOdsustva}</td>
+                        <td key={`brojDana_${index}`}>{row?.brojDana}</td>
+                        <td key={`odobreno_${index}`}>
+                          <input
+                            type="checkbox"
+                            checked={row?.odobreno}
+                            disabled
+                            className="h-4 w-4 appearance-auto rounded border-zinc-300 bg-zinc-100 p-2 text-zinc-600 focus:ring-2 focus:ring-zinc-500 dark:border-zinc-600 dark:bg-zinc-700 dark:ring-offset-zinc-800 dark:focus:ring-zinc-600"
+                          />
+                        </td>
+                        <td key={`print_${index}`} className="text-center">
+                          <button
+                            type="button"
+                            className="button button-sky"
+                            aria-label="Od1tampaj"
+                            disabled={row?.vrstaOdsustva !== "GODISNJI_ODMOR" || !row?.odobreno}
+                            onClick={() => window.open(`/odsustva/resenje-odmor/${row?.id}`, "_blank")}
+                          >
+                            Od1tampaj
+                          </button>
+                        </td>
+                        <td key={`delete_${index}`} className="text-center">
+                          <button type="button" className="button button-red" aria-label="Delete" disabled={!authUser?.superAdmin} onClick={() => handleDelete(row)}>
+                            Obri1i
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr className="border-b bg-white text-center hover:!bg-zinc-100 dark:border-zinc-700 dark:bg-zinc-800">
+                      <td colSpan={7}>Nemate unetih zahteva za odsustvo...</td>
                     </tr>
-                  ))) : (<tr className="border-b bg-white text-center hover:!bg-zinc-100 dark:border-zinc-700 dark:bg-zinc-800"><td colSpan={7}>Nemate unetih zahteva za odsustvo...</td></tr>)}
+                  )}
                 </tbody>
               </table>
               {!showSpinner && <Pagination pagination={pagination} setPagination={setPagination} />}
@@ -227,16 +290,33 @@ const Administrator: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {dodeljenaOdsustva?.length ? (dodeljenaOdsustva.map((row, index) => (
-                    <tr key={index} className="border-b bg-white text-center hover:!bg-zinc-100 dark:border-zinc-700 dark:bg-zinc-800"><td key={`vrstaOdsustva_${index}`}>{row?.vrstaOdsustva}</td><td key={`godina_${index}`}>{row?.godina}</td><td key={`brojDana_${index}`}>{row?.brojDana}</td></tr>
-                  ))) : (<tr className="border-b bg-white text-center hover:!bg-zinc-100 dark:border-zinc-700 dark:bg-zinc-800"><td colSpan={3}>Nema dodeljenih odsustva...</td></tr>)}
+                  {dodeljenaOdsustva?.length ? (
+                    dodeljenaOdsustva.map((row, index) => (
+                      <tr key={index} className="border-b bg-white text-center hover:!bg-zinc-100 dark:border-zinc-700 dark:bg-zinc-800">
+                        <td key={`vrstaOdsustva_${index}`}>{row?.vrstaOdsustva}</td>
+                        <td key={`godina_${index}`}>{row?.godina}</td>
+                        <td key={`brojDana_${index}`}>{row?.brojDana}</td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr className="border-b bg-white text-center hover:!bg-zinc-100 dark:border-zinc-700 dark:bg-zinc-800">
+                      <td colSpan={3}>Nema dodeljenih odsustva...</td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </div>
           </div>
         </div>
       </div>
-      {showModal && (<Modal onOK={handleDeleteOk} onCancel={handleDeleteCancel} title="Potvrda brisanja unetog odsustva" question={`Da li ste sigurni da želite da obrišete uneto odsustvo: ${selectedOdsustvo?.user} - ${selectedOdsustvo?.vrstaOdsustva} - ${selectedOdsustvo?.brojDana} dana?`} />)}
+      {showModal && (
+        <Modal
+          onOK={handleDeleteOk}
+          onCancel={handleDeleteCancel}
+          title="Potvrda brisanja unetog odsustva"
+          question={`Da li ste sigurni da želite da obrišete uneto odsustvo: ${selectedOdsustvo?.user} - ${selectedOdsustvo?.vrstaOdsustva} - ${selectedOdsustvo?.brojDana} dana?`}
+        />
+      )}
       {showSpinner && <Spinner />}
     </>
   );

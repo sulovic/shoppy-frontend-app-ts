@@ -1,5 +1,3 @@
-import businessapps from "../BusinessApss.jpg";
-
 export const allowedFileTypes = [
   "application/pdf", // PDF documents
   "image/jpeg", // JPEG images
@@ -67,52 +65,52 @@ export const Priviledges = {
   "/users/super-admin": 5000,
 };
 
-export const AppLinks = [
+export const AppLinks: AppLink[] = [
   {
     label: "Home",
-    image: businessapps,
+    image: "../BusinessApss.jpg",
     desc: "Shoppy Business Apps Home",
     href: "/",
     minRole: Priviledges["/"],
   },
   {
     label: "Slanje računa",
-    image: businessapps,
+    image: "../BusinessApss.jpg",
     desc: "Aplikacija za slanje fiskalnih računa putem SMS poruka",
     href: "/racuni",
     minRole: Priviledges["/racuni"],
   },
   {
     label: "Reklamacije",
-    image: businessapps,
+    image: "../BusinessApss.jpg",
     desc: "Aplikacija za obradu reklamacija",
     href: "/reklamacije",
     minRole: Priviledges["/reklamacije"],
   },
   {
     label: "Nabavke",
-    image: businessapps,
+    image: "../BusinessApss.jpg",
     desc: "Aplikacija za praćenje nabavki",
     href: "/nabavke",
     minRole: Priviledges["/nabavke"],
   },
   {
     label: "Odsustva",
-    image: businessapps,
+    image: "../BusinessApss.jpg",
     desc: "Aplikacija za evidentiranje odsustva",
     href: "/odsustva",
     minRole: Priviledges["/odsustva"],
   },
   {
     label: "Tokovi otpada",
-    image: businessapps,
+    image: "../BusinessApss.jpg",
     desc: "Aplikacija za praćenje tokova otpada",
     href: "/otpad",
     minRole: Priviledges["/otpad"],
   },
   {
     label: "Korisnici",
-    image: businessapps,
+    image: "../BusinessApss.jpg",
     desc: "Aplikacija za administraciju korisnika",
     href: "/users",
     minRole: Priviledges["/users"],
@@ -122,35 +120,35 @@ export const AppLinks = [
 export const ReklamacijeLinks = [
   {
     label: "Prijem reklamacija",
-    image: businessapps,
+    image: "../BusinessApss.jpg",
     desc: "Unos, pregled i izmena novih reklamacija",
     href: "/reklamacije/prijem-reklamacija",
     minRole: Priviledges["/reklamacije/prijem-reklamacija"],
   },
   {
     label: "Obrada reklamacija",
-    image: businessapps,
+    image: "../BusinessApss.jpg",
     desc: "Pregled, izmena, obrada i rešavanje primljenih reklamacija",
     href: "/reklamacije/obrada-reklamacija",
     minRole: Priviledges["/reklamacije/obrada-reklamacija"],
   },
   {
     label: "Slanje SMS",
-    image: businessapps,
+    image: "../BusinessApss.jpg",
     desc: "Slanje SMS poruka o Potvrdi prijema reklamacije i slanje Odgovora na reklamaciju",
     href: "/reklamacije/slanje-sms",
     minRole: Priviledges["/reklamacije/slanje-sms"],
   },
   {
     label: "Delovodnik reklamacija",
-    image: businessapps,
+    image: "../BusinessApss.jpg",
     desc: "Delovodnja knjiga primljenih reklamacija",
     href: "/reklamacije/delovodnik",
     minRole: Priviledges["/reklamacije/delovodnik"],
   },
   {
     label: "Administrtator",
-    image: businessapps,
+    image: "../BusinessApss.jpg",
     desc: "Administrativni pristup svim unetim reklamacijama",
     href: "/reklamacije/administrator",
     minRole: Priviledges["/reklamacije/administrator"],
@@ -160,21 +158,21 @@ export const ReklamacijeLinks = [
 export const UserLinks = [
   {
     label: "Kontrola tabla",
-    image: businessapps,
+    image: "../BusinessApss.jpg",
     desc: "Kontrolna tabla sa listom svih registrovanih korisnika i opcijama za promenu i brisanje",
     href: "/users/dashboard",
     minRole: Priviledges["/users/dashboard"],
   },
   {
     label: "Dodaj korisnika",
-    image: businessapps,
+    image: "../BusinessApss.jpg",
     desc: "Dodavanje novih korisnika i određivanje njihovih rola",
     href: "/users/new-user",
     minRole: Priviledges["/users/new-user"],
   },
   {
     label: "Super Admin",
-    image: businessapps,
+    image: "../BusinessApss.jpg",
     desc: "Aktiviranje i deaktiviranje Super Admin moda",
     href: "/users/super-admin",
     minRole: Priviledges["/users/super-admin"],
@@ -184,28 +182,28 @@ export const UserLinks = [
 export const OtpadLinks = [
   {
     label: "Evidencija JCI",
-    image: businessapps,
+    image: "../BusinessApss.jpg",
     desc: "Evidentiranje novih i izmena Jedinstvenih Carinskih Isprava",
     href: "/otpad/evidencija",
     minRole: Priviledges["/otpad/evidencija"],
   },
   {
     label: "Delovodna knjiga",
-    image: businessapps,
+    image: "../BusinessApss.jpg",
     desc: "Delovodne knjige tokova otpada po godinama, zemljama i vrstama otpada",
     href: "/otpad/delovodna-knjiga",
     minRole: Priviledges["/otpad/delovodna-knjiga"],
   },
   {
     label: "Proizvodi",
-    image: businessapps,
+    image: "../BusinessApss.jpg",
     desc: "Unos, izmene i parametrizacija proizvoda i vrsta otpada",
     href: "/otpad/proizvodi",
     minRole: Priviledges["/otpad/proizvodi"],
   },
   {
     label: "Vrste otpada",
-    image: businessapps,
+    image: "../BusinessApss.jpg",
     desc: "Kreiranje novih i izmena postojećih vrsta otpada",
     href: "/otpad/vrste-otpada",
     minRole: Priviledges["/otpad/vrste-otpada"],
@@ -215,35 +213,35 @@ export const OtpadLinks = [
 export const OdsustvaLinks = [
   {
     label: "Evidencija odsustva",
-    image: businessapps,
+    image: "../BusinessApss.jpg",
     desc: "Pregled i evidentiranje zahteva za odsustvo",
     href: "/odsustva/evidencija",
     minRole: Priviledges["/odsustva/evidencija"],
   },
   {
     label: "Štampanje rešenja",
-    image: businessapps,
+    image: "../BusinessApss.jpg",
     desc: "Pregled i štampanje zahteva i rešenja za odsustvo",
     href: "/odsustva/stampa",
     minRole: Priviledges["/odsustva/stampa"],
   },
   {
     label: "Odobravanje odsustva",
-    image: businessapps,
+    image: "../BusinessApss.jpg",
     desc: "Odobravanje unetih zahteva za odsustvo",
     href: "/odsustva/odobravanje",
     minRole: Priviledges["/odsustva/odobravanje"],
   },
   {
     label: "Dodeljivanje odsustva",
-    image: businessapps,
+    image: "../BusinessApss.jpg",
     desc: "Dodeljivanje i izmena dodeljenih odsustva",
     href: "/odsustva/dodeljivanje",
     minRole: Priviledges["/odsustva/dodeljivanje"],
   },
   {
     label: "Administrator",
-    image: businessapps,
+    image: "../BusinessApss.jpg",
     desc: "Odsustva - Administratorski pristup",
     href: "/odsustva/administrator",
     minRole: Priviledges["/odsustva/administrator"],
@@ -253,28 +251,28 @@ export const OdsustvaLinks = [
 export const NabavkeLinks = [
   {
     label: "Aktivne porudžbine",
-    image: businessapps,
+    image: "../BusinessApss.jpg",
     desc: "Pregled, dodavanje i izmena aktivnih porudžbina",
     href: "/nabavke/aktivne-porudzbine",
     minRole: Priviledges["/nabavke/aktivne-porudzbine"],
   },
   {
     label: "Sve porudžbine",
-    image: businessapps,
+    image: "../BusinessApss.jpg",
     desc: "Pregled i izmena svih porudžbina",
     href: "/nabavke/sve-porudzbine",
     minRole: Priviledges["/nabavke/sve-porudzbine"],
   },
   {
     label: "Pregled po proizvodima",
-    image: businessapps,
+    image: "../BusinessApss.jpg",
     desc: "Pregled porudžbina po proizvodima",
     href: "/nabavke/pregled",
     minRole: Priviledges["/nabavke/pregled"],
   },
   {
     label: "Proizvodi",
-    image: businessapps,
+    image: "../BusinessApss.jpg",
     desc: "Pregled, dodavanje i izmena proizvoda",
     href: "/nabavke/proizvodi",
     minRole: Priviledges["/nabavke/proizvodi"],
