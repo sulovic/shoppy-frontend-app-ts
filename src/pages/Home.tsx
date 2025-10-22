@@ -1,7 +1,7 @@
 import React from "react";
 import Navbar from "../components/Navbar";
 import businessapps from "../BusinessApss.jpg";
-import { useAuth } from "../Context/AuthContext";
+import { useAuth } from "../hooks/useAuth";
 import AppCards from "../components/AppCards";
 import { AppLinks } from "../config/Config";
 
@@ -23,9 +23,7 @@ const Home: React.FC = () => {
           <AppCards Links={AppLinks} />
         </div>
       ) : (
-        <div
-          className="flex flex-1 items-center justify-center bg-contain bg-center bg-no-repeat md:my-4"
-          style={{ backgroundImage: `url(${businessapps})` }}></div>
+        <div className="flex flex-1 items-center justify-center bg-contain bg-center bg-no-repeat md:my-4" style={{ backgroundImage: `url(${businessapps})` }}></div>
       )}
     </>
   );

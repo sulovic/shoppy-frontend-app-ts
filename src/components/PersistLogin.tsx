@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import Spinner from "./Spinner";
-import { useAuth } from "../Context/AuthContext";
+import { useAuth } from "../hooks/useAuth";
 import { Outlet } from "react-router-dom";
 
 function PersistLogin() {
@@ -8,24 +8,29 @@ function PersistLogin() {
   const [showSpinner, setShowSpinner] = useState(true);
 
   useEffect(() => {
-
+    let isMounted = true;
     const verifyRefreshToken = async () => {
       try {
         await refreshAccessToken();
       } catch (err) {
         console.error(err);
       } finally {
-        setShowSpinner(false);
+        if (isMounted) setShowSpinner(false);
       }
     };
-    !( authUser && accessToken) ? verifyRefreshToken() : setShowSpinner(false);
 
-  }, []);
+    if (!authUser || !accessToken) {
+      verifyRefreshToken();
+    } else {
+      setShowSpinner(false);
+    }
 
+    return () => {
+      isMounted = false;
+    };
+  }, [authUser, accessToken, refreshAccessToken]);
 
-  return (
-    <>{showSpinner ? <Spinner /> : <Outlet />}</>
-  );
+  return <>{showSpinner ? <Spinner /> : <Outlet />}</>;
 }
 
 export default PersistLogin;

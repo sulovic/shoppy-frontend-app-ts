@@ -29,6 +29,21 @@ declare type AppLink = {
   minRole: number;
 };
 
+declare type PaginationProps = {
+  pagination: {
+    page: number;
+    limit: number;
+    count: number;
+  };
+  setPagination: React.Dispatch<
+    React.SetStateAction<{
+      page: number;
+      limit: number;
+      count: number;
+    }>
+  >;
+};
+
 declare type AccessToken = string | null;
 
 declare type PrivilegesMap = Record<string, number>;

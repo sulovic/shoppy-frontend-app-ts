@@ -3,7 +3,6 @@ import { googleLogout, type CredentialResponse } from "@react-oauth/google";
 import { ApiLoginConnector, ApiLogoutConnector, ApiRefreshConnector } from "../components/ApiAuthConnectors";
 import { toast } from "react-toastify";
 import { jwtDecode } from "jwt-decode";
-import type { AuthUser, DecodedAccessToken } from "../types/global";
 
 interface AuthContextType {
   authUser: AuthUser | null;

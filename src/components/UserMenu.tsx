@@ -69,7 +69,7 @@ const UserMenu = ({ Links = [] }: { Links: AppLink[] }) => {
                   maxWidth: "24px",
                   borderRadius: "50%",
                 }}
-                src={authUser?.picture}
+                src={authUser.picture}
                 alt="Profile"
               />
             ) : (
@@ -83,20 +83,20 @@ const UserMenu = ({ Links = [] }: { Links: AppLink[] }) => {
         <div className={`${menuHidden ? "hidden" : "absolute right-0"} z-10 my-2 w-auto min-w-56 divide-y divide-gray-100 rounded-lg border border-solid border-gray-600 bg-white shadow dark:bg-gray-600`}>
           {authUser ? (
             <ul className="mb-0 flex w-full flex-col justify-end px-0 py-2 text-end text-base font-medium text-gray-600 dark:text-gray-200 " aria-labelledby="dropdownMenu">
-              <li className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">{authUser?.name}</li>
+              <li className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">{authUser.user}</li>
               <div className="my-1 h-0.5 w-full bg-zinc-200"></div>
 
               {Links.map(
                 (link, index) =>
-                  authUser?.role_id > link?.minRole && (
+                  authUser.role_id > link.minRole && (
                     <li
                       className={`block px-4 py-2 font-medium no-underline ${
-                        currentLocation.pathname === link?.href ? `text-gray-500` : `text-gray-600`
+                        currentLocation.pathname === link.href ? `text-gray-500` : `text-gray-600`
                       }  text-gray-600 hover:bg-gray-100 lg:hidden dark:text-gray-100 dark:hover:bg-gray-600 dark:hover:text-white`}
                       key={index}
                       onClick={toggleMenuHidden}
                     >
-                      <Link to={link?.href}>{link?.label}</Link>
+                      <Link to={link.href}>{link.label}</Link>
                     </li>
                   )
               )}
