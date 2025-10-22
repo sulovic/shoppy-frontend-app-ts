@@ -1,68 +1,77 @@
-:root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
-}
+@import "tailwindcss";
 
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  @apply bg-white dark:bg-gray-900;
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
+}
+h2 {
+  @apply py-2 text-3xl  font-bold text-gray-600 dark:text-gray-50;
 }
 
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+h3 {
+  @apply py-2 text-2xl  font-bold text-gray-600 dark:text-gray-50;
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
+h4 {
+  @apply py-2 text-xl font-bold text-gray-600 dark:text-gray-50;
+}
+
+h5 {
+  @apply text-lg font-bold text-gray-600 dark:text-gray-50;
+}
+
+p {
+  @apply overflow-hidden truncate whitespace-normal p-1 align-middle font-medium text-gray-600 dark:text-gray-50;
+}
+
+label {
+  @apply my-2 block font-bold text-gray-600 dark:text-gray-50;
+}
+
+input {
+  @apply w-full appearance-none rounded border px-3 py-2 leading-tight text-gray-600  shadow focus:outline-none dark:disabled:bg-gray-200;
+}
+
+textarea {
+  @apply min-h-20 w-full appearance-none rounded border px-3 py-2 leading-tight text-gray-600 shadow focus:outline-none dark:disabled:bg-gray-200;
+}
+
+select {
+  @apply block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-base text-gray-600 focus:border-sky-500 focus:ring-sky-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-sky-500 dark:focus:ring-sky-500;
+}
+
+td {
+  @apply whitespace-nowrap px-4 py-2 font-medium text-gray-600 dark:text-gray-50 dark:hover:text-gray-600;
+}
+
+.button {
+  @apply min-w-24 rounded-sm px-4 py-2 font-medium text-white shadow-sm;
+}
+.button:hover {
+  @apply opacity-80;
+}
+.button:disabled {
+  @apply opacity-65;
+}
+.button-red {
+  @apply bg-red-500;
+}
+.button-cyan {
+  @apply bg-cyan-500;
+}
+.button-sky {
+  @apply bg-sky-500;
+}
+.button-green {
+  @apply bg-green-500;
+}
+.button-gray {
+  @apply bg-gray-500;
 }

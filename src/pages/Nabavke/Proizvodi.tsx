@@ -5,7 +5,7 @@ import Spinner from "../../components/Spinner";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import Modal from "../../components/Modal";
 import ModalEditProizvod from "./ModalEditProizvod";
-import { useAuth } from "../../Context/AuthContext";
+import { useAuth } from "../../hooks/useAuth";
 
 const NabavkeProizvodi = () => {
   const [tableData, setTableData] = useState(null);
@@ -74,11 +74,7 @@ const NabavkeProizvodi = () => {
     <>
       <h3 className="mt-4">Proizvodi</h3>
       <div className="flex justify-end px-3">
-        <button
-          type="button"
-          className="button button-sky "
-          aria-label="Nov proizvod"
-          onClick={() => navigate("/nabavke/nov-proizvod")}>
+        <button type="button" className="button button-sky " aria-label="Nov proizvod" onClick={() => navigate("/nabavke/nov-proizvod")}>
           Dodaj novi proizvod
         </button>
       </div>
@@ -98,27 +94,16 @@ const NabavkeProizvodi = () => {
                   </thead>
                   <tbody>
                     {tableData.map((row, index) => (
-                      <tr
-                        key={index}
-                        className="border-b bg-white hover:!bg-zinc-100 dark:border-zinc-700 dark:bg-zinc-800">
+                      <tr key={index} className="border-b bg-white hover:!bg-zinc-100 dark:border-zinc-700 dark:bg-zinc-800">
                         <td key={`SKU_${index}`}>{row?.SKU}</td>
                         <td key={`naziv_${index}`}>{row?.naziv}</td>
                         <td key={`edit_${index}`} className="text-center">
-                          <button
-                            type="button"
-                            className="button button-sky float-left"
-                            aria-label="EditUser"
-                            onClick={() => handleEdit(row)}>
+                          <button type="button" className="button button-sky float-left" aria-label="EditUser" onClick={() => handleEdit(row)}>
                             Izmeni
                           </button>
                         </td>
                         <td key={`delete_${index}`} className="text-center">
-                          <button
-                            type="button"
-                            className="button button-red float-left"
-                            aria-label="Delete"
-                            disabled={!authUser?.superAdmin}
-                            onClick={() => handleDelete(row)}>
+                          <button type="button" className="button button-red float-left" aria-label="Delete" disabled={!authUser?.superAdmin} onClick={() => handleDelete(row)}>
                             Obriši
                           </button>
                         </td>
@@ -127,23 +112,9 @@ const NabavkeProizvodi = () => {
                   </tbody>
                 </table>
 
-                {showModal && (
-                  <Modal
-                    onOK={handleDeleteOK}
-                    onCancel={handleCancel}
-                    title="Potvrda brisanja vrste otpada"
-                    question={`Da li ste sigurni da želite da obrišete vrstu otpada: ${selectedProizvod?.naziv}?`}
-                  />
-                )}
+                {showModal && <Modal onOK={handleDeleteOK} onCancel={handleCancel} title="Potvrda brisanja vrste otpada" question={`Da li ste sigurni da želite da obrišete vrstu otpada: ${selectedProizvod?.naziv}?`} />}
 
-                {updateData && showModalEdit && (
-                  <ModalEditProizvod
-                    setShowModalEdit={setShowModalEdit}
-                    updateData={updateData}
-                    setUpdateData={setUpdateData}
-                    fetchData={fetchData}
-                  />
-                )}
+                {updateData && showModalEdit && <ModalEditProizvod setShowModalEdit={setShowModalEdit} updateData={updateData} setUpdateData={setUpdateData} fetchData={fetchData} />}
               </div>
             </div>
           </div>

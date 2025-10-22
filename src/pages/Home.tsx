@@ -1,6 +1,6 @@
 import React from "react";
 import Navbar from "../components/Navbar";
-import businessapps from "../BusinessApss.jpg";
+import businessapps from "../assets/BusinessApss.jpg";
 import { useAuth } from "../hooks/useAuth";
 import AppCards from "../components/AppCards";
 import { AppLinks } from "../config/Config";

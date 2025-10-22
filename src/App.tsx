@@ -17,9 +17,10 @@ const App = () => {
   useEffect(() => {
     const storedPath = localStorage.getItem("lastRoute");
     if (storedPath && storedPath !== location.pathname) {
-      navigate(storedPath);
+      navigate(storedPath, { replace: true });
     }
-  }, [navigate, location]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div className="container-2xl min-h-screen mx-auto flex flex-col">

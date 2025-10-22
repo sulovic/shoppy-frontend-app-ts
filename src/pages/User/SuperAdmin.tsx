@@ -1,5 +1,5 @@
 import React from "react";
-import { useAuth } from "../../Context/AuthContext";
+import { useAuth } from "../../hooks/useAuth";
 import "./ToggleSwitch.css";
 import type { AuthUser } from "../../types/global";
 

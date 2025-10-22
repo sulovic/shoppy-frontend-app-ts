@@ -5,7 +5,7 @@ import ModalEditUser from "./ModalEditUser";
 import { toast } from "react-toastify";
 import Spinner from "../../components/Spinner";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../Context/AuthContext";
+import { useAuth } from "../../hooks/useAuth";
 
 const Dashboard: React.FC = () => {
   const [tableData, setTableData] = useState<any[]>([]);
@@ -79,7 +79,9 @@ const Dashboard: React.FC = () => {
       {tableData?.length ? (
         <>
           <div className="flex justify-end px-3">
-            <button type="button" className="button button-sky " aria-label="EditUser" onClick={() => navigate("/users/new-user")}>Dodaj korisnika</button>
+            <button type="button" className="button button-sky " aria-label="EditUser" onClick={() => navigate("/users/new-user")}>
+              Dodaj korisnika
+            </button>
           </div>
 
           <div>
@@ -89,10 +91,16 @@ const Dashboard: React.FC = () => {
                   <thead className=" bg-zinc-200 uppercase text-zinc-600 dark:bg-zinc-700 dark:text-zinc-400">
                     <tr>
                       {tableHeaders.map((tableKey, index) => (
-                        <th className="px-6 py-3" key={index}>{tableKey}</th>
+                        <th className="px-6 py-3" key={index}>
+                          {tableKey}
+                        </th>
                       ))}
-                      <th className="px-6 py-3" key="editUser">Izmeni korisnika</th>
-                      <th className="px-6 py-3" key="deleteUser">Obriši korisnika</th>
+                      <th className="px-6 py-3" key="editUser">
+                        Izmeni korisnika
+                      </th>
+                      <th className="px-6 py-3" key="deleteUser">
+                        Obriši korisnika
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
@@ -102,19 +110,23 @@ const Dashboard: React.FC = () => {
                         <td key={`email_${index}`}>{row?.email}</td>
                         <td key={`role_${index}`}>{row?.role?.role}</td>
                         <td key={`editUser_${index}`} className="text-center">
-                          <button type="button" className="button button-sky" aria-label="EditUser" disabled={authUser?.email === row?.email} onClick={() => handleEdit(row)}>Izmeni</button>
+                          <button type="button" className="button button-sky" aria-label="EditUser" disabled={authUser?.email === row?.email} onClick={() => handleEdit(row)}>
+                            Izmeni
+                          </button>
                         </td>
                         <td key={`deleteUser_${index}`} className="text-center">
-                          <button type="button" className="button button-red" aria-label="Delete" disabled={authUser?.email === row?.email || !authUser?.superAdmin} onClick={() => handleDelete(row?.email)}>Obriši</button>
+                          <button type="button" className="button button-red" aria-label="Delete" disabled={authUser?.email === row?.email || !authUser?.superAdmin} onClick={() => handleDelete(row?.email)}>
+                            Obriši
+                          </button>
                         </td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
 
-                {showModal && (<Modal onOK={handleDeleteOK} onCancel={handleCancel} title="Potvrda brisanja korisnika" question={`Da li ste sigurni da želite da obrišete korisnika ${selectedUserEmail}?`} />)}
+                {showModal && <Modal onOK={handleDeleteOK} onCancel={handleCancel} title="Potvrda brisanja korisnika" question={`Da li ste sigurni da želite da obrišete korisnika ${selectedUserEmail}?`} />}
 
-                {updateData && showModalEditUser && (<ModalEditUser setShowModalEditUser={setShowModalEditUser} updateData={updateData} setUpdateData={setUpdateData} fetchData={fetchData} />)}
+                {updateData && showModalEditUser && <ModalEditUser setShowModalEditUser={setShowModalEditUser} updateData={updateData} setUpdateData={setUpdateData} fetchData={fetchData} />}
               </div>
             </div>
           </div>

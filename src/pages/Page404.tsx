@@ -1,5 +1,5 @@
 import React from "react";
-import background404 from "../ooops404.jpg";
+import background404 from "../assets/ooops404.jpg";
 import { Link } from "react-router-dom";
 
 const Page404: React.FC = () => {

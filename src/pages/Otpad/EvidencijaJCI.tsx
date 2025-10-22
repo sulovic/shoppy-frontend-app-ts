@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import ModalEditJCI from "./ModalEditJCI";
 import Modal from "../../components/Modal";
-import { useAuth } from "../../Context/AuthContext";
+import { useAuth } from "../../hooks/useAuth";
 import Pagination from "../../components/Pagination";
 
 const EvidencijaJCI: React.FC = () => {
@@ -24,9 +24,7 @@ const EvidencijaJCI: React.FC = () => {
   const fetchData = async () => {
     setShowSpinner(true);
     try {
-      const response = await axiosPrivate.get(
-        `otpad/evidencija?sortBy=datum&sortOrder=desc${filter?.zemlja !== "" ? `&zemlja=${filter?.zemlja}` : ""}&page=${pagination.page}&limit=${pagination.limit}`,
-      );
+      const response = await axiosPrivate.get(`otpad/evidencija?sortBy=datum&sortOrder=desc${filter?.zemlja !== "" ? `&zemlja=${filter?.zemlja}` : ""}&page=${pagination.page}&limit=${pagination.limit}`);
       setTableData(response?.data?.data);
       setPagination({ ...pagination, count: response?.data?.count });
       window.scrollTo({
@@ -164,12 +162,8 @@ const EvidencijaJCI: React.FC = () => {
       {!showSpinner && <Pagination pagination={pagination} setPagination={setPagination} />}
 
       {showSpinner && <Spinner />}
-      {showModal && (
-        <Modal onOK={handleDeleteOK} onCancel={handleCancel} title="Potvrda brisanja JCI" question={`Da li ste sigurni da želite da obrišete JCI: ${updateData?.brojJci}?`} />
-      )}
-      {updateData && showModalEdit && (
-        <ModalEditJCI setShowModalEdit={setShowModalEdit} updateData={updateData} setUpdateData={setUpdateData} fetchData={fetchData} />
-      )}
+      {showModal && <Modal onOK={handleDeleteOK} onCancel={handleCancel} title="Potvrda brisanja JCI" question={`Da li ste sigurni da želite da obrišete JCI: ${updateData?.brojJci}?`} />}
+      {updateData && showModalEdit && <ModalEditJCI setShowModalEdit={setShowModalEdit} updateData={updateData} setUpdateData={setUpdateData} fetchData={fetchData} />}
     </div>
   );
 };

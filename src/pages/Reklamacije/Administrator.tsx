@@ -6,7 +6,7 @@ import Spinner from "../../components/Spinner";
 import ModalEdit from "./ModalEdit";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import HandleFiles from "../../components/HandleFiles";
-import { useAuth } from "../../Context/AuthContext";
+import { useAuth } from "../../hooks/useAuth";
 import Pagination from "../../components/Pagination";
 
 const Administrator: React.FC = () => {
@@ -121,15 +121,21 @@ const Administrator: React.FC = () => {
                 <div>
                   <h5 key={`reklamacija_${index}`}>Podaci o reklamaciji:</h5>
                 </div>
-                <p key={`broj_reklamacije_${index}`} className="font-medium text-sky-500 hover:cursor-pointer hover:text-sky-400" onClick={() => handleResolve(row)}>{row?.broj_reklamacije}</p>
-                <p className={`text-center font-medium ${row?.status_reklamacije === "OPRAVDANA" ? `bg-green-300` : row?.status_reklamacije === "NEOPRAVDANA" ? `bg-red-300` : `bg-zinc-300`}`} key={`status_reklamacije_${index}`}>{row?.status_reklamacije}</p>
+                <p key={`broj_reklamacije_${index}`} className="font-medium text-sky-500 hover:cursor-pointer hover:text-sky-400" onClick={() => handleResolve(row)}>
+                  {row?.broj_reklamacije}
+                </p>
+                <p className={`text-center font-medium ${row?.status_reklamacije === "OPRAVDANA" ? `bg-green-300` : row?.status_reklamacije === "NEOPRAVDANA" ? `bg-red-300` : `bg-zinc-300`}`} key={`status_reklamacije_${index}`}>
+                  {row?.status_reklamacije}
+                </p>
                 <p key={`zemlja_reklamacije_${index}`}>{row?.zemlja_reklamacije}</p>
                 <div>
                   <h5 key={`kupac_${index}`}>Podaci o kupcu:</h5>
                 </div>
                 <p key={`ime_prezime_${index}`}>{row?.ime_prezime}</p>
                 <p key={`telefon_${index}`}>{row?.telefon}</p>
-                <p className="text-ellipsis	" key={`email_${index}`}>{row?.email}</p>
+                <p className="text-ellipsis	" key={`email_${index}`}>
+                  {row?.email}
+                </p>
               </div>
 
               <div className="grid grid-cols-2 gap-4 md:grid-cols-4 xl:grid-cols-8">
@@ -142,31 +148,43 @@ const Administrator: React.FC = () => {
                 <div>
                   <h5 key={`opis_${index}`}>Opis reklamacije:</h5>
                 </div>
-                <p key={`opis_reklamacije_${index}`} className="col-span-2 sm:col-span-3">{row?.datum_prijema && format(new Date(row?.datum_prijema), "dd.MM.yyyy")} - {row?.opis_reklamacije}</p>
+                <p key={`opis_reklamacije_${index}`} className="col-span-2 sm:col-span-3">
+                  {row?.datum_prijema && format(new Date(row?.datum_prijema), "dd.MM.yyyy")} - {row?.opis_reklamacije}
+                </p>
               </div>
 
               <div className="grid grid-cols-2 gap-4 md:grid-cols-4 xl:grid-cols-8">
                 <div>
                   <h5 key={`komentar_${index}`}>Komentar:</h5>
                 </div>
-                <p key={`komentar_id_${index}`} className="col-span-2 sm:col-span-3">{row?.komentar}</p>
+                <p key={`komentar_id_${index}`} className="col-span-2 sm:col-span-3">
+                  {row?.komentar}
+                </p>
                 <div>
                   <h5 key={`odluka_${index}`}>Opis odluke:</h5>
                 </div>
-                <p key={`opis_odluke_${index}`} className="col-span-2 sm:col-span-3">{row?.datum_odgovora && format(new Date(row?.datum_odgovora), "dd.MM.yyyy")} - {row?.opis_odluke}</p>
+                <p key={`opis_odluke_${index}`} className="col-span-2 sm:col-span-3">
+                  {row?.datum_odgovora && format(new Date(row?.datum_odgovora), "dd.MM.yyyy")} - {row?.opis_odluke}
+                </p>
               </div>
 
               <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4 xl:grid-cols-8">
                 <div className="col-span-2 content-center sm:col-span-4">
-                  <button key={`datoteke_list_${index}`} className="button button-sky" onClick={() => handleShowFiles(row)}>Rad sa datotekama - prikačeno {row?.files ? JSON.parse(row?.files).length : "0"}</button>
+                  <button key={`datoteke_list_${index}`} className="button button-sky" onClick={() => handleShowFiles(row)}>
+                    Rad sa datotekama - prikačeno {row?.files ? JSON.parse(row?.files).length : "0"}
+                  </button>
                 </div>
 
                 <div className="col-span-2 grid grid-cols-1 content-end items-end gap-2 sm:col-span-4 ">
                   <h5 className="sm:col-span-2">Akcije:</h5>
                   <div className="flex justify-end gap-2">
-                    <button type="button" className="button button-sky" aria-label="Return" disabled={!authUser?.superAdmin} onClick={() => handleReturn(row)}>Vrati</button>
+                    <button type="button" className="button button-sky" aria-label="Return" disabled={!authUser?.superAdmin} onClick={() => handleReturn(row)}>
+                      Vrati
+                    </button>
 
-                    <button type="button" className="button button-red" aria-label="Delete" onClick={() => handleDelete(row)} disabled={!authUser?.superAdmin}>Obriši</button>
+                    <button type="button" className="button button-red" aria-label="Delete" onClick={() => handleDelete(row)} disabled={!authUser?.superAdmin}>
+                      Obriši
+                    </button>
                   </div>
                 </div>
               </div>
@@ -177,12 +195,26 @@ const Administrator: React.FC = () => {
       ) : (
         !showSpinner && <h4 className="my-4 text-zinc-600 ">Nema reklamacija koje su u prijemu...</h4>
       )}
-      {showDeleteModal && (<Modal onOK={handleDeleteOK} onCancel={handleDeleteCancel} title="Potvrda brisanja reklamacije" question={`Da li ste sigurni da želite da obrišete reklamaciju ${selectedRowDelete?.broj_reklamacije} - ${selectedRowDelete?.ime_prezime}?`} />)}
+      {showDeleteModal && (
+        <Modal
+          onOK={handleDeleteOK}
+          onCancel={handleDeleteCancel}
+          title="Potvrda brisanja reklamacije"
+          question={`Da li ste sigurni da želite da obrišete reklamaciju ${selectedRowDelete?.broj_reklamacije} - ${selectedRowDelete?.ime_prezime}?`}
+        />
+      )}
 
-      {showRetrunModal && (<Modal onOK={handleReturnOK} onCancel={handleRetrunCancel} title="Vraćanje reklamacije u obradu" question={`Da li ste sigurni da želite da vratite u obradu reklamaciju ${processData?.broj_reklamacije} - ${processData?.ime_prezime}?`} />)}
+      {showRetrunModal && (
+        <Modal
+          onOK={handleReturnOK}
+          onCancel={handleRetrunCancel}
+          title="Vraćanje reklamacije u obradu"
+          question={`Da li ste sigurni da želite da vratite u obradu reklamaciju ${processData?.broj_reklamacije} - ${processData?.ime_prezime}?`}
+        />
+      )}
 
-      {updateData && showEditModal && (<ModalEdit setShowEditModal={setShowEditModal} updateData={updateData} setUpdateData={setUpdateData} fetchData={fetchData} />)}
-      {showHandleFiles && (<HandleFiles url="reklamacije" id={selectedRowFiles?.broj_reklamacije} data={selectedRowFiles} fetchData={fetchData} setShowHandleFiles={setShowHandleFiles} />)}
+      {updateData && showEditModal && <ModalEdit setShowEditModal={setShowEditModal} updateData={updateData} setUpdateData={setUpdateData} fetchData={fetchData} />}
+      {showHandleFiles && <HandleFiles url="reklamacije" id={selectedRowFiles?.broj_reklamacije} data={selectedRowFiles} fetchData={fetchData} setShowHandleFiles={setShowHandleFiles} />}
       {showSpinner && <Spinner />}
     </div>
   );

@@ -5,7 +5,7 @@ import Spinner from "../../components/Spinner";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import ModalEditProizvod from "./ModalEditProizvod";
 import Modal from "../../components/Modal";
-import { useAuth } from "../../Context/AuthContext";
+import { useAuth } from "../../hooks/useAuth";
 
 const Proizvodi: React.FC = () => {
   const [tableData, setTableData] = useState<any[] | null>(null);
@@ -76,11 +76,7 @@ const Proizvodi: React.FC = () => {
       <h3 className="mt-4">Proizvodi - Parametrizacija</h3>
 
       <div className="flex justify-end px-3">
-        <button
-          type="button"
-          className="button button-sky "
-          aria-label="Nov proizvod"
-          onClick={() => navigate("/otpad/nov-proizvod")}>
+        <button type="button" className="button button-sky " aria-label="Nov proizvod" onClick={() => navigate("/otpad/nov-proizvod")}>
           Dodaj novu vrstu proizvoda
         </button>
       </div>
@@ -100,27 +96,16 @@ const Proizvodi: React.FC = () => {
                   </thead>
                   <tbody>
                     {tableData.map((row, index) => (
-                      <tr
-                        key={index}
-                        className="border-b bg-white hover:!bg-zinc-100 dark:border-zinc-700 dark:bg-zinc-800">
+                      <tr key={index} className="border-b bg-white hover:!bg-zinc-100 dark:border-zinc-700 dark:bg-zinc-800">
                         <td key={`id_${index}`}>{index + 1}</td>
                         <td key={`proizvod_${index}`}>{row?.proizvod}</td>
                         <td key={`edit_${index}`} className="text-center">
-                          <button
-                            type="button"
-                            className="button button-sky float-left"
-                            aria-label="Edit"
-                            onClick={() => handleEdit(row)}>
+                          <button type="button" className="button button-sky float-left" aria-label="Edit" onClick={() => handleEdit(row)}>
                             Izmeni
                           </button>
                         </td>
                         <td key={`delete_${index}`} className="text-center">
-                          <button
-                            type="button"
-                            className="button button-red float-left"
-                            aria-label="Delete"
-                            disabled={!authUser?.superAdmin}
-                            onClick={() => handleDelete(row)}>
+                          <button type="button" className="button button-red float-left" aria-label="Delete" disabled={!authUser?.superAdmin} onClick={() => handleDelete(row)}>
                             Obriši
                           </button>
                         </td>
@@ -129,23 +114,9 @@ const Proizvodi: React.FC = () => {
                   </tbody>
                 </table>
 
-                {showModal && (
-                  <Modal
-                    onOK={handleDeleteOK}
-                    onCancel={handleCancel}
-                    title="Potvrda brisanja vrste proizvoda"
-                    question={`Da li ste sigurni da želite da obrišete vrstu proizvoda: ${updateData?.proizvod}?`}
-                  />
-                )}
+                {showModal && <Modal onOK={handleDeleteOK} onCancel={handleCancel} title="Potvrda brisanja vrste proizvoda" question={`Da li ste sigurni da želite da obrišete vrstu proizvoda: ${updateData?.proizvod}?`} />}
 
-                {updateData && showModalEdit && (
-                  <ModalEditProizvod
-                    setShowModalEdit={setShowModalEdit}
-                    updateData={updateData}
-                    setUpdateData={setUpdateData}
-                    fetchData={fetchData}
-                  />
-                )}
+                {updateData && showModalEdit && <ModalEditProizvod setShowModalEdit={setShowModalEdit} updateData={updateData} setUpdateData={setUpdateData} fetchData={fetchData} />}
               </div>
             </div>
           </div>
