@@ -4,10 +4,16 @@ import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import Modal from "../../components/Modal";
 import { toast } from "react-toastify";
 import Spinner from "../../components/Spinner";
-import type { User } from "../../types/global";
 
-const NewUser: React.FC = () => {
-  const [newUser, setNewUser] = useState<User | null>(null);
+const NewUser = () => {
+  const blankUser: User = {
+    ime_prezime: "",
+    email: "",
+    role: "BASE",
+    role_id: 1001,
+  };
+
+  const [newUser, setNewUser] = useState<User>(blankUser);
   const [showModal, setShowModal] = useState(false);
   const [showSpinner, setShowSpinner] = useState(false);
   const navigate = useNavigate();
@@ -35,7 +41,7 @@ const NewUser: React.FC = () => {
 
   const handleClose = (e: React.MouseEvent) => {
     e.preventDefault();
-    setNewUser(null);
+    setNewUser(blankUser);
     setShowModal(false);
     setShowSpinner(false);
     navigate("/users/dashboard");
@@ -51,7 +57,7 @@ const NewUser: React.FC = () => {
     const key = e.target.id as UserKeys;
     const value = key === "role_id" ? parseInt(e.target.value) : e.target.value;
 
-    setNewUser((prev) => (prev ? { ...prev, [key]: value } : prev));
+    setNewUser((prev) => ({ ...prev, [key]: value }));
   };
 
   return (
@@ -66,15 +72,15 @@ const NewUser: React.FC = () => {
             <div>
               <div className="mb-3">
                 <label htmlFor="ime_prezime">Ime i prezime</label>
-                <input type="text" id="ime_prezime" aria-describedby="Ime i prezime" value={newUser?.ime_prezime} onChange={handleChange} maxLength={190} required />
+                <input type="text" id="ime_prezime" aria-describedby="Ime i prezime" value={newUser.ime_prezime} onChange={handleChange} minLength={5} maxLength={190} required />
               </div>
               <div className="mb-3">
                 <label htmlFor="email">Email</label>
-                <input type="email" id="email" aria-describedby="Email" value={newUser?.email} onChange={handleChange} maxLength={64} required />
+                <input type="email" id="email" aria-describedby="Email" value={newUser.email} onChange={handleChange} maxLength={64} minLength={5} required />
               </div>
               <div className="mb-3 ">
                 <label htmlFor="role_id">Ovlašćenja korisnika</label>
-                <select id="role_id" aria-label="Odaberite ovlašćenja korisnika" required value={newUser?.role_id} onChange={handleChange}>
+                <select id="role_id" aria-label="Odaberite ovlašćenja korisnika" required value={newUser.role_id} onChange={handleChange}>
                   <option value={1001}>BASE</option>
                   <option value={3001}>POWER</option>
                   <option value={5001}>ADMIN</option>
@@ -92,7 +98,7 @@ const NewUser: React.FC = () => {
           </form>
         </div>
 
-        {showModal && <Modal onOK={handleOK} onCancel={handleCancel} title="Potvrda dodavanja novog korisnika" question={`Da li ste sigurni da želite da dodate novog korisnika ${newUser?.email}`} />}
+        {showModal && <Modal onOK={handleOK} onCancel={handleCancel} title="Potvrda dodavanja novog korisnika" question={`Da li ste sigurni da želite da dodate novog korisnika ${newUser.email}`} />}
         {showSpinner && <Spinner />}
       </div>
     </>

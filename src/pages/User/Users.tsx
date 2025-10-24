@@ -1,10 +1,9 @@
-import React from "react";
 import Navbar from "../../components/Navbar";
 import { Outlet, useLocation } from "react-router-dom";
 import AppCards from "../../components/AppCards";
 import { UserLinks } from "../../config/Config";
 
-const Users: React.FC = () => {
+const Users = () => {
   const AppName = "Korisnici";
   const location = useLocation();
 

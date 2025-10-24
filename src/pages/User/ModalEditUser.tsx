@@ -1,11 +1,21 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import Modal from "../../components/Modal";
 import Spinner from "../../components/Spinner";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 
-const ModalEditUser: React.FC<any> = ({ setShowModalEditUser, updateData, setUpdateData, fetchData }) => {
+const ModalEditUser = ({
+  setShowModalEditUser,
+  updateData,
+  setUpdateData,
+  fetchData,
+}: {
+  setShowModalEditUser: React.Dispatch<React.SetStateAction<boolean>>;
+  updateData: User;
+  setUpdateData: React.Dispatch<React.SetStateAction<User>>;
+  fetchData: () => void;
+}) => {
   const [showSpinner, setShowSpinner] = useState(false);
   const [showSaveModal, setShowSaveModal] = useState(false);
   const navigate = useNavigate();
@@ -30,12 +40,12 @@ const ModalEditUser: React.FC<any> = ({ setShowModalEditUser, updateData, setUpd
     setShowSpinner(true);
     try {
       await axiosPrivate.put(`users/${updateData?.email}`, updateData);
-      toast.success(`Korisnik ${updateData?.email} je uspešno sačuvan!`, { position: toast.POSITION.TOP_CENTER });
+      toast.success(`Korisnik ${updateData?.email} je uspešno sačuvan!`, { position: "top-center" });
       navigate("/users/dashboard");
     } catch (error) {
-      toast.error(`UPS!!! Došlo je do greške: ${error} `, { position: toast.POSITION.TOP_CENTER });
+      toast.error(`UPS!!! Došlo je do greške: ${error} `, { position: "top-center" });
     } finally {
-      setShowSaveModal(true);
+      setShowSaveModal(false);
       setShowModalEditUser(false);
       setShowSpinner(false);
       fetchData();
@@ -43,10 +53,10 @@ const ModalEditUser: React.FC<any> = ({ setShowModalEditUser, updateData, setUpd
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    setUpdateData((prev: any) => ({
+    const { id, value } = e.target;
+    setUpdateData((prev) => ({
       ...prev,
-      [e.target.id]: e.target.id === "role_id" ? parseInt((e.target as HTMLSelectElement).value) : (e.target as HTMLInputElement).value,
-      role: undefined,
+      [id]: id === "role_id" ? parseInt(value) : value,
     }));
   };
 
@@ -87,14 +97,18 @@ const ModalEditUser: React.FC<any> = ({ setShowModalEditUser, updateData, setUpd
               </div>
 
               <div className="flex flex-row-reverse gap-2">
-                <button type="submit" className="button button-sky">Sačuvaj</button>
-                <button type="button" className="button button-gray" onClick={handleCancel}>Odustani</button>
+                <button type="submit" className="button button-sky">
+                  Sačuvaj
+                </button>
+                <button type="button" className="button button-gray" onClick={handleCancel}>
+                  Odustani
+                </button>
               </div>
             </div>
           </div>
         </div>
         {showSpinner && <Spinner />}
-        {showSaveModal && (<Modal onOK={handleSaveOk} onCancel={handleCancelModal} title="Sačuvati izmene" question="Da li ste sigurni da želite da sačuvate izmene koje ste uneli?" />)}
+        {showSaveModal && <Modal onOK={handleSaveOk} onCancel={handleCancelModal} title="Sačuvati izmene" question="Da li ste sigurni da želite da sačuvate izmene koje ste uneli?" />}
       </form>
     </div>
   );

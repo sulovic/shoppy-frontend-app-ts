@@ -1,19 +1,21 @@
-import React from "react";
 import { useAuth } from "../../hooks/useAuth";
 import "./ToggleSwitch.css";
-import type { AuthUser } from "../../types/global";
 
-const SuperAdmin: React.FC = () => {
+const SuperAdmin = () => {
   const { authUser, setAuthUser } = useAuth();
 
   const handleToggle = () => {
-    setAuthUser((prev: AuthUser) => ({ ...prev, superAdmin: !prev?.superAdmin }));
+    setAuthUser((prev) => {
+      if (!prev) return null;
+      return { ...prev, superAdmin: !prev.superAdmin };
+    });
   };
 
   const superAdmin = authUser?.superAdmin ?? false;
 
   return (
-    authUser?.role_id > 5000 && (
+    authUser &&
+    authUser.role_id > 5000 && (
       <>
         <h3 className="my-4">Super Admin Privilegije</h3>
         <div className="my-3 mt-16 flex h-full w-full items-center justify-center gap-2">

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import Modal from "../../components/Modal";
 import ModalEditUser from "./ModalEditUser";
@@ -8,12 +8,12 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 
 const Dashboard: React.FC = () => {
-  const [tableData, setTableData] = useState<any[]>([]);
+  const [tableData, setTableData] = useState<User[]>([]);
   const [showSpinner, setShowSpinner] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [showModalEditUser, setShowModalEditUser] = useState(false);
   const [selectedUserEmail, setSelectedUserEmail] = useState("");
-  const [updateData, setUpdateData] = useState<any>(null);
+  const [updateData, setUpdateData] = useState<User | null>(null);
   const navigate = useNavigate();
   const axiosPrivate = useAxiosPrivate();
   const { authUser } = useAuth();
@@ -27,7 +27,7 @@ const Dashboard: React.FC = () => {
       setTableData(response?.data || []);
     } catch (error) {
       toast.error(`UPS!!! Došlo je do greške: ${error} `, {
-        position: toast.POSITION.TOP_CENTER,
+        position: "top-center",
       });
     } finally {
       setShowSpinner(false);
@@ -44,11 +44,11 @@ const Dashboard: React.FC = () => {
     try {
       await axiosPrivate.delete(`users/${selectedUserEmail}`);
       toast.success(`Korisnik ${selectedUserEmail} je uspešno obrisan!`, {
-        position: toast.POSITION.TOP_CENTER,
+        position: "top-center",
       });
     } catch (error) {
       toast.error(`UPS!!! Došlo je do greške: ${error} `, {
-        position: toast.POSITION.TOP_CENTER,
+        position: "top-center",
       });
     } finally {
       setShowModal(false);
