@@ -1,7 +1,7 @@
-import type { GoogleCredentialResponse } from "@react-oauth/google";
 import axios from "axios";
 import type { AxiosError, AxiosResponse } from "axios";
 import { toast } from "react-toastify";
+import type { CodeResponse } from "@react-oauth/google";
 
 const apiClient = axios.create({
   baseURL: import.meta.env.VITE_APP_API_BASE_URL,
@@ -37,9 +37,14 @@ apiClient.interceptors.response.use(
   }
 );
 
-const ApiLoginConnector = async (googleRepsonse: GoogleCredentialResponse) => {
-  const response = await apiClient.post("/login", googleRepsonse);
-  return response.data;
+const ApiGoogleLoginConnector = async (googleCode: CodeResponse) => {
+  const response: { data: { accessToken: string } } = await apiClient.post("/login/google", googleCode);
+  return response.data.accessToken;
+};
+
+const ApiLoginConnector = async (email: string, password: string) => {
+  const response: { data: { accessToken: string } } = await apiClient.post("/login", { email, password });
+  return response.data.accessToken;
 };
 
 const ApiLogoutConnector = async () => {
@@ -48,8 +53,8 @@ const ApiLogoutConnector = async () => {
 };
 
 const ApiRefreshConnector = async () => {
-  const response = await apiClient.post("/refresh");
-  return response.data;
+  const response: { data: { accessToken: string } } = await apiClient.post("/refresh");
+  return response.data.accessToken;
 };
 
-export { ApiLoginConnector, ApiRefreshConnector, ApiLogoutConnector };
+export { ApiLoginConnector, ApiRefreshConnector, ApiLogoutConnector, ApiGoogleLoginConnector };

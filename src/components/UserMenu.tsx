@@ -1,12 +1,19 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
-import { GoogleLogin, type CredentialResponse } from "@react-oauth/google";
+import { useGoogleLogin, GoogleLogin } from "@react-oauth/google";
 import Modal from "./Modal";
-import { toast } from "react-toastify";
+
+declare type AppLink = {
+  label: string;
+  image: string;
+  desc: string;
+  href: string;
+  minRole: number;
+};
 
 const UserMenu = ({ Links = [] }: { Links: AppLink[] }) => {
-  const { authUser, handleLogin, handleLogoutOK } = useAuth();
+  const { authUser, handleGoogleLogin, handleLogoutOK } = useAuth();
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [menuHidden, setMenuHidden] = useState(true);
   const navigate = useNavigate();
@@ -30,15 +37,11 @@ const UserMenu = ({ Links = [] }: { Links: AppLink[] }) => {
     };
   }, []);
 
-  const handleErrorGoogleLogin = () => {
-    toast.error(`UPS!!! Došlo je do greške prilikom prijave`, {
-      position: "top-center",
-    });
-  };
-  const handleGoogleLoginSuccess = (res: CredentialResponse) => {
-    setMenuHidden(true);
-    handleLogin(res);
-  };
+  const handleLoginWithGoogle = useGoogleLogin({
+    flow: "auth-code",
+    onSuccess: (googleCode) => handleGoogleLogin(googleCode),
+    onError: () => console.log("Google Auth failed"),
+  });
 
   const handleLogout = () => {
     setShowLogoutModal(true);
@@ -58,7 +61,7 @@ const UserMenu = ({ Links = [] }: { Links: AppLink[] }) => {
   return (
     <>
       <div className="relative m-1" ref={menuRef}>
-        <button className="button flex bg-gray-600 !py-1" type="button" id="dropdownUser" data-dropdown-toggle="dropdown" aria-expanded="false" onClick={toggleMenuHidden}>
+        <button className="button flex bg-gray-600 py-1!" type="button" id="dropdownUser" data-dropdown-toggle="dropdown" aria-expanded="false" onClick={toggleMenuHidden}>
           <span className="text-lg">{authUser ? "MENU" : "LOGIN"}</span>
           <span className="m-auto ps-2">
             {authUser ? (
@@ -111,15 +114,9 @@ const UserMenu = ({ Links = [] }: { Links: AppLink[] }) => {
           ) : (
             <li className="list-none">
               <div className="float-end p-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
-                <GoogleLogin
-                  onSuccess={(res) => {
-                    handleGoogleLoginSuccess(res);
-                  }}
-                  onError={() => {
-                    handleErrorGoogleLogin();
-                  }}
-                  shape={"pill"}
-                />
+                <div onClick={() => handleLoginWithGoogle()} style={{ display: "inline-block" }}>
+                  <GoogleLogin onSuccess={() => {}} onError={() => {}} text="signin_with" shape="pill" theme="outline" />
+                </div>
               </div>
             </li>
           )}

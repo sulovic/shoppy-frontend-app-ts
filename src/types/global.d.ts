@@ -16,35 +16,32 @@ declare type PaginationProps = {
 };
 
 import {
-  userDataSchema,
-  AuthUser,
-  queryParamsSchema,
-  envSchema,
-  jwtPayloadSchema,
-  reklamacijaSchema,
+  UserDataSchema,
+  AuthUserSchema,
+  QueryParamsSchema,
+  EnvSchema,
+  ReklamacijaSchema,
+  JwtPayloadSchema,
   JciPodaciSchema,
   JciProizvodiSchema,
-  ProizvodMasaOtpadaSchema,
   ProizvodiSchema,
   VrstaOtpadaSchema,
+  OtpadProizvodSchema,
   JciProizvodiSchema,
   JciPodaciSchema,
 } from "../schemas/schemas.js";
 
 declare global {
-  type QueryParams = z.infer<typeof queryParamsSchema>;
-  type Env = z.infer<typeof envSchema>;
-  type UserData = z.infer<typeof userDataSchema>;
-  type AuthUser = z.infer<typeof AuthUser>;
-  type JWTPayload = z.infer<typeof jwtPayloadSchema>;
-  type Reklamacija = z.infer<typeof reklamacijaSchema>;
+  type QueryParams = z.infer<typeof QueryParamsSchema>;
+  type Env = z.infer<typeof EnvSchema>;
+  type UserData = z.infer<typeof UserDataSchema>;
+  type AuthUser = z.infer<typeof AuthUserSchema>;
+  type JWTPayload = z.infer<typeof JwtPayloadSchema>;
+  type Reklamacija = z.infer<typeof ReklamacijaSchema>;
   type JciPodaci = z.infer<typeof JciPodaciSchema>;
   type JciProizvodi = z.infer<typeof JciProizvodiSchema>;
-  type ProizvodMasaOtpada = z.infer<typeof ProizvodMasaOtpadaSchema>;
-  type Proizvodi = z.infer<typeof ProizvodiSchema>;
+  type OtpadProizvod = z.infer<typeof OtpadProizvodSchema>;
   type VrstaOtpada = z.infer<typeof VrstaOtpadaSchema>;
-  type JciProizvodi = z.infer<typeof JciProizvodiSchema>;
-  type JciPodaci = z.infer<typeof JciPodaciSchema>;
   namespace NodeJS {
     interface ProcessEnv extends Env {}
   }
