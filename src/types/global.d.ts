@@ -1,34 +1,5 @@
 // Shared types
 
-declare type User = {
-  ime_prezime: string;
-  email: string;
-  role_id: 1001 | 3001 | 5001;
-  role: string;
-};
-
-declare type AuthUser = {
-  user: string;
-  email: string;
-  role_id: 1001 | 3001 | 5001;
-  role: string;
-  picture: string;
-  superAdmin: boolean;
-};
-
-declare type DecodedAccessToken = {
-  exp: number;
-  user: AuthUser;
-};
-
-declare type AppLink = {
-  label: string;
-  image: string;
-  desc: string;
-  href: string;
-  minRole: number;
-};
-
 declare type PaginationProps = {
   pagination: {
     page: number;
@@ -44,6 +15,39 @@ declare type PaginationProps = {
   >;
 };
 
-declare type AccessToken = string | null;
+import {
+  userDataSchema,
+  AuthUser,
+  queryParamsSchema,
+  envSchema,
+  jwtPayloadSchema,
+  reklamacijaSchema,
+  JciPodaciSchema,
+  JciProizvodiSchema,
+  ProizvodMasaOtpadaSchema,
+  ProizvodiSchema,
+  VrstaOtpadaSchema,
+  JciProizvodiSchema,
+  JciPodaciSchema,
+} from "../schemas/schemas.js";
 
-declare type PrivilegesMap = Record<string, number>;
+declare global {
+  type QueryParams = z.infer<typeof queryParamsSchema>;
+  type Env = z.infer<typeof envSchema>;
+  type UserData = z.infer<typeof userDataSchema>;
+  type AuthUser = z.infer<typeof AuthUser>;
+  type JWTPayload = z.infer<typeof jwtPayloadSchema>;
+  type Reklamacija = z.infer<typeof reklamacijaSchema>;
+  type JciPodaci = z.infer<typeof JciPodaciSchema>;
+  type JciProizvodi = z.infer<typeof JciProizvodiSchema>;
+  type ProizvodMasaOtpada = z.infer<typeof ProizvodMasaOtpadaSchema>;
+  type Proizvodi = z.infer<typeof ProizvodiSchema>;
+  type VrstaOtpada = z.infer<typeof VrstaOtpadaSchema>;
+  type JciProizvodi = z.infer<typeof JciProizvodiSchema>;
+  type JciPodaci = z.infer<typeof JciPodaciSchema>;
+  namespace NodeJS {
+    interface ProcessEnv extends Env {}
+  }
+}
+
+export {};
