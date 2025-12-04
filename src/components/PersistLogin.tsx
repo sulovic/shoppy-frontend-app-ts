@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import Spinner from "./Spinner";
 import { useAuth } from "../hooks/useAuth";
 import { Outlet } from "react-router-dom";
+import { toast } from "react-toastify";
 
 function PersistLogin() {
   const { authUser, accessToken, refreshAccessToken } = useAuth();
@@ -13,7 +14,10 @@ function PersistLogin() {
       try {
         await refreshAccessToken();
       } catch (err) {
-        console.error(err);
+        toast.warning(`Ulogujte se kako biste pristupili aplikaciji`, {
+          position: "top-center",
+          autoClose: 3000,
+        });
       } finally {
         if (isMounted) setShowSpinner(false);
       }

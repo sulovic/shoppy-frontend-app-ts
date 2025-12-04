@@ -1,20 +1,3 @@
-// Shared types
-
-declare type PaginationProps = {
-  pagination: {
-    page: number;
-    limit: number;
-    count: number;
-  };
-  setPagination: React.Dispatch<
-    React.SetStateAction<{
-      page: number;
-      limit: number;
-      count: number;
-    }>
-  >;
-};
-
 import {
   UserDataSchema,
   AuthUserSchema,
@@ -32,6 +15,28 @@ import {
 } from "../schemas/schemas.js";
 
 declare global {
+  type AppLink = {
+    label: string;
+    image: string;
+    desc: string;
+    href: string;
+    minRole: number;
+  };
+
+  type PaginationProps = {
+    pagination: {
+      page: number;
+      limit: number;
+      count: number;
+    };
+    setPagination: React.Dispatch<
+      React.SetStateAction<{
+        page: number;
+        limit: number;
+        count: number;
+      }>
+    >;
+  };
   type QueryParams = z.infer<typeof QueryParamsSchema>;
   type Env = z.infer<typeof EnvSchema>;
   type UserData = z.infer<typeof UserDataSchema>;

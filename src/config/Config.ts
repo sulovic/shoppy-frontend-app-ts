@@ -65,7 +65,7 @@ export const Priviledges = {
   "/users/super-admin": 5000,
 };
 
-export const AppLinks = [
+export const AppLinks: AppLink[] = [
   {
     label: "Home",
     image: "../assets/BusinessApss.jpg",

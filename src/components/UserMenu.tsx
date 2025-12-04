@@ -4,14 +4,6 @@ import { useAuth } from "../hooks/useAuth";
 import { useGoogleLogin, GoogleLogin } from "@react-oauth/google";
 import Modal from "./Modal";
 
-declare type AppLink = {
-  label: string;
-  image: string;
-  desc: string;
-  href: string;
-  minRole: number;
-};
-
 const UserMenu = ({ Links = [] }: { Links: AppLink[] }) => {
   const { authUser, handleGoogleLogin, handleLogoutOK } = useAuth();
   const [showLogoutModal, setShowLogoutModal] = useState(false);
@@ -39,6 +31,7 @@ const UserMenu = ({ Links = [] }: { Links: AppLink[] }) => {
 
   const handleLoginWithGoogle = useGoogleLogin({
     flow: "auth-code",
+
     onSuccess: (googleCode) => handleGoogleLogin(googleCode),
     onError: () => console.log("Google Auth failed"),
   });

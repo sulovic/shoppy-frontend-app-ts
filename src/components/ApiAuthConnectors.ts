@@ -53,7 +53,7 @@ const ApiLogoutConnector = async () => {
 };
 
 const ApiRefreshConnector = async () => {
-  const response: { data: { accessToken: string } } = await apiClient.post("/refresh");
+  const response: { data: { accessToken: string } } = await apiClient.post("/auth/refresh");
   return response.data.accessToken;
 };
 

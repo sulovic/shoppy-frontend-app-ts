@@ -20,16 +20,16 @@ const Navbar = ({ AppName = "Unauthorized", Links = [] }: { AppName: string; Lin
 
   return (
     <nav tabIndex={-1} ref={navbarRef} className={`mb-3 flex flex-wrap items-center justify-between ${authUser?.superAdmin ? `bg-red-500` : `bg-sky-400`} p-2`}>
-      <div className="mr-6 flex flex-shrink-0 items-center text-white">
+      <div className="mr-6 flex shrink-0 items-center text-white">
         <AppMenu AppName={AppName} Links={AppLinks} />
       </div>
-      <div className="hidden lg:flex lg:w-auto lg:flex-grow lg:items-center">
+      <div className="hidden lg:flex lg:w-auto lg:grow lg:items-center">
         {authUser && (
           <ul className="mb-0">
             {Links.map(
               (link, index) =>
                 authUser?.role_id > link?.minRole && (
-                  <li className="mt-3 text-end	text-lg font-medium lg:!mt-0 lg:inline-block" key={index}>
+                  <li className="mt-3 text-end	text-lg font-medium lg:mt-0! lg:inline-block" key={index}>
                     <Link className={`mr-4 no-underline ${currentLocation.pathname === link?.href ? `text-sky-200` : `text-sky-100`} hover:text-white`} to={link?.href}>
                       {link?.label}
                     </Link>
