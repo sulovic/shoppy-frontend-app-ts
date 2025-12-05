@@ -6,6 +6,11 @@ export default defineConfig({
   plugins: [tailwindcss(), basicSsl()],
   server: {
     port: 3000,
+    https: {},
     strictPort: true,
+    headers: {
+      "Cross-Origin-Opener-Policy": "same-origin-allow-popups",
+      "Cross-Origin-Embedder-Policy": "unsafe-none",
+    },
   },
 });

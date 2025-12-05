@@ -1,11 +1,10 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
-import { useGoogleLogin, GoogleLogin } from "@react-oauth/google";
 import Modal from "./Modal";
 
 const UserMenu = ({ Links = [] }: { Links: AppLink[] }) => {
-  const { authUser, handleGoogleLogin, handleLogoutOK } = useAuth();
+  const { authUser, handleLogoutOK } = useAuth();
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [menuHidden, setMenuHidden] = useState(true);
   const navigate = useNavigate();
@@ -28,13 +27,6 @@ const UserMenu = ({ Links = [] }: { Links: AppLink[] }) => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
-
-  const handleLoginWithGoogle = useGoogleLogin({
-    flow: "auth-code",
-
-    onSuccess: (googleCode) => handleGoogleLogin(googleCode),
-    onError: () => console.log("Google Auth failed"),
-  });
 
   const handleLogout = () => {
     setShowLogoutModal(true);
@@ -107,9 +99,7 @@ const UserMenu = ({ Links = [] }: { Links: AppLink[] }) => {
           ) : (
             <li className="list-none">
               <div className="float-end p-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
-                <div onClick={() => handleLoginWithGoogle()} style={{ display: "inline-block" }}>
-                  <GoogleLogin onSuccess={() => {}} onError={() => {}} text="signin_with" shape="pill" theme="outline" />
-                </div>
+                <Link to="/login">Login</Link>
               </div>
             </li>
           )}

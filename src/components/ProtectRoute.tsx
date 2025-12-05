@@ -9,18 +9,16 @@ const ProtectRoute = ({ minRole = 5000 }: { minRole: number }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!authUser || authUser.role_id <= minRole) {
-      toast.warning("UPS!!! Izgleda da niste autorizovani da posetite ovu lokaciju!", { position: "top-center", autoClose: 3000 });
+    if (!authUser || authUser.roleId <= minRole) {
+      console.log("Here");
+      toast.warning("PROTCTED ROUTE: UPS!!! Izgleda da niste autorizovani da posetite ovu lokaciju!", { position: "top-center", autoClose: 3000 });
 
-      const timer = setTimeout(() => {
-        navigate("/", { replace: true });
-      }, 3500);
-
-      return () => clearTimeout(timer);
+      navigate("/login", { replace: true });
     }
   }, [authUser, minRole, navigate]);
 
-  if (authUser && authUser.role_id > minRole) {
+  if (authUser && authUser.roleId > minRole) {
+    console.log("Izgleda da ste autorizovani da posetite ovu lokaciju!");
     return <Outlet />;
   }
 

@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { id } from "zod/locales";
 
 export const EnvSchema = z.object({});
 
@@ -16,7 +15,7 @@ export const UserDataSchema = z.object({
   userId: z.number().int(),
   firstName: z.string().min(3, "First name is required"),
   lastName: z.string().min(3, "Last name is required"),
-  email: z.email("Invalid email"),
+  email: z.string().email("Invalid email"),
   roleId: z.number().int(),
   roleName: z.string(),
 });
@@ -45,7 +44,7 @@ export const ReklamacijaSchema = z.object({
     .min(6, "Telefon is required and must have at least 6 characters")
     .max(20, "Telefon must have at most 20 characters")
     .regex(/^[\d+\s\-()/]+$/, "Telefon contains invalid characters"),
-  email: z.email("invalid email").nullable().optional(),
+  email: z.string().email("invalid email").nullable().optional(),
   datumKupovine: z.coerce.date().nullable().optional(),
   brojRacuna: z.string().min(3, "Broj racuna is required").nullable().optional(),
   nazivProizvoda: z.string().nullable().optional(),

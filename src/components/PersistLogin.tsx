@@ -2,39 +2,24 @@ import { useState, useEffect } from "react";
 import Spinner from "./Spinner";
 import { useAuth } from "../hooks/useAuth";
 import { Outlet } from "react-router-dom";
-import { toast } from "react-toastify";
 
 function PersistLogin() {
   const { authUser, accessToken, refreshAccessToken } = useAuth();
-  const [showSpinner, setShowSpinner] = useState(true);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    let isMounted = true;
-    const verifyRefreshToken = async () => {
-      try {
+    console.log("PersistLogin");
+    const verifyToken = async () => {
+      if (!authUser || !accessToken) {
         await refreshAccessToken();
-      } catch (err) {
-        toast.warning(`Ulogujte se kako biste pristupili aplikaciji`, {
-          position: "top-center",
-          autoClose: 3000,
-        });
-      } finally {
-        if (isMounted) setShowSpinner(false);
+        setLoading(false);
       }
     };
 
-    if (!authUser || !accessToken) {
-      verifyRefreshToken();
-    } else {
-      setShowSpinner(false);
-    }
+    verifyToken();
+  }, []); // run once on mount
 
-    return () => {
-      isMounted = false;
-    };
-  }, [authUser, accessToken, refreshAccessToken]);
-
-  return <>{showSpinner ? <Spinner /> : <Outlet />}</>;
+  return <>{loading ? <Spinner /> : <Outlet />}</>;
 }
 
 export default PersistLogin;

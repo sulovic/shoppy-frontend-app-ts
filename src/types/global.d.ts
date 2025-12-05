@@ -1,20 +1,20 @@
-import {
-  UserDataSchema,
-  AuthUserSchema,
-  QueryParamsSchema,
-  EnvSchema,
-  ReklamacijaSchema,
-  JwtPayloadSchema,
-  JciPodaciSchema,
-  JciProizvodiSchema,
-  ProizvodiSchema,
-  VrstaOtpadaSchema,
-  OtpadProizvodSchema,
-  JciProizvodiSchema,
-  JciPodaciSchema,
-} from "../schemas/schemas.js";
+// global.d.ts
+import { z } from "zod";
+import { QueryParamsSchema, EnvSchema, UserDataSchema, AuthUserSchema, JwtPayloadSchema, ReklamacijaSchema, JciPodaciSchema, JciProizvodiSchema, ProizvodiSchema, VrstaOtpadaSchema, OtpadProizvodSchema } from "../schemas/schemas";
 
 declare global {
+  type AuthUser = z.infer<typeof AuthUserSchema>;
+  type UserData = z.infer<typeof UserDataSchema>;
+  type QueryParams = z.infer<typeof QueryParamsSchema>;
+  type Env = z.infer<typeof EnvSchema>;
+  type JWTPayload = z.infer<typeof JwtPayloadSchema>;
+  type Reklamacija = z.infer<typeof ReklamacijaSchema>;
+  type JciPodaci = z.infer<typeof JciPodaciSchema>;
+  type JciProizvodi = z.infer<typeof JciProizvodiSchema>;
+  type Proizvodi = z.infer<typeof ProizvodiSchema>;
+  type VrstaOtpada = z.infer<typeof VrstaOtpadaSchema>;
+  type OtpadProizvod = z.infer<typeof OtpadProizvodSchema>;
+
   type AppLink = {
     label: string;
     image: string;
@@ -37,16 +37,7 @@ declare global {
       }>
     >;
   };
-  type QueryParams = z.infer<typeof QueryParamsSchema>;
-  type Env = z.infer<typeof EnvSchema>;
-  type UserData = z.infer<typeof UserDataSchema>;
-  type AuthUser = z.infer<typeof AuthUserSchema>;
-  type JWTPayload = z.infer<typeof JwtPayloadSchema>;
-  type Reklamacija = z.infer<typeof ReklamacijaSchema>;
-  type JciPodaci = z.infer<typeof JciPodaciSchema>;
-  type JciProizvodi = z.infer<typeof JciProizvodiSchema>;
-  type OtpadProizvod = z.infer<typeof OtpadProizvodSchema>;
-  type VrstaOtpada = z.infer<typeof VrstaOtpadaSchema>;
+
   namespace NodeJS {
     interface ProcessEnv extends Env {}
   }

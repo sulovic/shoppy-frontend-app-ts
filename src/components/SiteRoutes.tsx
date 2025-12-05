@@ -29,17 +29,18 @@ import NewDodeljivanjeOdsustva from "../pages/Odsustva/NewDodeljivanjeOdsustva";
 import OdobravanjeOdsustva from "../pages/Odsustva/OdobravanjeOdsustva";
 import ResenjeOdmor from "../pages/Odsustva/ResenjeOdmor";
 import { Priviledges } from "../config/Config.js";
-import Administrator from "../pages/Odsustva/Administrator.jsx";
-import Racuni from "../pages/Racuni/Racuni.jsx";
-import NabavkeProizvodi from "../pages/Nabavke/Proizvodi.jsx";
-import NewNabavkaProizvod from "../pages/Nabavke/NewProizvod.jsx";
-import NewPorudzbina from "../pages/Nabavke/NewPorudzbina.jsx";
-import AktivnePorudzbine from "../pages/Nabavke/AktivnePorudzbine.jsx";
-import SvePorudzbine from "../pages/Nabavke/SvePorudzbine.jsx";
-import StampaResenja from "../pages/Odsustva/StampaResenja.jsx";
-import SuperAdmin from "../pages/User/SuperAdmin.jsx";
-import Pregled from "../pages/Nabavke/Pregled.jsx";
-import SlanjeSMS from "../pages/Reklamacije/SlanjeSMS.jsx";
+import Administrator from "../pages/Odsustva/Administrator";
+import Racuni from "../pages/Racuni/Racuni";
+import NabavkeProizvodi from "../pages/Nabavke/Proizvodi";
+import NewNabavkaProizvod from "../pages/Nabavke/NewProizvod";
+import NewPorudzbina from "../pages/Nabavke/NewPorudzbina";
+import AktivnePorudzbine from "../pages/Nabavke/AktivnePorudzbine";
+import SvePorudzbine from "../pages/Nabavke/SvePorudzbine";
+import StampaResenja from "../pages/Odsustva/StampaResenja";
+import SuperAdmin from "../pages/User/SuperAdmin";
+import Pregled from "../pages/Nabavke/Pregled";
+import SlanjeSMS from "../pages/Reklamacije/SlanjeSMS";
+import Login from "../pages/Login";
 
 const SiteRoutes = () => {
   return (
@@ -48,6 +49,7 @@ const SiteRoutes = () => {
 
       {/* Reklamacije Public Route */}
       <Route path="reklamacije/pregled-reklamacije/:id" element={<PregledReklamacije />} />
+      <Route path="login" element={<Login />} />
 
       {/* Private Rotutes */}
 

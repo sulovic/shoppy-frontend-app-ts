@@ -21,11 +21,6 @@ apiClient.interceptors.response.use(
         position: "top-center",
         autoClose: 3000,
       });
-
-      // Redirect after toast
-      setTimeout(() => {
-        window.location.href = "/";
-      }, 3500);
     } else {
       toast.error(message, {
         position: "top-center",
@@ -38,12 +33,12 @@ apiClient.interceptors.response.use(
 );
 
 const ApiGoogleLoginConnector = async (googleCode: CodeResponse) => {
-  const response: { data: { accessToken: string } } = await apiClient.post("/login/google", googleCode);
+  const response: { data: { accessToken: string } } = await apiClient.post("/auth/login/google", googleCode);
   return response.data.accessToken;
 };
 
-const ApiLoginConnector = async (email: string, password: string) => {
-  const response: { data: { accessToken: string } } = await apiClient.post("/login", { email, password });
+const ApiPasswordLoginConnector = async (email: string, password: string) => {
+  const response: { data: { accessToken: string } } = await apiClient.post("/auth/login", { email, password });
   return response.data.accessToken;
 };
 
@@ -57,4 +52,4 @@ const ApiRefreshConnector = async () => {
   return response.data.accessToken;
 };
 
-export { ApiLoginConnector, ApiRefreshConnector, ApiLogoutConnector, ApiGoogleLoginConnector };
+export { ApiPasswordLoginConnector, ApiRefreshConnector, ApiLogoutConnector, ApiGoogleLoginConnector };
