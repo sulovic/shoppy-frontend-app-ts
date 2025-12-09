@@ -1,41 +1,52 @@
 import { toast } from "react-toastify";
+import type { AxiosError } from "axios";
 
-export const handleApiError: (error: any) => void = (error) => {
-  if (error.response?.status === 400) {
-    toast.warning("Nisu poslati podaci za upis.", {
+export const handleApiError = (error: any): void => {
+  const axiosError = error as AxiosError<any>;
+
+  // No server response (network error, CORS issue, timeout)
+  if (axiosError.request && !axiosError.response) {
+    toast.error("Server nije dostupan. Proverite internet ili API server.", {
       position: "top-center",
     });
-  } else if (error.response?.status === 401) {
-    toast.warning("Niste autorizovani da posetite ovu stranu.", {
-      position: "top-center",
-    });
-  } else if (error.response?.status === 403) {
-    toast.error("Nemate ovlašćenja da izvršite ovu akciju.", {
-      position: "top-center",
-    });
-  } else if (error.response?.status === 404) {
-    toast.error("Traženi podatak nije pronađen.", {
-      position: "top-center",
-    });
-  } else if (error.response?.status === 500) {
-    toast.error("Greška na API serveru.", {
-      position: "top-center",
-    });
-  } else if (error.response?.status === 409) {
-    toast.error("Podatak nije dodat! Ovaj podatak već postoji.", {
-      position: "top-center",
-    });
-  } else if (error.response) {
-    toast.error(`API Error: ${error?.response?.status}`, {
-      position: "top-center",
-    });
-  } else if (error.request) {
-    toast.error("Error: No response received from server. Please check your server or internet connection.", {
-      position: "top-center",
-    });
-  } else {
-    toast.error(`Unexpected Error: Please try again later.`, {
-      position: "top-center",
-    });
+    return;
+  }
+
+  // Backend responded with a status
+  const status = axiosError.response?.status;
+  const msg = axiosError.response?.data?.message;
+
+  switch (status) {
+    case 400:
+      toast.warning(msg || "Nisu poslati validni podaci.", { position: "top-center" });
+      break;
+
+    case 401:
+      toast.warning(msg || "Niste autorizovani da pristupite ovoj akciji.", { position: "top-center" });
+      break;
+
+    case 403:
+      toast.error(msg || "Nemate ovlašćenja za ovu akciju.", { position: "top-center" });
+      break;
+
+    case 404:
+      toast.error(msg || "Traženi podatak nije pronađen.", { position: "top-center" });
+      break;
+
+    case 409:
+      toast.error(msg || "Podatak već postoji.", { position: "top-center" });
+      break;
+
+    case 500:
+      toast.error(msg || "Greška na API serveru.", { position: "top-center" });
+      break;
+
+    default:
+      if (status) {
+        toast.error(msg || `API greška: ${status}`, { position: "top-center" });
+      } else {
+        toast.error("Dogodila se neočekivana greška.", { position: "top-center" });
+      }
+      break;
   }
 };

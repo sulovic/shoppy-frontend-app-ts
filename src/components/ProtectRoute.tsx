@@ -8,6 +8,8 @@ const ProtectRoute = ({ minRole = 5000 }: { minRole: number }) => {
   const { authUser } = useAuth();
   const navigate = useNavigate();
 
+  console.log("Protect route");
+
   useEffect(() => {
     if (!authUser || authUser.roleId <= minRole) {
       console.log("Here");
@@ -18,7 +20,6 @@ const ProtectRoute = ({ minRole = 5000 }: { minRole: number }) => {
   }, [authUser, minRole, navigate]);
 
   if (authUser && authUser.roleId > minRole) {
-    console.log("Izgleda da ste autorizovani da posetite ovu lokaciju!");
     return <Outlet />;
   }
 

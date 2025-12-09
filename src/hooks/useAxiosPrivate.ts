@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import axios from "axios";
 import type { AxiosError, InternalAxiosRequestConfig, AxiosHeaders } from "axios";
 import { useAuth } from "../hooks/useAuth";
+import { handleApiError } from "../services/errorHandler";
 
 const axiosPrivate = axios.create({
   headers: {
@@ -44,15 +45,15 @@ const useAxiosPrivate = () => {
             const newAccessToken = await refreshAccessToken();
 
             const headers: AxiosHeaders = prevRequest.headers;
-            if (!headers.has("Authorization")) {
-              headers.set("Authorization", `Bearer ${newAccessToken}`);
-            }
+            headers.set("Authorization", `Bearer ${newAccessToken}`);
 
             return axiosPrivate(prevRequest);
           } catch (refreshError) {
             return Promise.reject(refreshError);
           }
         }
+
+        handleApiError(error);
 
         return Promise.reject(error);
       }

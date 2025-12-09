@@ -33,6 +33,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const authUserData = AuthUserSchema.parse({ ...decodedAccessToken, superAdmin: false });
         setAuthUser(authUserData);
         setAccessToken(accessToken);
+        console.log("authUser", authUserData);
       }
     } catch (error) {
       handleApiError(error);
@@ -43,8 +44,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       const receivedAccessToken = await ApiPasswordLoginConnector(email, password);
       processAccessToken(receivedAccessToken);
+      navigate("/");
     } catch (error) {
-      handleApiError(error);
+      //error already processed
     }
   };
 
@@ -52,8 +54,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       const receivedAccessToken = await ApiGoogleLoginConnector(googleCode);
       processAccessToken(receivedAccessToken);
+      navigate("/");
     } catch (error) {
-      handleApiError(error);
+      //error already processed
     }
   };
 
@@ -65,21 +68,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       toast.success(`Uspešno ste se odjavili`, {
         position: "top-center",
       });
-    } catch (error) {
-      handleApiError(error);
+      navigate("/login");
+    } catch {
+      //error already processed
     }
   };
 
   const refreshAccessToken: () => Promise<void> = async () => {
     try {
       const newAccessToken = await ApiRefreshConnector();
-      if (!newAccessToken) {
-        throw new Error("Failed to refresh access token");
-      }
       processAccessToken(newAccessToken);
     } catch (error) {
-      handleApiError(error);
-      navigate("/login");
+      setTimeout(() => navigate("/login"), 2000);
     }
   };
 

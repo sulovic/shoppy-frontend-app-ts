@@ -10,14 +10,17 @@ function PersistLogin() {
   useEffect(() => {
     console.log("PersistLogin");
     const verifyToken = async () => {
-      if (!authUser || !accessToken) {
-        await refreshAccessToken();
+      try {
+        if (!authUser || !accessToken) {
+          await refreshAccessToken();
+        }
+      } finally {
         setLoading(false);
       }
     };
 
     verifyToken();
-  }, []); // run once on mount
+  }, [authUser, accessToken, refreshAccessToken]);
 
   return <>{loading ? <Spinner /> : <Outlet />}</>;
 }
