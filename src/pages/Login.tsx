@@ -17,6 +17,7 @@ const Login: React.FC = () => {
 
   const handleLoginWithGoogle = useGoogleLogin({
     flow: "auth-code",
+    redirect_uri: import.meta.env.VITE_APP_BASE_URL,
     onSuccess: (googleCode) => handleGoogleLogin(googleCode),
     onError: () => console.log("Google Auth failed"),
   });
@@ -40,7 +41,7 @@ const Login: React.FC = () => {
           <div className="flex w-full justify-center">
             <div className="float-end p-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
               <div onClick={() => handleLoginWithGoogle()} style={{ display: "inline-block" }}>
-                <GoogleLogin onSuccess={() => {}} onError={() => {}} text="signin_with" shape="pill" theme="outline" />
+                {/* <GoogleLogin onSuccess={() => {}} onError={() => {}} text="signin_with" shape="pill" theme="outline" /> */} GOOGLE
               </div>
             </div>
           </div>

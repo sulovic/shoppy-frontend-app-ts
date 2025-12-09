@@ -20,7 +20,7 @@ apiClient.interceptors.response.use(
 );
 
 const ApiGoogleLoginConnector = async (googleCode: CodeResponse) => {
-  const response: { data: { accessToken: string } } = await apiClient.post("/auth/login/google", googleCode);
+  const response: { data: { accessToken: string } } = await apiClient.post(`/auth/google`, { code: googleCode.code, redirect_uri: import.meta.env.VITE_APP_BASE_URL });
   return response.data.accessToken;
 };
 
@@ -30,7 +30,7 @@ const ApiPasswordLoginConnector = async (email: string, password: string) => {
 };
 
 const ApiLogoutConnector = async () => {
-  const response = await apiClient.post("/logout");
+  const response = await apiClient.post("/auth/logout");
   return response.data;
 };
 
