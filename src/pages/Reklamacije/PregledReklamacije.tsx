@@ -31,10 +31,7 @@ const PregledReklamacije: React.FC = () => {
 
   const rokZaResavanjeSrbija = (
     <>
-      <p>
-        Rok za rešavanje reklamacije ukoliko je reklamacija opravdana: Zakonski rok od 15 dana od dana prijema, odnosno
-        30 dana za tehničku robu i nameštaj, od dana podnošenja reklamacije.
-      </p>
+      <p>Rok za rešavanje reklamacije ukoliko je reklamacija opravdana: Zakonski rok od 15 dana od dana prijema, odnosno 30 dana za tehničku robu i nameštaj, od dana podnošenja reklamacije.</p>
     </>
   );
   const rokZaResavanjeCrnaGora = (
@@ -52,7 +49,7 @@ const PregledReklamacije: React.FC = () => {
       }
     } catch (error) {
       toast.warning(`Ne postoiji reklamacija sa brojem ${id}`, {
-        position: toast.POSITION.TOP_CENTER,
+        position: "top-center",
       });
     } finally {
       setShowSpinner(false);
@@ -87,46 +84,21 @@ const PregledReklamacije: React.FC = () => {
                       <div className="mb-4 grid grid-cols-1 gap-2 md:grid-cols-2 xl:grid-cols-4">
                         <div>
                           <label htmlFor="broj_reklamacije">Broj reklamacije</label>
-                          <input
-                            value={tableData?.broj_reklamacije}
-                            type="text"
-                            id="broj_reklamacije"
-                            aria-describedby="Broj reklamacije"
-                            disabled
-                          />
+                          <input value={tableData?.broj_reklamacije} type="text" id="broj_reklamacije" aria-describedby="Broj reklamacije" disabled />
                         </div>
                         <div>
                           <label htmlFor="datum_prijema">Datum prijema</label>
                           <div>
-                            <DatePicker
-                              id="datum_prijema"
-                              locale="sr-Latn"
-                              selected={new Date(tableData?.datum_prijema)}
-                              dateFormat="dd-MM-yyyy"
-                              aria-describedby="Datum prijema"
-                              disabled
-                            />
+                            <DatePicker id="datum_prijema" locale="sr-Latn" selected={new Date(tableData?.datum_prijema)} dateFormat="dd-MM-yyyy" aria-describedby="Datum prijema" disabled />
                           </div>
                         </div>
                         <div>
                           <label htmlFor="tatus_reklamacije">Status reklamacije</label>
-                          <input
-                            value={tableData?.status_reklamacije}
-                            type="text"
-                            id="status_reklamacije"
-                            aria-describedby="Status reklamacije"
-                            disabled
-                          />
+                          <input value={tableData?.status_reklamacije} type="text" id="status_reklamacije" aria-describedby="Status reklamacije" disabled />
                         </div>
                         <div>
                           <label htmlFor="odgovorna_osoba">Odgovorna osoba</label>
-                          <input
-                            value={tableData?.odgovorna_osoba}
-                            type="text"
-                            id="odgovorna_osoba"
-                            aria-describedby="Odgovorna osoba"
-                            disabled
-                          />
+                          <input value={tableData?.odgovorna_osoba} type="text" id="odgovorna_osoba" aria-describedby="Odgovorna osoba" disabled />
                         </div>
                       </div>
 
@@ -135,13 +107,7 @@ const PregledReklamacije: React.FC = () => {
                       <div className="mb-4 grid grid-cols-1 gap-2 md:grid-cols-4">
                         <div>
                           <label htmlFor="ime_prezime">Ime i prezime</label>
-                          <input
-                            type="text"
-                            id="ime_prezime"
-                            aria-describedby="Ime i prezime"
-                            value={tableData?.ime_prezime}
-                            disabled
-                          />
+                          <input type="text" id="ime_prezime" aria-describedby="Ime i prezime" value={tableData?.ime_prezime} disabled />
                         </div>
                         <div>
                           <label htmlFor="adresa">Adresa</label>
@@ -149,13 +115,7 @@ const PregledReklamacije: React.FC = () => {
                         </div>
                         <div>
                           <label htmlFor="telefon">Telefon</label>
-                          <input
-                            type="text"
-                            id="telefon"
-                            aria-describedby="Telefon"
-                            value={tableData?.telefon}
-                            disabled
-                          />
+                          <input type="text" id="telefon" aria-describedby="Telefon" value={tableData?.telefon} disabled />
                         </div>
                         <div>
                           <label htmlFor="email">Email</label>
@@ -169,47 +129,23 @@ const PregledReklamacije: React.FC = () => {
                         <div>
                           <label htmlFor="datum_kupovine">Datum kupovine</label>
                           <div>
-                            <DatePicker
-                              id="datum_kupovine"
-                              locale="sr-Latn"
-                              selected={new Date(tableData?.datum_kupovine)}
-                              dateFormat="dd-MM-yyyy"
-                              disabled
-                            />
+                            <DatePicker id="datum_kupovine" locale="sr-Latn" selected={new Date(tableData?.datum_kupovine)} dateFormat="dd-MM-yyyy" disabled />
                           </div>
                         </div>
                         <div>
                           <label htmlFor="broj_racuna">Broj računa</label>
-                          <input
-                            type="text"
-                            id="broj_racuna"
-                            aria-describedby="Broj računa"
-                            value={tableData?.broj_racuna}
-                            disabled
-                          />
+                          <input type="text" id="broj_racuna" aria-describedby="Broj računa" value={tableData?.broj_racuna} disabled />
                         </div>
                         <div>
                           <label htmlFor="naziv_poizvoda">Naziv proizvoda</label>
-                          <input
-                            type="text"
-                            id="naziv_poizvoda"
-                            aria-describedby="Naziv proizvoda"
-                            value={tableData?.naziv_poizvoda}
-                            disabled
-                          />
+                          <input type="text" id="naziv_poizvoda" aria-describedby="Naziv proizvoda" value={tableData?.naziv_poizvoda} disabled />
                         </div>
                       </div>
 
                       <div className="mb-2 grid grid-cols-1 gap-2">
                         <div className="mb-2">
                           <label htmlFor="opis_reklamacije">Opis reklamacije</label>
-                          <textarea
-                            className="min-h-48 md:min-h-32"
-                            id="opis_reklamacije"
-                            aria-describedby="Opis reklamacije"
-                            value={tableData?.opis_reklamacije}
-                            disabled
-                          />
+                          <textarea className="min-h-48 md:min-h-32" id="opis_reklamacije" aria-describedby="Opis reklamacije" value={tableData?.opis_reklamacije} disabled />
                         </div>
                       </div>
                     </div>
@@ -222,24 +158,12 @@ const PregledReklamacije: React.FC = () => {
                           <div className="mb-3">
                             <label htmlFor="datum_odgovora">Datum odluke</label>
                             <div className="md:col-span-1">
-                              <DatePicker
-                                id="datum_odgovora"
-                                locale="sr-Latn"
-                                selected={tableData?.datum_odgovora && new Date(tableData?.datum_odgovora)}
-                                dateFormat="dd-MM-yyyy"
-                                disabled
-                              />
+                              <DatePicker id="datum_odgovora" locale="sr-Latn" selected={tableData?.datum_odgovora && new Date(tableData?.datum_odgovora)} dateFormat="dd-MM-yyyy" disabled />
                             </div>
                           </div>
                           <div className="md:col-span-3">
                             <label htmlFor="opis_odluke">Opis odluke o reklamaciji</label>
-                            <textarea
-                              className="min-h-48 md:min-h-32"
-                              id="opis_odluke"
-                              aria-describedby="Odluka o reklamaciji"
-                              value={tableData?.opis_odluke}
-                              disabled
-                            />
+                            <textarea className="min-h-48 md:min-h-32" id="opis_odluke" aria-describedby="Odluka o reklamaciji" value={tableData?.opis_odluke} disabled />
                           </div>
                         </div>
                       </>
@@ -251,9 +175,8 @@ const PregledReklamacije: React.FC = () => {
 
                     <p></p>
                     <p>
-                      Ukoliko prodavac odbije reklamaciju, dužan je da potrošača obavesti o mogućnosti rešavanja spora
-                      vansudskim putem i o nadleženim telima za vansudsko rešavanje potrošačkih sporova. Listu tela za
-                      vansudsko rešavanje sporova možete pronaći na web sajtu nadležnog ministarstva.
+                      Ukoliko prodavac odbije reklamaciju, dužan je da potrošača obavesti o mogućnosti rešavanja spora vansudskim putem i o nadleženim telima za vansudsko rešavanje potrošačkih sporova. Listu tela za vansudsko rešavanje
+                      sporova možete pronaći na web sajtu nadležnog ministarstva.
                     </p>
                   </div>
                 </div>

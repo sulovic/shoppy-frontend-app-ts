@@ -26,13 +26,11 @@ const PrijemReklamacija: React.FC = () => {
     setShowSpinner(true);
 
     try {
-      const response = await axiosPrivate.get(
-        `reklamacije?status_reklamacije=PRIJEM&sortBy=datum_prijema&sortOrder=asc`,
-      );
+      const response = await axiosPrivate.get(`reklamacije?filters[statusReklamacije]=PRIJEM&sortBy=datumPrijema&sortOrder=asc`);
       setTableData(response?.data?.data);
     } catch (error) {
       toast.error(`UPS!!! Došlo je do greške pri preuzimanju podataka: ${error} `, {
-        position: toast.POSITION.TOP_CENTER,
+        position: "top-center",
       });
     } finally {
       setShowSpinner(false);
@@ -64,11 +62,11 @@ const PrijemReklamacija: React.FC = () => {
       }
 
       toast.success("Reklamacija je uspešno obrisana!", {
-        position: toast.POSITION.TOP_CENTER,
+        position: "top-center",
       });
     } catch (error) {
       toast.error(`UPS!!! Došlo je do greške: ${error} `, {
-        position: toast.POSITION.TOP_CENTER,
+        position: "top-center",
       });
     } finally {
       setShowDeleteModal(false);
@@ -96,11 +94,11 @@ const PrijemReklamacija: React.FC = () => {
       await axiosPrivate.put(`reklamacije/${updatedForwardData?.broj_reklamacije}`, updatedForwardData);
 
       toast.success("Reklamacija je uspešno zavedena i poslata na obradu!", {
-        position: toast.POSITION.TOP_CENTER,
+        position: "top-center",
       });
     } catch (error) {
       toast.error(`UPS!!! Došlo je do greške: ${error} `, {
-        position: toast.POSITION.TOP_CENTER,
+        position: "top-center",
       });
     } finally {
       setShowForwardModal(false);
@@ -123,11 +121,7 @@ const PrijemReklamacija: React.FC = () => {
     <>
       <h3 className="mt-4 ">Reklamacije u prijemu</h3>
       <div className="mb-4 flex justify-end">
-        <button
-          type="button"
-          className="button button-sky "
-          aria-label="Nova Reklamacija"
-          onClick={() => navigate("/reklamacije/nova-reklamacija")}>
+        <button type="button" className="button button-sky " aria-label="Nova Reklamacija" onClick={() => navigate("/reklamacije/nova-reklamacija")}>
           Nova reklamacija
         </button>
       </div>
@@ -140,10 +134,7 @@ const PrijemReklamacija: React.FC = () => {
                   <h5 key={`reklamacija_${index}`}>Podaci o reklamaciji:</h5>
                 </div>
 
-                <p
-                  key={`broj_reklamacije_${index}`}
-                  className="font-medium text-sky-500 hover:cursor-pointer hover:text-sky-400"
-                  onClick={() => handleEdit(row)}>
+                <p key={`broj_reklamacije_${index}`} className="font-medium text-sky-500 hover:cursor-pointer hover:text-sky-400" onClick={() => handleEdit(row)}>
                   {row?.broj_reklamacije}
                 </p>
                 <p key={`status_reklamacije_${index}`}>{row?.status_reklamacije}</p>
@@ -160,9 +151,7 @@ const PrijemReklamacija: React.FC = () => {
                 <div>
                   <h5 key={`proizvod_${index}`}>Podaci o kupovini:</h5>
                 </div>
-                <p key={`datum_kupovine_${index}`}>
-                  {row?.datum_kupovine && format(row?.datum_kupovine, "dd.MM.yyyy")}
-                </p>
+                <p key={`datum_kupovine_${index}`}>{row?.datum_kupovine && format(row?.datum_kupovine, "dd.MM.yyyy")}</p>
                 <p key={`broj_racuna_${index}`}>{row?.broj_racuna}</p>
                 <p key={`naziv_poizvoda_${index}`}>{row?.naziv_poizvoda}</p>
                 <div>
@@ -190,10 +179,7 @@ const PrijemReklamacija: React.FC = () => {
 
               <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4 xl:grid-cols-8">
                 <div className="col-span-2 content-center sm:col-span-4">
-                  <button
-                    key={`datoteke_list_${index}`}
-                    className="button button-sky"
-                    onClick={() => handleShowFiles(row)}>
+                  <button key={`datoteke_list_${index}`} className="button button-sky" onClick={() => handleShowFiles(row)}>
                     Rad sa datotekama - prikačeno {row.files ? JSON.parse(row?.files).length : "0"}
                   </button>
                 </div>
@@ -201,18 +187,10 @@ const PrijemReklamacija: React.FC = () => {
                 <div className="col-span-2 grid grid-cols-1 content-end items-end gap-2 sm:col-span-4 sm:grid-cols-2">
                   <h5 className="sm:col-span-2">Akcije:</h5>
                   <div className="flex justify-end gap-2 sm:col-span-2">
-                    <button
-                      type="button"
-                      className="button button-red"
-                      aria-label="Delete"
-                      onClick={() => handleDelete(row)}>
+                    <button type="button" className="button button-red" aria-label="Delete" onClick={() => handleDelete(row)}>
                       Obriši
                     </button>
-                    <button
-                      type="button"
-                      className="button button-sky"
-                      aria-label="Forward"
-                      onClick={() => handleForward(row)}>
+                    <button type="button" className="button button-sky" aria-label="Forward" onClick={() => handleForward(row)}>
                       Zavedi i prebaci u obradu
                     </button>
                   </div>
@@ -241,23 +219,8 @@ const PrijemReklamacija: React.FC = () => {
         />
       )}
 
-      {updateData && showEditModal && (
-        <ModalEdit
-          setShowEditModal={setShowEditModal}
-          updateData={updateData}
-          setUpdateData={setUpdateData}
-          fetchData={fetchData}
-        />
-      )}
-      {showHandleFiles && (
-        <HandleFiles
-          url="reklamacije"
-          id={selectedRowFiles?.broj_reklamacije}
-          data={selectedRowFiles}
-          fetchData={fetchData}
-          setShowHandleFiles={setShowHandleFiles}
-        />
-      )}
+      {updateData && showEditModal && <ModalEdit setShowEditModal={setShowEditModal} updateData={updateData} setUpdateData={setUpdateData} fetchData={fetchData} />}
+      {showHandleFiles && <HandleFiles url="reklamacije" id={selectedRowFiles?.broj_reklamacije} data={selectedRowFiles} fetchData={fetchData} setShowHandleFiles={setShowHandleFiles} />}
       {showSpinner && <Spinner />}
     </>
   );

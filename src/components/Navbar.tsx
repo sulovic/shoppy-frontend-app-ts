@@ -28,7 +28,7 @@ const Navbar = ({ AppName = "Unauthorized", Links = [] }: { AppName: string; Lin
           <ul className="mb-0">
             {Links.map(
               (link, index) =>
-                authUser?.role_id > link?.minRole && (
+                authUser?.roleId > link?.minRole && (
                   <li className="mt-3 text-end	text-lg font-medium lg:mt-0! lg:inline-block" key={index}>
                     <Link className={`mr-4 no-underline ${currentLocation.pathname === link?.href ? `text-sky-200` : `text-sky-100`} hover:text-white`} to={link?.href}>
                       {link?.label}

@@ -1,5 +1,5 @@
 import React, { createContext, useState } from "react";
-import { ApiGoogleLoginConnector, ApiLogoutConnector, ApiRefreshConnector, ApiPasswordLoginConnector } from "../services/ApiAuthConnectors";
+import { ApiGoogleLoginConnector, ApiLogoutConnector, ApiRefreshConnector, ApiPasswordLoginConnector } from "../services/apiAuthConnectors";
 import type { CodeResponse } from "@react-oauth/google";
 import { toast } from "react-toastify";
 import { jwtDecode } from "jwt-decode";

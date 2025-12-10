@@ -8,6 +8,7 @@ import { AppLinks } from "../config/Config";
 const Home: React.FC = () => {
   const { authUser } = useAuth();
   const AppName = "APPS";
+  console.log(authUser, AppLinks);
 
   return (
     <>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useGoogleLogin, GoogleLogin } from "@react-oauth/google";
+import { useGoogleLogin } from "@react-oauth/google";
 import { useAuth } from "../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 
@@ -39,10 +39,17 @@ const Login: React.FC = () => {
 
           <h5>Prijavite se pomoću Google naloga</h5>
           <div className="flex w-full justify-center">
-            <div className="float-end p-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
-              <div onClick={() => handleLoginWithGoogle()} style={{ display: "inline-block" }}>
-                {/* <GoogleLogin onSuccess={() => {}} onError={() => {}} text="signin_with" shape="pill" theme="outline" /> */} GOOGLE
-              </div>
+            <div className="float-end p-2">
+              <button onClick={handleLoginWithGoogle} className="flex items-center gap-3 bg-sky-500 hover:bg-sky-600 text-white px-4 py-2 rounded-lg shadow-md transition">
+                <svg width="18" height="18" viewBox="0 0 48 48">
+                  <path fill="#EA4335" d="M24 9.5c3.54 0 6.65 1.22 9.13 3.63l6.82-6.82C35.25 2.42 30.04 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.91 6.14C12.69 13 17.91 9.5 24 9.5z" />
+                  <path fill="#4285F4" d="M46.5 24.5c0-1.57-.15-3.08-.43-4.5H24v9h12.65c-.55 2.82-2.19 5.2-4.65 6.82l7.15 5.56C43.91 38.05 46.5 31.7 46.5 24.5z" />
+                  <path fill="#FBBC05" d="M10.47 28.64c-.48-1.43-.74-2.95-.74-4.64s.26-3.21.74-4.64l-7.91-6.14C.92 16.21 0 20.02 0 24c0 3.98.92 7.79 2.56 10.78l7.91-6.14z" />
+                  <path fill="#34A853" d="M24 48c6.04 0 11.25-2.02 15.15-5.48l-7.15-5.56c-2 1.29-4.57 2.04-8 2.04-6.09 0-11.31-3.49-13.53-8.54l-7.91 6.14C6.51 42.62 14.62 48 24 48z" />
+                </svg>
+
+                <span className="font-medium">Sign in with Google</span>
+              </button>
             </div>
           </div>
           <div className="my-2 h-0.5 w-full bg-zinc-400"></div>
