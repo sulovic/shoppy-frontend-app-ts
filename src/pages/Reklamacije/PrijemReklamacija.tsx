@@ -1,37 +1,40 @@
 import React, { useEffect, useState } from "react";
-import { format } from "date-fns";
 import Modal from "../../components/Modal";
 import { toast } from "react-toastify";
 import Spinner from "../../components/Spinner";
 import ModalEdit from "./ModalEdit";
-import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import HandleFiles from "../../components/HandleFiles";
 import { useNavigate } from "react-router-dom";
+import reklamacijeServiceBuilder from "../../services/reklamacijeService";
+import { handleCustomErrors } from "../../services/errorHandler";
+import ReklamacijeTable from "../../components/ReklamacijeTable";
+import { useAuth } from "../../hooks/useAuth";
+import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 
 const PrijemReklamacija: React.FC = () => {
-  const [tableData, setTableData] = useState<any[]>([]);
-  const [selectedRowDelete, setSelectedRowDelete] = useState<any | null>(null);
-  const [selectedRowFiles, setSelectedRowFiles] = useState<any | null>(null);
+  const [tableData, setTableData] = useState<Reklamacija[]>([]);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showHandleFiles, setShowHandleFiles] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showForwardModal, setShowForwardModal] = useState(false);
   const [showSpinner, setShowSpinner] = useState(false);
-  const [updateData, setUpdateData] = useState<any | null>(null);
-  const [forwardData, setForwardData] = useState<any | null>(null);
+  const [selectedRowFiles, setSelectedRowFiles] = useState<Reklamacija | null>(null);
+  const [deleteData, setDeleteData] = useState<Reklamacija | null>(null);
+  const [updateData, setUpdateData] = useState<Reklamacija | null>(null);
+  const [forwardData, setForwardData] = useState<Reklamacija | null>(null);
+  const [queryParams, setQueryParams] = useState<QueryParams>({ filters: { statusReklamacije: "OPRAVDANA" }, page: 1, limit: 20, sortOrder: "asc", sortBy: "datumKreiranja" });
+  const { authUser } = useAuth();
   const axiosPrivate = useAxiosPrivate();
+  const reklamacijeService = reklamacijeServiceBuilder(axiosPrivate, authUser);
   const navigate = useNavigate();
 
   const fetchData = async () => {
     setShowSpinner(true);
-
     try {
-      const response = await axiosPrivate.get(`reklamacije?filters[statusReklamacije]=PRIJEM&sortBy=datumPrijema&sortOrder=asc`);
-      setTableData(response?.data?.data);
+      const response = await reklamacijeService.getAllReklamacije(queryParams);
+      setTableData(response.data.data);
     } catch (error) {
-      toast.error(`UPS!!! Došlo je do greške pri preuzimanju podataka: ${error} `, {
-        position: "top-center",
-      });
+      handleCustomErrors(error);
     } finally {
       setShowSpinner(false);
     }
@@ -39,36 +42,36 @@ const PrijemReklamacija: React.FC = () => {
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [queryParams]);
 
-  const handleEdit = (row: any) => {
+  const handleEdit = (row: Reklamacija) => {
     setUpdateData(row);
     setShowEditModal(true);
   };
-  const handleDelete = (row: any) => {
-    setSelectedRowDelete(row);
+  const handleDelete = (row: Reklamacija) => {
+    setDeleteData(row);
     setShowDeleteModal(true);
   };
 
   const handleDeleteOK = async () => {
     setShowSpinner(true);
     try {
-      await axiosPrivate.delete(`reklamacije/${selectedRowDelete?.broj_reklamacije}`);
+      await reklamacijeService.deleteReklamacija(deleteData!);
 
-      if (selectedRowDelete?.files.length > 0) {
-        await axiosPrivate.delete(`uploads/reklamacije`, {
-          data: { files: JSON.parse(selectedRowDelete?.files) },
-        });
-      }
+      // Brisanje fajlova TODO
+      // if (deleteData && deleteData.files && deleteData.files.length > 0) {
+      //   await axiosPrivate.delete(`uploads/reklamacije`, {
+      //     data: { files: JSON.parse(deleteData?.files) },
+      //   });
+      // }
 
       toast.success("Reklamacija je uspešno obrisana!", {
         position: "top-center",
       });
     } catch (error) {
-      toast.error(`UPS!!! Došlo je do greške: ${error} `, {
-        position: "top-center",
-      });
+      handleCustomErrors(error);
     } finally {
+      setDeleteData(null);
       setShowDeleteModal(false);
       setShowSpinner(false);
       fetchData();
@@ -76,31 +79,30 @@ const PrijemReklamacija: React.FC = () => {
   };
 
   const handleDeleteCancel = () => {
+    setDeleteData(null);
     setShowDeleteModal(false);
     setShowSpinner(false);
   };
 
-  const handleForward = (row: any) => {
+  const handleForward = (row: Reklamacija) => {
     setForwardData(row);
     setShowForwardModal(true);
   };
 
   const handleForwardOK = async () => {
     setShowSpinner(true);
-    const updatedForwardData = { ...forwardData, status_reklamacije: "OBRADA" };
-    setForwardData(updatedForwardData);
+    const forwardReklamacija: Reklamacija = { ...forwardData!, statusReklamacije: "OBRADA" };
 
     try {
-      await axiosPrivate.put(`reklamacije/${updatedForwardData?.broj_reklamacije}`, updatedForwardData);
+      await reklamacijeService.updateReklamacija(forwardReklamacija);
 
       toast.success("Reklamacija je uspešno zavedena i poslata na obradu!", {
         position: "top-center",
       });
     } catch (error) {
-      toast.error(`UPS!!! Došlo je do greške: ${error} `, {
-        position: "top-center",
-      });
+      handleCustomErrors(error);
     } finally {
+      setForwardData(null);
       setShowForwardModal(false);
       setShowSpinner(false);
       fetchData();
@@ -108,11 +110,12 @@ const PrijemReklamacija: React.FC = () => {
   };
 
   const handleForwardCancel = () => {
+    setForwardData(null);
     setShowForwardModal(false);
     setShowSpinner(false);
   };
 
-  const handleShowFiles = (row: any) => {
+  const handleShowFiles = (row: Reklamacija) => {
     setSelectedRowFiles(row);
     setShowHandleFiles(true);
   };
@@ -125,102 +128,25 @@ const PrijemReklamacija: React.FC = () => {
           Nova reklamacija
         </button>
       </div>
-      {tableData?.length ? (
-        <div>
-          {tableData.map((row, index) => (
-            <div key={index} className="my-3 grid grid-cols-1 rounded-xl bg-gray-100 p-2 shadow-sm dark:bg-gray-800 ">
-              <div className="grid grid-cols-2 gap-2 md:grid-cols-4 xl:grid-cols-8">
-                <div>
-                  <h5 key={`reklamacija_${index}`}>Podaci o reklamaciji:</h5>
-                </div>
-
-                <p key={`broj_reklamacije_${index}`} className="font-medium text-sky-500 hover:cursor-pointer hover:text-sky-400" onClick={() => handleEdit(row)}>
-                  {row?.broj_reklamacije}
-                </p>
-                <p key={`status_reklamacije_${index}`}>{row?.status_reklamacije}</p>
-                <p key={`zemlja_reklamacije_${index}`}>{row?.zemlja_reklamacije}</p>
-                <div>
-                  <h5 key={`kupac_${index}`}>Podaci o kupcu:</h5>
-                </div>
-                <p key={`ime_prezime_${index}`}>{row?.ime_prezime}</p>
-                <p key={`telefon_${index}`}>{row?.telefon}</p>
-                <p key={`email_${index}`}>{row?.email}</p>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 xl:grid-cols-8">
-                <div>
-                  <h5 key={`proizvod_${index}`}>Podaci o kupovini:</h5>
-                </div>
-                <p key={`datum_kupovine_${index}`}>{row?.datum_kupovine && format(row?.datum_kupovine, "dd.MM.yyyy")}</p>
-                <p key={`broj_racuna_${index}`}>{row?.broj_racuna}</p>
-                <p key={`naziv_poizvoda_${index}`}>{row?.naziv_poizvoda}</p>
-                <div>
-                  <h5 key={`opis_${index}`}>Opis reklamacije:</h5>
-                </div>
-                <p key={`opis_reklamacije_${index}`} className="col-span-2 sm:col-span-3">
-                  {row?.datum_prijema && format(row?.datum_prijema, "dd.MM.yyyy")} - {row?.opis_reklamacije}
-                </p>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 xl:grid-cols-8">
-                <div>
-                  <h5 key={`komentar_${index}`}>Komentar:</h5>
-                </div>
-                <p key={`komentar_id_${index}`} className="col-span-2 sm:col-span-3">
-                  {row?.komentar}
-                </p>
-                <div>
-                  <h5 key={`odluka_${index}`}>Opis odluke:</h5>
-                </div>
-                <p key={`opis_odluke_${index}`} className="col-span-2 sm:col-span-3">
-                  {row?.datum_odgovora && format(row?.datum_odgovora, "dd.MM.yyyy")} - {row?.opis_odluke}
-                </p>
-              </div>
-
-              <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4 xl:grid-cols-8">
-                <div className="col-span-2 content-center sm:col-span-4">
-                  <button key={`datoteke_list_${index}`} className="button button-sky" onClick={() => handleShowFiles(row)}>
-                    Rad sa datotekama - prikačeno {row.files ? JSON.parse(row?.files).length : "0"}
-                  </button>
-                </div>
-
-                <div className="col-span-2 grid grid-cols-1 content-end items-end gap-2 sm:col-span-4 sm:grid-cols-2">
-                  <h5 className="sm:col-span-2">Akcije:</h5>
-                  <div className="flex justify-end gap-2 sm:col-span-2">
-                    <button type="button" className="button button-red" aria-label="Delete" onClick={() => handleDelete(row)}>
-                      Obriši
-                    </button>
-                    <button type="button" className="button button-sky" aria-label="Forward" onClick={() => handleForward(row)}>
-                      Zavedi i prebaci u obradu
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
+      {tableData && tableData.length ? (
+        <ReklamacijeTable tableData={tableData} handleEdit={handleEdit} handleDelete={handleDelete} handleShowFiles={handleShowFiles} handleForward={handleForward} />
       ) : (
         !showSpinner && <h4 className="my-4 text-zinc-600 ">Nema reklamacija koje su u prijemu...</h4>
       )}
       {showDeleteModal && (
-        <Modal
-          onOK={handleDeleteOK}
-          onCancel={handleDeleteCancel}
-          title="Potvrda brisanja reklamacije"
-          question={`Da li ste sigurni da želite da obrišete reklamaciju ${selectedRowDelete?.broj_reklamacije} - ${selectedRowDelete?.ime_prezime}?`}
-        />
+        <Modal onOK={handleDeleteOK} onCancel={handleDeleteCancel} title="Potvrda brisanja reklamacije" question={`Da li ste sigurni da želite da obrišete reklamaciju ${deleteData?.brojReklamacije} - ${deleteData?.imePrezime}?`} />
       )}
       {showForwardModal && (
         <Modal
           onOK={handleForwardOK}
           onCancel={handleForwardCancel}
           title="Potvrda prijema reklamacije"
-          question={`Da li ste sigurni da želite da zavedete i prebacite u obradu reklamaciju ${forwardData?.broj_reklamacije} - ${forwardData?.ime_prezime}?`}
+          question={`Da li ste sigurni da želite da zavedete i prebacite u obradu reklamaciju ${forwardData?.brojReklamacije} - ${forwardData?.imePrezime}?`}
         />
       )}
 
       {updateData && showEditModal && <ModalEdit setShowEditModal={setShowEditModal} updateData={updateData} setUpdateData={setUpdateData} fetchData={fetchData} />}
-      {showHandleFiles && <HandleFiles url="reklamacije" id={selectedRowFiles?.broj_reklamacije} data={selectedRowFiles} fetchData={fetchData} setShowHandleFiles={setShowHandleFiles} />}
+      {showHandleFiles && <HandleFiles url="reklamacije" id={selectedRowFiles!.idReklamacije!} data={selectedRowFiles!} fetchData={fetchData} setShowHandleFiles={setShowHandleFiles} />}
       {showSpinner && <Spinner />}
     </>
   );

@@ -8,13 +8,13 @@ import { allowedFileTypes } from "../config/Config";
 import { allowedExtensions } from "../config/Config";
 import { useAuth } from "../hooks/useAuth";
 
-const HandleFiles = ({ url, id, data, setShowHandleFiles, fetchData }: { url: string; id: number; data: Record<string, string>; setShowHandleFiles: React.Dispatch<React.SetStateAction<boolean>>; fetchData: () => void }) => {
+const HandleFiles = ({ url, id, data, setShowHandleFiles, fetchData }: { url: string; id: number; data: Reklamacija; setShowHandleFiles: React.Dispatch<React.SetStateAction<boolean>>; fetchData: () => void }) => {
   const [fileUrl, setFileUrl] = useState<string | null>(null);
   const [showSpinner, setShowSpinner] = useState<boolean>(false);
-  const [editedData, setEditedData] = useState(data);
+  const [editedData, setEditedData] = useState<Reklamacija>(data);
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
   const [formFiles, setFormFiles] = useState(new FormData());
-  const [uploadFileNames, setUploadFileNames] = useState({});
+  const [uploadFileNames, setUploadFileNames] = useState<string[]>([]);
   const fileInputRef = useRef(null);
   const axiosPrivate = useAxiosPrivate();
   const axiosPrivateFiles = useAxiosPrivateFiles();
@@ -75,7 +75,7 @@ const HandleFiles = ({ url, id, data, setShowHandleFiles, fetchData }: { url: st
     setShowSpinner(true);
     try {
       //new array with removed file
-      const updatedFiles = JSON.stringify(JSON.parse(editedData?.files).filter((fileName) => fileName !== fileUrl));
+      const updatedFiles = editedData!.files!.filter((fileName) => fileName !== fileUrl);
       const updatedData = {
         ...editedData,
         files: updatedFiles,
@@ -102,30 +102,28 @@ const HandleFiles = ({ url, id, data, setShowHandleFiles, fetchData }: { url: st
     }
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setShowSpinner(true);
 
     try {
       // Check files for duplicates
 
-      const newFileNames = JSON.parse(editedData?.files) ?? [];
+      const newFileNames = editedData?.files ?? [];
 
       for (const uploadFileName of uploadFileNames) {
         if (newFileNames.includes(uploadFileName)) {
           toast.warn(`Fajl ${uploadFileName} već postoji u fajlovima reklamacije i neće biti dodat`, {
-            position: toast.POSITION.TOP_CENTER,
+            position: "top-center",
           });
         } else {
           newFileNames.push(uploadFileName);
         }
       }
 
-      const newFileNamesJson = JSON.stringify(newFileNames);
-
       const updatedData = {
         ...editedData,
-        files: newFileNamesJson,
+        files: newFileNames,
       };
 
       await axiosPrivateFiles.post(`uploads/${url}`, formFiles);
@@ -133,14 +131,14 @@ const HandleFiles = ({ url, id, data, setShowHandleFiles, fetchData }: { url: st
       await axiosPrivate.put(`${url}/${id}`, updatedData);
 
       if (fileInputRef.current) {
-        fileInputRef.current.value = "";
+        fileInputRef.current = null;
       }
       toast.success(`Izmena je uspešno sačuvana !`, {
         position: "top-center",
       });
       setEditedData(updatedData);
       setFormFiles(new FormData());
-    } catch (error) {
+    } catch (error: any) {
       if (error.response && error.response.status === 413) {
         toast.error(`Neki od fajlova prelazi ograničenje od 10MB `, {
           position: "top-center",
@@ -156,7 +154,7 @@ const HandleFiles = ({ url, id, data, setShowHandleFiles, fetchData }: { url: st
     }
   };
 
-  const handleAddFiles = (e) => {
+  const handleAddFiles = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     const renamedFormFiles = new FormData();
 
@@ -175,7 +173,7 @@ const HandleFiles = ({ url, id, data, setShowHandleFiles, fetchData }: { url: st
         } else {
           // File type is not allowed, handle accordingly (e.g., show an error message)
           toast.error(`Nije dozvoljena ekstenzija datoteke: ${file?.type} `, {
-            position: toast.POSITION.TOP_CENTER,
+            position: "top-center",
           });
         }
       }
@@ -183,9 +181,9 @@ const HandleFiles = ({ url, id, data, setShowHandleFiles, fetchData }: { url: st
       setUploadFileNames(fileNames);
     } else {
       toast.warn(`Možete dodati između 1 i 5 datoteka `, {
-        position: toast.POSITION.TOP_CENTER,
+        position: "top-center",
       });
-      e.target.value = null;
+      e.target.value = "";
     }
   };
 
@@ -211,8 +209,8 @@ const HandleFiles = ({ url, id, data, setShowHandleFiles, fetchData }: { url: st
                 <h4>Prikačene datoteke: </h4>
 
                 <div>
-                  {editedData?.files && JSON.parse(editedData?.files).length > 0 ? (
-                    JSON.parse(editedData?.files).map((fileUrl, index) => (
+                  {editedData?.files && editedData.files.length > 0 ? (
+                    editedData?.files.map((fileUrl, index) => (
                       <div key={`fileUrl_${index}`} className="my-4 flex items-center gap-4">
                         <p className="grow">{fileUrl}</p>
                         <button type="button" className="button button-sky" onClick={() => handleFileClick(fileUrl)}>

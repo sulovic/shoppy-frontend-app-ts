@@ -1,6 +1,19 @@
 import { toast } from "react-toastify";
 import type { AxiosError } from "axios";
 
+export const handleCustomErrors = (error: any): void => {
+  if (error === "Unauthorized") {
+    toast.error("Nemate ovlašćenja za ovu akciju.", {
+      position: "top-center",
+    });
+    return;
+  }
+
+  toast.error(error, {
+    position: "top-center",
+  });
+};
+
 export const handleApiError = (error: any): void => {
   const axiosError = error as AxiosError<any>;
 

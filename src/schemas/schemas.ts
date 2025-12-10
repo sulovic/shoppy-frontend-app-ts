@@ -5,8 +5,8 @@ export const EnvSchema = z.object({});
 export const QueryParamsSchema = z.object({
   sortBy: z.string().nullable().optional(),
   sortOrder: z.enum(["asc", "desc"]).nullable().optional(),
-  limit: z.string().nullable().optional(),
-  page: z.string().nullable().optional(),
+  limit: z.number().nullable().optional(),
+  page: z.number().nullable().optional(),
   search: z.string().nullable().optional(),
   filters: z.record(z.string(), z.string()).nullable().optional(),
 });
