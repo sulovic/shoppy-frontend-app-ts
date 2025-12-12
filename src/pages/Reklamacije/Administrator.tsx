@@ -8,31 +8,39 @@ import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import HandleFiles from "../../components/HandleFiles";
 import { useAuth } from "../../hooks/useAuth";
 import Pagination from "../../components/Pagination";
+import { handleCustomErrors } from "../../services/errorHandler";
+import reklamacijeServiceBuilder from "../../services/reklamacijeService";
 
 const Administrator: React.FC = () => {
-  const [tableData, setTableData] = useState<any[]>([]);
-  const [selectedRowDelete, setSelectedRowDelete] = useState<any>(null);
-  const [selectedRowFiles, setSelectedRowFiles] = useState<any>(null);
+  const [tableData, setTableData] = useState<Reklamacija[]>([]);
+  const [deleteData, setDeleteData] = useState<Reklamacija | null>(null);
+  const [updateData, setUpdateData] = useState<Reklamacija | null>(null);
+  const [processData, setProcessData] = useState<Reklamacija | null>(null);
+  const [selectedRowFiles, setSelectedRowFiles] = useState<Reklamacija | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showHandleFiles, setShowHandleFiles] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showSpinner, setShowSpinner] = useState(false);
-  const [updateData, setUpdateData] = useState<any>(null);
-  const [processData, setProcessData] = useState<any>(null);
   const [showRetrunModal, setShowRetrunModal] = useState(false);
-  const [pagination, setPagination] = useState<any>({ limit: 20, page: 1, count: 0 });
   const axiosPrivate = useAxiosPrivate();
   const { authUser } = useAuth();
+  const reklamacijeService = reklamacijeServiceBuilder(axiosPrivate, authUser);
+
+  const [queryParams, setQueryParams] = useState<QueryParams>({ filters: { statusReklamacije: "*" }, page: 1, limit: 20, sortOrder: "desc", sortBy: "datumPrijema" });
+  const filtersOptions: FiltersOptions = {
+    zemljaReklamacije: ["SRBIJA", "CRNA_GORA"],
+    statusReklamacije: ["PRIJEM", "OBRADA", "OPRAVDANA", "NEOPRAVDANA", "DODATNI_ROK"],
+  };
 
   const fetchData = async () => {
     setShowSpinner(true);
     try {
-      const response = await axiosPrivate.get(`reklamacije?sortBy=datum_prijema&sortOrder=desc&page=${pagination.page}&limit=${pagination.limit}`);
-      setTableData(response?.data?.data || []);
-      setPagination({ ...pagination, count: response?.data?.count });
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      const response = await reklamacijeService.getAllReklamacije(queryParams);
+      const reklamacijeCount = await reklamacijeService.getAllReklamacijeCount(queryParams);
+      setTableData(response.data.data);
+      setQueryParams({ ...queryParams, count: reklamacijeCount.data.count });
     } catch (error) {
-      toast.error(`UPS!!! Došlo je do greške pri preuzimanju podataka: ${error} `, { position: toast.POSITION.TOP_CENTER });
+      handleCustomErrors(error);
     } finally {
       setShowSpinner(false);
     }
@@ -41,31 +49,37 @@ const Administrator: React.FC = () => {
   useEffect(() => {
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pagination.page, pagination.limit]);
+  }, [queryParams.filters, queryParams.search, queryParams.page, queryParams.limit, queryParams.sortOrder, queryParams.sortBy]);
 
-  const handleResolve = (row: any) => {
+  const handleResolve = (row: Reklamacija) => {
     setUpdateData(row);
     setShowEditModal(true);
   };
 
-  const handleDelete = (row: any) => {
-    setSelectedRowDelete(row);
+  const handleDelete = (row: Reklamacija) => {
+    setDeleteData(row);
     setShowDeleteModal(true);
   };
 
   const handleDeleteOK = async () => {
     setShowSpinner(true);
     try {
-      await axiosPrivate.delete(`reklamacije/${selectedRowDelete?.broj_reklamacije}`);
+      await reklamacijeService.deleteReklamacija(deleteData!);
 
-      if (selectedRowDelete?.files && JSON.parse(selectedRowDelete?.files).length > 0) {
-        await axiosPrivate.delete(`uploads/reklamacije/`, { data: { files: JSON.parse(selectedRowDelete?.files) } });
-      }
+      // Brisanje fajlova TODO
+      // if (deleteData && deleteData.files && deleteData.files.length > 0) {
+      //   await axiosPrivate.delete(`uploads/reklamacije`, {
+      //     data: { files: JSON.parse(deleteData?.files) },
+      //   });
+      // }
 
-      toast.success(`Reklamacija ${selectedRowDelete?.broj_reklamacije} je uspešno obrisana!`, { position: toast.POSITION.TOP_CENTER });
+      toast.success("Reklamacija je uspešno obrisana!", {
+        position: "top-center",
+      });
     } catch (error) {
-      toast.error(`UPS!!! Došlo je do greške: ${error} `, { position: toast.POSITION.TOP_CENTER });
+      handleCustomErrors(error);
     } finally {
+      setDeleteData(null);
       setShowDeleteModal(false);
       setShowSpinner(false);
       fetchData();
@@ -75,18 +89,20 @@ const Administrator: React.FC = () => {
   const handleDeleteCancel = () => {
     setShowDeleteModal(false);
     setShowSpinner(false);
+    setDeleteData(null);
   };
 
-  const handleReturn = (row: any) => {
+  const handleReturn = (row: Reklamacija) => {
     setProcessData(row);
     setShowRetrunModal(true);
   };
 
   const handleReturnOK = async () => {
     setShowSpinner(true);
-    const updatedProcessData = { ...processData, status_reklamacije: "OBRADA" };
+    const returnedReklamacija: Reklamacija = { ...processData!, statusReklamacije: "OBRADA" };
 
     try {
+      await reklamacijeService.updateReklamacija(returnedReklamacija);
       await axiosPrivate.put(`reklamacije/${updatedProcessData?.broj_reklamacije}`, updatedProcessData);
       toast.success(`Reklamacija ${updatedProcessData?.broj_reklamacije} je uspešno vraćena u obradu!`, { position: toast.POSITION.TOP_CENTER });
     } catch (error) {
@@ -196,12 +212,7 @@ const Administrator: React.FC = () => {
         !showSpinner && <h4 className="my-4 text-zinc-600 ">Nema reklamacija koje su u prijemu...</h4>
       )}
       {showDeleteModal && (
-        <Modal
-          onOK={handleDeleteOK}
-          onCancel={handleDeleteCancel}
-          title="Potvrda brisanja reklamacije"
-          question={`Da li ste sigurni da želite da obrišete reklamaciju ${selectedRowDelete?.broj_reklamacije} - ${selectedRowDelete?.ime_prezime}?`}
-        />
+        <Modal onOK={handleDeleteOK} onCancel={handleDeleteCancel} title="Potvrda brisanja reklamacije" question={`Da li ste sigurni da želite da obrišete reklamaciju ${deleteData?.broj_reklamacije} - ${deleteData?.ime_prezime}?`} />
       )}
 
       {showRetrunModal && (

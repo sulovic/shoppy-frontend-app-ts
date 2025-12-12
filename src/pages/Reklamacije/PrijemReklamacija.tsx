@@ -48,7 +48,8 @@ const PrijemReklamacija: React.FC = () => {
 
   useEffect(() => {
     fetchData();
-  }, [queryParams.filters, queryParams.search]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [queryParams.filters, queryParams.search, queryParams.page, queryParams.limit, queryParams.sortOrder, queryParams.sortBy]);
 
   const handleEdit = (row: Reklamacija) => {
     setUpdateData(row);
