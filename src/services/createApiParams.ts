@@ -3,10 +3,12 @@ const createApiParams = (queryParams: QueryParams | null) => {
     return "";
   }
 
+  let apiParams: string = "";
+
   if (queryParams.page && queryParams.limit) {
-    var apiParams: string = `?page=${queryParams.page}&limit=${queryParams.limit}`;
+    apiParams = `?page=${queryParams.page}&limit=${queryParams.limit}`;
   } else {
-    var apiParams: string = "?";
+    apiParams = "?";
   }
 
   if (queryParams.sortBy && queryParams.sortOrder) {
@@ -20,6 +22,9 @@ const createApiParams = (queryParams: QueryParams | null) => {
   if (queryParams.filters) {
     apiParams += `&`;
     for (const [key, value] of Object.entries(queryParams.filters)) {
+      if (value === "*") {
+        continue;
+      }
       apiParams += `filters[${key}]=${value}&`;
     }
   }

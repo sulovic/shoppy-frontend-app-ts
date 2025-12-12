@@ -1,11 +1,25 @@
 // global.d.ts
 import { z } from "zod";
-import { QueryParamsSchema, EnvSchema, UserDataSchema, AuthUserSchema, JwtPayloadSchema, ReklamacijaSchema, JciPodaciSchema, JciProizvodiSchema, ProizvodiSchema, VrstaOtpadaSchema, OtpadProizvodSchema } from "../schemas/schemas";
+import {
+  QueryParamsSchema,
+  FiltersOptionsSchema,
+  EnvSchema,
+  UserDataSchema,
+  AuthUserSchema,
+  JwtPayloadSchema,
+  ReklamacijaSchema,
+  JciPodaciSchema,
+  JciProizvodiSchema,
+  ProizvodiSchema,
+  VrstaOtpadaSchema,
+  OtpadProizvodSchema,
+} from "../schemas/schemas";
 
 declare global {
   type AuthUser = z.infer<typeof AuthUserSchema>;
   type UserData = z.infer<typeof UserDataSchema>;
   type QueryParams = z.infer<typeof QueryParamsSchema>;
+  type FiltersOptions = z.infer<typeof FiltersOptionsSchema>;
   type Env = z.infer<typeof EnvSchema>;
   type JWTPayload = z.infer<typeof JwtPayloadSchema>;
   type Reklamacija = z.infer<typeof ReklamacijaSchema>;
@@ -39,6 +53,7 @@ declare global {
   };
 
   namespace NodeJS {
+    // eslint-disable-next-line @typescript-eslint/no-empty-object-type
     interface ProcessEnv extends Env {}
   }
 }

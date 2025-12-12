@@ -20,7 +20,7 @@ function PersistLogin() {
     };
 
     verifyToken();
-  }, [authUser, accessToken, refreshAccessToken]);
+  }, [authUser]);
 
   return <>{loading ? <Spinner /> : <Outlet />}</>;
 }

@@ -13,7 +13,6 @@ const ReklamacijeTable = ({
   handleShowFiles: (row: Reklamacija) => void;
   handleForward: (row: Reklamacija) => void;
 }) => {
-  console.log("tableData", tableData);
   return (
     <div>
       {tableData.map((row, index) => (

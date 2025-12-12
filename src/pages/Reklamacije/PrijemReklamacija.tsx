@@ -10,6 +10,7 @@ import { handleCustomErrors } from "../../services/errorHandler";
 import ReklamacijeTable from "../../components/ReklamacijeTable";
 import { useAuth } from "../../hooks/useAuth";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
+import FiltersSearc from "../../components/FiltersSearch";
 
 const PrijemReklamacija: React.FC = () => {
   const [tableData, setTableData] = useState<Reklamacija[]>([]);
@@ -22,17 +23,22 @@ const PrijemReklamacija: React.FC = () => {
   const [deleteData, setDeleteData] = useState<Reklamacija | null>(null);
   const [updateData, setUpdateData] = useState<Reklamacija | null>(null);
   const [forwardData, setForwardData] = useState<Reklamacija | null>(null);
-  const [queryParams, setQueryParams] = useState<QueryParams>({ filters: { statusReklamacije: "OPRAVDANA" }, page: 1, limit: 20, sortOrder: "asc", sortBy: "datumKreiranja" });
   const { authUser } = useAuth();
   const axiosPrivate = useAxiosPrivate();
   const reklamacijeService = reklamacijeServiceBuilder(axiosPrivate, authUser);
   const navigate = useNavigate();
-
+  const [queryParams, setQueryParams] = useState<QueryParams>({ filters: { statusReklamacije: "OPRAVDANA" }, page: 1, limit: 20, sortOrder: "desc", sortBy: "datumPrijema" });
+  const filtersOptions: FiltersOptions = {
+    zemljaReklamacije: ["SRBIJA", "CRNA_GORA"],
+    statusReklamacije: ["PRIJEM", "OBRADA", "OPRAVDANA", "NEOPRAVDANA", "DODATNI_ROK"],
+  };
   const fetchData = async () => {
     setShowSpinner(true);
     try {
       const response = await reklamacijeService.getAllReklamacije(queryParams);
+      const reklamacijeCount = await reklamacijeService.getAllReklamacijeCount(queryParams);
       setTableData(response.data.data);
+      setQueryParams({ ...queryParams, count: reklamacijeCount.data.count });
     } catch (error) {
       handleCustomErrors(error);
     } finally {
@@ -42,7 +48,7 @@ const PrijemReklamacija: React.FC = () => {
 
   useEffect(() => {
     fetchData();
-  }, [queryParams]);
+  }, [queryParams.filters, queryParams.search]);
 
   const handleEdit = (row: Reklamacija) => {
     setUpdateData(row);
@@ -128,6 +134,7 @@ const PrijemReklamacija: React.FC = () => {
           Nova reklamacija
         </button>
       </div>
+      <FiltersSearc filtersOptions={filtersOptions} queryParams={queryParams} setQueryParams={setQueryParams} />
       {tableData && tableData.length ? (
         <ReklamacijeTable tableData={tableData} handleEdit={handleEdit} handleDelete={handleDelete} handleShowFiles={handleShowFiles} handleForward={handleForward} />
       ) : (

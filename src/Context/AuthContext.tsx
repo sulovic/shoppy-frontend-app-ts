@@ -33,7 +33,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const authUserData = AuthUserSchema.parse({ ...decodedAccessToken, superAdmin: false });
         setAuthUser(authUserData);
         setAccessToken(accessToken);
-        console.log("authUser", authUserData);
       }
     } catch (error) {
       handleApiError(error);
