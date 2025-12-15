@@ -12,6 +12,7 @@ import { useAuth } from "../../hooks/useAuth";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import Filters from "../../components/Filters";
 import Search from "../../components/Search";
+import Pagination from "../../components/Pagination";
 
 const PrijemReklamacija: React.FC = () => {
   const [tableData, setTableData] = useState<Reklamacija[]>([]);
@@ -130,7 +131,7 @@ const PrijemReklamacija: React.FC = () => {
 
   return (
     <>
-      <h3 className="mt-4 ">Reklamacije u prijemu</h3>
+      <h3 className="mt-4">Reklamacije u prijemu</h3>
       <div className="mb-4 flex justify-end">
         <button type="button" className="button button-sky " aria-label="Nova Reklamacija" onClick={() => navigate("/reklamacije/nova-reklamacija")}>
           Nova reklamacija
@@ -145,6 +146,9 @@ const PrijemReklamacija: React.FC = () => {
       ) : (
         !showSpinner && <h4 className="my-4 text-zinc-600 ">Nema reklamacija koje su u prijemu...</h4>
       )}
+      <div className="flex justify-end gap-4 mb-4">
+        <Pagination queryParams={queryParams} setQueryParams={setQueryParams} />
+      </div>
       {showDeleteModal && (
         <Modal onOK={handleDeleteOK} onCancel={handleDeleteCancel} title="Potvrda brisanja reklamacije" question={`Da li ste sigurni da želite da obrišete reklamaciju ${deleteData?.brojReklamacije} - ${deleteData?.imePrezime}?`} />
       )}

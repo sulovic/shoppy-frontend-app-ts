@@ -17,7 +17,7 @@ const Filters = ({ filtersOptions, queryParams, setQueryParams }: { filtersOptio
           >
             <option value="*">Obriši filter</option>
             {filtersOptions[filterKey].map((filterValue) => (
-              <option key={filterValue} value={filterValue}>
+              <option key={filterValue} value={filterValue} aria-label={filterValue}>
                 {filterValue}
               </option>
             ))}

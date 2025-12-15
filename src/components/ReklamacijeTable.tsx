@@ -16,7 +16,7 @@ const ReklamacijeTable = ({
   return (
     <div>
       {tableData.map((row, index) => (
-        <div key={index} className="my-3 grid grid-cols-1 rounded-xl bg-gray-100 p-2 shadow-sm dark:bg-gray-800 ">
+        <div key={index} className="my-2 grid grid-cols-1 rounded-xl bg-gray-100 p-2 shadow-sm dark:bg-gray-800 ">
           <div className="grid grid-cols-2 gap-2 md:grid-cols-4 xl:grid-cols-8">
             <div>
               <h5 key={`reklamacija_${index}`}>Podaci o reklamaciji:</h5>

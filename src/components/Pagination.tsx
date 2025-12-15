@@ -1,20 +1,51 @@
-const Pagination = ({ pagination, setPagination }: PaginationProps) => {
+const Pagination = ({ queryParams, setQueryParams }: { queryParams: QueryParams; setQueryParams: React.Dispatch<React.SetStateAction<QueryParams>> }) => {
+  const { page = 1, limit = 20, count = 0 } = queryParams;
+  const totalPages = Math.max(1, Math.ceil((count ?? 0) / limit));
+  const limitOptions = [10, 20, 50, 100];
+
   return (
-    <div className="flex mt-4 justify-end">
-      <div className="flex gap-4 justify-end content-center">
-        <button type="button" className="button button-sky" aria-label="Previous Page" disabled={pagination.page === 1} onClick={() => setPagination({ ...pagination, page: pagination.page - 1 })}>
+    <div className="flex justify-end gap-4">
+      <div className="flex gap-4 items-center">
+        <button
+          type="button"
+          className="button button-sky"
+          aria-label="Previous Page"
+          disabled={page <= 1}
+          onClick={() =>
+            setQueryParams((prev) => ({
+              ...prev,
+              page: Math.max(1, prev.page - 1),
+            }))
+          }
+        >
           Prethodna
         </button>
-        <h5 className="content-center">{pagination.count > 0 ? `Strana: ${pagination.page} od ${Math.ceil(pagination.count / pagination.limit)}` : `Nema podataka`}</h5>
+
+        <h5>{(count ?? 0) > 0 ? `Strana: ${page} od ${totalPages}` : "Nema podataka"}</h5>
+
         <button
           type="button"
           className="button button-sky"
           aria-label="Next Page"
-          disabled={pagination?.page === Math.ceil(pagination.count / pagination.limit) || pagination.count === 0}
-          onClick={() => setPagination({ ...pagination, page: pagination.page + 1 })}
+          disabled={page >= totalPages || count === 0}
+          onClick={() =>
+            setQueryParams((prev) => ({
+              ...prev,
+              page: Math.min(totalPages, prev.page + 1),
+            }))
+          }
         >
           Sledeća
         </button>
+      </div>
+      <div>
+        <select value={limit} aria-label="Limit per page" onChange={(e) => setQueryParams((prev) => ({ ...prev, limit: Number(e.target.value) }))}>
+          {limitOptions.map((limitOption) => (
+            <option key={limitOption} value={limitOption} aria-label={limitOption.toString()}>
+              {limitOption}
+            </option>
+          ))}
+        </select>
       </div>
     </div>
   );
