@@ -3,7 +3,6 @@ import Modal from "../../components/Modal";
 import { toast } from "react-toastify";
 import Spinner from "../../components/Spinner";
 import ModalEdit from "./ModalEdit";
-import HandleFiles from "../../components/HandleFiles";
 import { useNavigate } from "react-router-dom";
 import reklamacijeServiceBuilder from "../../services/reklamacijeService";
 import { handleCustomErrors } from "../../services/errorHandler";
@@ -17,11 +16,9 @@ import Pagination from "../../components/Pagination";
 const PrijemReklamacija: React.FC = () => {
   const [tableData, setTableData] = useState<Reklamacija[]>([]);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [showHandleFiles, setShowHandleFiles] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showForwardModal, setShowForwardModal] = useState(false);
   const [showSpinner, setShowSpinner] = useState(false);
-  const [selectedRowFiles, setSelectedRowFiles] = useState<Reklamacija | null>(null);
   const [deleteData, setDeleteData] = useState<Reklamacija | null>(null);
   const [updateData, setUpdateData] = useState<Reklamacija | null>(null);
   const [forwardData, setForwardData] = useState<Reklamacija | null>(null);
@@ -29,10 +26,10 @@ const PrijemReklamacija: React.FC = () => {
   const axiosPrivate = useAxiosPrivate();
   const reklamacijeService = reklamacijeServiceBuilder(axiosPrivate, authUser);
   const navigate = useNavigate();
-  const [queryParams, setQueryParams] = useState<QueryParams>({ filters: { statusReklamacije: "OPRAVDANA" }, page: 1, limit: 20, sortOrder: "desc", sortBy: "datumPrijema" });
+  const [queryParams, setQueryParams] = useState<QueryParams>({ filters: { statusReklamacije: "PRIJEM" }, page: 1, limit: 20, sortOrder: "desc", sortBy: "datumPrijema" });
   const filtersOptions: FiltersOptions = {
     zemljaReklamacije: ["SRBIJA", "CRNA_GORA"],
-    statusReklamacije: ["PRIJEM", "OBRADA", "OPRAVDANA", "NEOPRAVDANA", "DODATNI_ROK"],
+    // statusReklamacije: ["PRIJEM", "OBRADA", "OPRAVDANA", "NEOPRAVDANA", "DODATNI_ROK"],
   };
   const fetchData = async () => {
     setShowSpinner(true);
@@ -124,11 +121,6 @@ const PrijemReklamacija: React.FC = () => {
     setShowSpinner(false);
   };
 
-  const handleShowFiles = (row: Reklamacija) => {
-    setSelectedRowFiles(row);
-    setShowHandleFiles(true);
-  };
-
   return (
     <>
       <h3 className="mt-4">Reklamacije u prijemu</h3>
@@ -142,7 +134,7 @@ const PrijemReklamacija: React.FC = () => {
         <Search queryParams={queryParams} setQueryParams={setQueryParams} />
       </div>
       {tableData && tableData.length ? (
-        <ReklamacijeTable tableData={tableData} handleEdit={handleEdit} handleDelete={handleDelete} handleShowFiles={handleShowFiles} handleForward={handleForward} />
+        <ReklamacijeTable tableData={tableData} handleEdit={handleEdit} handleDelete={handleDelete} fetchData={fetchData} handleForward={handleForward} />
       ) : (
         !showSpinner && <h4 className="my-4 text-zinc-600 ">Nema reklamacija koje su u prijemu...</h4>
       )}
@@ -162,7 +154,7 @@ const PrijemReklamacija: React.FC = () => {
       )}
 
       {updateData && showEditModal && <ModalEdit setShowEditModal={setShowEditModal} updateData={updateData} setUpdateData={setUpdateData} fetchData={fetchData} />}
-      {showHandleFiles && <HandleFiles url="reklamacije" id={selectedRowFiles!.idReklamacije!} data={selectedRowFiles!} fetchData={fetchData} setShowHandleFiles={setShowHandleFiles} />}
+
       {showSpinner && <Spinner />}
     </>
   );
