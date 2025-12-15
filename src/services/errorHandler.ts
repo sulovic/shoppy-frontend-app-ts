@@ -1,7 +1,7 @@
 import { toast } from "react-toastify";
 import type { AxiosError } from "axios";
 
-export const handleCustomErrors = (error: any): void => {
+export const handleCustomErrors = (error: string) => {
   if (error === "Unauthorized") {
     toast.error("Nemate ovlašćenja za ovu akciju.", {
       position: "top-center",
@@ -14,11 +14,9 @@ export const handleCustomErrors = (error: any): void => {
   });
 };
 
-export const handleApiError = (error: any): void => {
-  const axiosError = error as AxiosError<any>;
-
+export const handleApiError = (error: AxiosError) => {
   // No server response (network error, CORS issue, timeout)
-  if (axiosError.request && !axiosError.response) {
+  if (error.request && !error.response) {
     toast.error("Server nije dostupan. Proverite internet ili API server.", {
       position: "top-center",
     });
@@ -26,37 +24,37 @@ export const handleApiError = (error: any): void => {
   }
 
   // Backend responded with a status
-  const status = axiosError.response?.status;
-  const msg = axiosError.response?.data?.message;
+  const status = error.response?.status;
+  const message = error.response?.data as string;
 
   switch (status) {
     case 400:
-      toast.warning(msg || "Nisu poslati validni podaci.", { position: "top-center" });
+      toast.warning(message || "Nisu poslati validni podaci.", { position: "top-center" });
       break;
 
     case 401:
-      toast.warning(msg || "Niste autorizovani da pristupite ovoj akciji.", { position: "top-center" });
+      toast.warning(message || "Niste autorizovani da pristupite ovoj akciji.", { position: "top-center" });
       break;
 
     case 403:
-      toast.error(msg || "Nemate ovlašćenja za ovu akciju.", { position: "top-center" });
+      toast.error(message || "Nemate ovlašćenja za ovu akciju.", { position: "top-center" });
       break;
 
     case 404:
-      toast.error(msg || "Traženi podatak nije pronađen.", { position: "top-center" });
+      toast.error(message || "Traženi podatak nije pronađen.", { position: "top-center" });
       break;
 
     case 409:
-      toast.error(msg || "Podatak već postoji.", { position: "top-center" });
+      toast.error(message || "Podatak već postoji.", { position: "top-center" });
       break;
 
     case 500:
-      toast.error(msg || "Greška na API serveru.", { position: "top-center" });
+      toast.error(message || "Greška na API serveru.", { position: "top-center" });
       break;
 
     default:
       if (status) {
-        toast.error(msg || `API greška: ${status}`, { position: "top-center" });
+        toast.error(message || `API greška: ${status}, greška: ${message}`, { position: "top-center" });
       } else {
         toast.error("Dogodila se neočekivana greška.", { position: "top-center" });
       }

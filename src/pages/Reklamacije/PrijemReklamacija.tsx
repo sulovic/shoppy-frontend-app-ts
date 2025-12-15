@@ -10,7 +10,8 @@ import { handleCustomErrors } from "../../services/errorHandler";
 import ReklamacijeTable from "../../components/ReklamacijeTable";
 import { useAuth } from "../../hooks/useAuth";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
-import FiltersSearc from "../../components/FiltersSearch";
+import Filters from "../../components/Filters";
+import Search from "../../components/Search";
 
 const PrijemReklamacija: React.FC = () => {
   const [tableData, setTableData] = useState<Reklamacija[]>([]);
@@ -40,7 +41,7 @@ const PrijemReklamacija: React.FC = () => {
       setTableData(response.data.data);
       setQueryParams({ ...queryParams, count: reklamacijeCount.data.count });
     } catch (error) {
-      handleCustomErrors(error);
+      handleCustomErrors(error as string);
     } finally {
       setShowSpinner(false);
     }
@@ -76,7 +77,7 @@ const PrijemReklamacija: React.FC = () => {
         position: "top-center",
       });
     } catch (error) {
-      handleCustomErrors(error);
+      handleCustomErrors(`Greška, ${error}`);
     } finally {
       setDeleteData(null);
       setShowDeleteModal(false);
@@ -107,7 +108,7 @@ const PrijemReklamacija: React.FC = () => {
         position: "top-center",
       });
     } catch (error) {
-      handleCustomErrors(error);
+      handleCustomErrors(error as string);
     } finally {
       setForwardData(null);
       setShowForwardModal(false);
@@ -135,7 +136,10 @@ const PrijemReklamacija: React.FC = () => {
           Nova reklamacija
         </button>
       </div>
-      <FiltersSearc filtersOptions={filtersOptions} queryParams={queryParams} setQueryParams={setQueryParams} />
+      <div className="mb-4 flex gap-4 justify-end">
+        <Filters filtersOptions={filtersOptions} queryParams={queryParams} setQueryParams={setQueryParams} />
+        <Search queryParams={queryParams} setQueryParams={setQueryParams} />
+      </div>
       {tableData && tableData.length ? (
         <ReklamacijeTable tableData={tableData} handleEdit={handleEdit} handleDelete={handleDelete} handleShowFiles={handleShowFiles} handleForward={handleForward} />
       ) : (

@@ -1,6 +1,4 @@
-import React from "react";
-
-const FiltersSearc = ({ filtersOptions, queryParams, setQueryParams }: { filtersOptions: FiltersOptions; queryParams: QueryParams; setQueryParams: React.Dispatch<React.SetStateAction<QueryParams>> }) => {
+const Filters = ({ filtersOptions, queryParams, setQueryParams }: { filtersOptions: FiltersOptions; queryParams: QueryParams; setQueryParams: React.Dispatch<React.SetStateAction<QueryParams>> }) => {
   return (
     <div className="flex flex-wrap justify-end gap-2">
       {/* Filters */}
@@ -30,4 +28,4 @@ const FiltersSearc = ({ filtersOptions, queryParams, setQueryParams }: { filters
   );
 };
 
-export default FiltersSearc;
+export default Filters;
