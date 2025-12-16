@@ -5,8 +5,10 @@ import Spinner from "../../components/Spinner";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import Modal from "../../components/Modal";
 import { useAuth } from "../../hooks/useAuth";
+import { handleCustomErrors } from "../../services/errorHandler";
 
-const ModalEdit: React.FC<any> = ({ updateData, setUpdateData, setShowEditModal, fetchData }) => {
+const ModalEdit = ({ row, setShowEditModal, fetchData }: { row: Reklamacija; setShowEditModal: React.Dispatch<React.SetStateAction<boolean>>; fetchData: () => void }) => {
+  const [updateData, setUpdateData] = useState<Reklamacija>(row);
   const [showSpinner, setShowSpinner] = useState(false);
   const [showSaveModal, setShowSaveModal] = useState(false);
   const axiosPrivate = useAxiosPrivate();
@@ -30,15 +32,13 @@ const ModalEdit: React.FC<any> = ({ updateData, setUpdateData, setShowEditModal,
   const handleConfirmedSaveModal = async () => {
     setShowSpinner(true);
     try {
-      await axiosPrivate.put(`reklamacije/${updateData?.broj_reklamacije}`, updateData);
+      await axiosPrivate.put(`reklamacije/${updateData.brojReklamacije}`, updateData);
 
-      toast.success(`Reklamacija ${updateData?.broj_reklamacije} je uspešno sačuvana!`, {
-        position: toast.POSITION.TOP_CENTER,
+      toast.success(`Reklamacija ${updateData?.brojReklamacije} je uspešno sačuvana!`, {
+        position: "top-center",
       });
     } catch (error) {
-      toast.error(`UPS!!! Došlo je do greške: ${error} `, {
-        position: toast.POSITION.TOP_CENTER,
-      });
+      handleCustomErrors(error as string);
     } finally {
       setShowSaveModal(true);
       setShowEditModal(false);
@@ -48,9 +48,9 @@ const ModalEdit: React.FC<any> = ({ updateData, setUpdateData, setShowEditModal,
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    setUpdateData((prev: any) => ({
+    setUpdateData((prev: Reklamacija) => ({
       ...prev,
-      [e.target.id]: (e.target as HTMLInputElement).value,
+      [e.target.id]: e.target.value,
     }));
   };
 
@@ -71,39 +71,39 @@ const ModalEdit: React.FC<any> = ({ updateData, setUpdateData, setShowEditModal,
                   <div className="mb-4 grid grid-cols-1 gap-2 md:grid-cols-4">
                     <div>
                       <label htmlFor="broj_reklamacije">Broj reklamacije</label>
-                      <input value={updateData?.broj_reklamacije} type="text" id="broj_reklamacije" aria-describedby=" Broj reklamacije" disabled />
+                      <input value={updateData?.brojReklamacije} type="text" id="broj_reklamacije" aria-describedby=" Broj reklamacije" disabled />
                     </div>
                     <div>
-                      <label htmlFor="datum_prijema">Datum prijema</label>
+                      <label htmlFor="datumPrijema">Datum prijema</label>
                       <div>
                         <DatePicker
-                          id="datum_prijema"
+                          id="datumPrijema"
                           locale="sr-Latn"
                           autoComplete="off"
-                          selected={new Date(updateData?.datum_prijema)}
-                          onChange={(date: Date) =>
-                            setUpdateData((prev: any) => ({
+                          selected={updateData.datumPrijema || null}
+                          onChange={(date: Date | null) =>
+                            setUpdateData((prev) => ({
                               ...prev,
-                              datum_prijema: date,
+                              datumPrijema: date,
                             }))
                           }
                           dateFormat="dd-MM-yyyy"
                           required
-                          disabled={updateData?.status_reklamacije !== "PRIJEM"}
+                          disabled={updateData?.statusReklamacije !== "PRIJEM"}
                         />
                       </div>
                     </div>
                     <div>
-                      <label htmlFor="zemlja_reklamacije">Zemlja reklamacije</label>
-                      <select id="zemlja_reklamacije" aria-label="Odaberi zemlju" required value={updateData?.zemlja_reklamacije} onChange={handleChange} disabled={updateData?.status_reklamacije !== "PRIJEM"}>
+                      <label htmlFor="zemljaReklamacije">Zemlja reklamacije</label>
+                      <select id="zemljaReklamacije" aria-label="Odaberi zemlju" required value={updateData?.zemljaReklamacije} onChange={handleChange} disabled={updateData?.statusReklamacije !== "PRIJEM"}>
                         <option value="">Odaberite zemlju</option>
                         <option value="SRBIJA">Srbija</option>
                         <option value="CRNAGORA">Crna Gora</option>
                       </select>
                     </div>
                     <div>
-                      <label htmlFor="status_reklamacije">Status reklamacije</label>
-                      <input value={updateData?.status_reklamacije} type="text" id="status_reklamacije" aria-describedby=" Status reklamacije" disabled />
+                      <label htmlFor="statusReklamacije">Status reklamacije</label>
+                      <input value={updateData?.statusReklamacije} type="text" id="statusReklamacije" aria-describedby="statusReklamacije" disabled />
                     </div>
                   </div>
 
@@ -111,20 +111,20 @@ const ModalEdit: React.FC<any> = ({ updateData, setUpdateData, setShowEditModal,
 
                   <div className="mb-4 grid grid-cols-1 gap-2 md:grid-cols-4">
                     <div>
-                      <label htmlFor="ime_prezime">Ime i prezime</label>
-                      <input type="text" id="ime_prezime" aria-describedby="Ime i prezime" value={updateData?.ime_prezime} onChange={handleChange} maxLength={190} required disabled={updateData?.status_reklamacije !== "PRIJEM"} />
+                      <label htmlFor="imePrezime">Ime i prezime</label>
+                      <input type="text" id="imePrezime" aria-describedby="Ime i prezime" value={updateData?.imePrezime} onChange={handleChange} maxLength={190} required disabled={updateData?.statusReklamacije !== "PRIJEM"} />
                     </div>
                     <div>
                       <label htmlFor="adresa">Adresa</label>
-                      <input type="text" id="adresa" aria-describedby="Adresa" value={updateData?.adresa} onChange={handleChange} maxLength={190} disabled={updateData?.status_reklamacije !== "PRIJEM"} />
+                      <input type="text" id="adresa" aria-describedby="Adresa" value={updateData?.adresa || ""} onChange={handleChange} maxLength={190} disabled={updateData?.statusReklamacije !== "PRIJEM"} />
                     </div>
                     <div>
                       <label htmlFor="telefon">Telefon</label>
-                      <input type="text" id="telefon" aria-describedby="Telefon" value={updateData?.telefon} onChange={handleChange} maxLength={190} required disabled={updateData?.status_reklamacije !== "PRIJEM"} />
+                      <input type="text" id="telefon" aria-describedby="Telefon" value={updateData?.telefon} onChange={handleChange} maxLength={190} required disabled={updateData?.statusReklamacije !== "PRIJEM"} />
                     </div>
                     <div>
                       <label htmlFor="email">Email</label>
-                      <input type="email" id="email" autoComplete="on" aria-describedby="Email" value={updateData?.email} onChange={handleChange} maxLength={190} disabled={updateData?.status_reklamacije !== "PRIJEM"} />
+                      <input type="email" id="email" autoComplete="on" aria-describedby="Email" value={updateData?.email || ""} onChange={handleChange} maxLength={190} disabled={updateData?.statusReklamacije !== "PRIJEM"} />
                     </div>
                   </div>
 
@@ -132,45 +132,54 @@ const ModalEdit: React.FC<any> = ({ updateData, setUpdateData, setShowEditModal,
 
                   <div className="mb-2 grid grid-cols-1 gap-2 md:grid-cols-4">
                     <div>
-                      <label htmlFor="datum_kupovine">Datum kupovine</label>
+                      <label htmlFor="datumKupovine">Datum kupovine</label>
                       <div>
                         <DatePicker
-                          id="datum_kupovine"
+                          id="datumKupovine"
                           locale="sr-Latn"
                           autoComplete="off"
-                          selected={new Date(updateData?.datum_kupovine)}
-                          onChange={(date: Date) =>
-                            setUpdateData((prev: any) => ({
+                          selected={updateData.datumKupovine || null}
+                          onChange={(date: Date | null) =>
+                            setUpdateData((prev) => ({
                               ...prev,
-                              datum_kupovine: date,
+                              datumKupovine: date,
                             }))
                           }
                           dateFormat="dd-MM-yyyy"
                           required
-                          disabled={updateData?.status_reklamacije !== "PRIJEM"}
+                          disabled={updateData?.statusReklamacije !== "PRIJEM"}
                         />
                       </div>
                     </div>
                     <div>
-                      <label htmlFor="broj_racuna">Broj računa</label>
-                      <input type="text" id="broj_racuna" aria-describedby="Broj računa" value={updateData?.broj_racuna} onChange={handleChange} maxLength={190} required disabled={updateData?.status_reklamacije !== "PRIJEM"} />
+                      <label htmlFor="brojRacuna">Broj računa</label>
+                      <input type="text" id="brojRacuna" aria-describedby="Broj računa" value={updateData?.brojRacuna || ""} onChange={handleChange} maxLength={190} required disabled={updateData?.statusReklamacije !== "PRIJEM"} />
                     </div>
                     <div>
-                      <label htmlFor="naziv_poizvoda">Naziv proizvoda</label>
-                      <input type="text" id="naziv_poizvoda" aria-describedby="Naziv proizvoda" value={updateData?.naziv_poizvoda} onChange={handleChange} maxLength={190} required disabled={updateData?.status_reklamacije !== "PRIJEM"} />
+                      <label htmlFor="nazivProizvoda">Naziv proizvoda</label>
+                      <input
+                        type="text"
+                        id="nazivProizvoda"
+                        aria-describedby="Naziv proizvoda"
+                        value={updateData?.nazivProizvoda || ""}
+                        onChange={handleChange}
+                        maxLength={190}
+                        required
+                        disabled={updateData?.statusReklamacije !== "PRIJEM"}
+                      />
                     </div>
                   </div>
 
                   <div className="mb-2 grid grid-cols-1 gap-2">
                     <div className="mb-2">
-                      <label htmlFor="opis_reklamacije">Opis reklamacije</label>
-                      <textarea id="opis_reklamacije" aria-describedby="Opis reklamacije" value={updateData?.opis_reklamacije} onChange={handleChange} maxLength={512} required disabled={updateData?.status_reklamacije !== "PRIJEM"} />
+                      <label htmlFor="opisReklamacije">Opis reklamacije</label>
+                      <textarea id="opisReklamacije" aria-describedby="Opis reklamacije" value={updateData?.opisReklamacije || ""} onChange={handleChange} maxLength={512} required disabled={updateData?.statusReklamacije !== "PRIJEM"} />
                     </div>
                   </div>
                   <div className="mb-4 grid grid-cols-1 gap-2">
                     <div className="mb-2">
                       <label htmlFor="komentar">Komentar</label>
-                      <input type="text" id="komentar" aria-describedby="Komentar" value={updateData?.komentar} onChange={handleChange} maxLength={512} />
+                      <input type="text" id="komentar" aria-describedby="Komentar" value={updateData?.komentar || ""} onChange={handleChange} maxLength={512} />
                     </div>
                   </div>
                 </div>
@@ -179,35 +188,35 @@ const ModalEdit: React.FC<any> = ({ updateData, setUpdateData, setShowEditModal,
 
                 <div className="mb-2 grid grid-cols-1 gap-2 md:grid-cols-4">
                   <div className="mb-3">
-                    <label htmlFor="datum_odgovora">Datum odluke</label>
+                    <label htmlFor="datumOdgovora">Datum odluke</label>
                     <div className="md:col-span-1">
                       <DatePicker
-                        id="datum_odgovora"
+                        id="datumOdgovora"
                         locale="sr-Latn"
                         autoComplete="off"
-                        selected={updateData?.datum_odgovora && new Date(updateData?.datum_odgovora)}
-                        onChange={(date: Date) =>
-                          setUpdateData((prev: any) => ({
+                        selected={updateData.datumOdgovora || null}
+                        onChange={(date: Date | null) =>
+                          setUpdateData((prev) => ({
                             ...prev,
-                            datum_odgovora: date,
+                            datumOdgovora: date,
                           }))
                         }
                         dateFormat="dd-MM-yyyy"
-                        required={updateData?.status_reklamacije !== "OBRADA"}
-                        disabled={updateData?.status_reklamacije !== "OBRADA" || authUser?.role_id < 3000}
+                        required={updateData?.statusReklamacije !== "OBRADA"}
+                        disabled={updateData?.statusReklamacije !== "OBRADA" || authUser!.roleId < 3000}
                       />
                     </div>
                   </div>
                   <div className="md:col-span-3">
-                    <label htmlFor="opis_odluke">Opis odluke o reklamaciji</label>
+                    <label htmlFor="opisOdluke">Opis odluke o reklamaciji</label>
                     <textarea
-                      id="opis_odluke"
+                      id="opisOdluke"
                       aria-describedby="Odluka o reklamaciji"
-                      value={updateData?.opis_odluke}
+                      value={updateData?.opisOdluke || ""}
                       onChange={handleChange}
                       maxLength={512}
-                      required={updateData?.status_reklamacije !== "OBRADA"}
-                      disabled={updateData?.status_reklamacije !== "OBRADA" || authUser?.role_id < 3000}
+                      required={updateData?.statusReklamacije !== "OBRADA"}
+                      disabled={updateData?.statusReklamacije !== "OBRADA" || authUser!.roleId < 3000}
                     />
                   </div>
                 </div>

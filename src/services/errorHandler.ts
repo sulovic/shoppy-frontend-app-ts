@@ -2,6 +2,7 @@ import { toast } from "react-toastify";
 import type { AxiosError } from "axios";
 
 export const handleCustomErrors = (error: string) => {
+  console.log("Custom error received:", error);
   if (error === "Unauthorized") {
     toast.error("Nemate ovlašćenja za ovu akciju.", {
       position: "top-center",
@@ -9,7 +10,7 @@ export const handleCustomErrors = (error: string) => {
     return;
   }
 
-  toast.error(error, {
+  toast.error(`Greška, ${error}`, {
     position: "top-center",
   });
 };

@@ -1,62 +1,70 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import DatePicker from "react-datepicker";
-import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import Modal from "../../components/Modal";
 import { toast } from "react-toastify";
 import Spinner from "../../components/Spinner";
+import { handleCustomErrors } from "../../services/errorHandler";
+import reklamacijeServiceBuilder from "../../services/reklamacijeService";
+import { useAuth } from "../../hooks/useAuth";
+import useAxiosPrivate from "../../hooks/useAxiosPrivate";
+import { ReklamacijaSchema } from "../../schemas/schemas";
 
 const NovaReklamacija: React.FC = () => {
-  const broj_reklamacije = Math.floor(Math.random() * 8999999 + 100000).toString() + "-" + (new Date().getMonth() + 1).toString() + "-" + new Date().getFullYear().toString();
-  const praznaReklamacija = {
-    ime_prezime: "",
-    broj_reklamacije: broj_reklamacije,
-    odgovorna_osoba: "Ivan Mitić, Direktor",
-    status_reklamacije: "PRIJEM",
-    datum_prijema: null,
-    zemlja_reklamacije: "",
+  const brojReklamacije = Math.floor(Math.random() * 8999999 + 100000).toString() + "-" + (new Date().getMonth() + 1).toString() + "-" + new Date().getFullYear().toString();
+  const praznaReklamacija: Reklamacija = {
+    imePrezime: "",
+    brojReklamacije: brojReklamacije,
+    odgovornaOsoba: "Ivan Mitić, Direktor",
+    statusReklamacije: "PRIJEM",
+    datumPrijema: null,
     adresa: "",
     telefon: "",
     email: "",
-    datum_kupovine: null,
-    broj_racuna: "",
-    naziv_poizvoda: "",
-    opis_reklamacije: "",
+    zemljaReklamacije: "SRBIJA",
+    datumKupovine: null,
+    brojRacuna: "",
+    nazivProizvoda: "",
+    opisReklamacije: "",
     komentar: "",
+    smsSent: false,
   };
   const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
   const [showSpinner, setShowSpinner] = useState(false);
-  const [novaReklamacija, setNovaReklamacija] = useState<any>(praznaReklamacija);
+  const [novaReklamacija, setNovaReklamacija] = useState<Reklamacija>(praznaReklamacija);
+  const { authUser } = useAuth();
   const axiosPrivate = useAxiosPrivate();
+  const reklamacijeService = reklamacijeServiceBuilder(axiosPrivate, authUser);
 
-  const handleClose = (e: any) => {
+  const handleClose = (e: React.FormEvent) => {
     e.preventDefault();
-    setNovaReklamacija(null);
+    setNovaReklamacija(praznaReklamacija);
     setShowModal(false);
     setShowSpinner(false);
     navigate("/reklamacije/prijem-reklamacija");
   };
 
-  const handleSubmit = (e: any) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setShowModal(true);
   };
 
   const handleOK = async () => {
     setShowSpinner(true);
+    console.log("Here");
 
     try {
-      await axiosPrivate.post(`reklamacije`, novaReklamacija);
-      toast.success(`Reklamacija ${novaReklamacija?.broj_reklamacije} je uspešno sačuvana!`, {
-        position: toast.POSITION.TOP_CENTER,
+      const paresedReklamacija = ReklamacijaSchema.parse(novaReklamacija);
+      await reklamacijeService.createReklamacija(paresedReklamacija);
+      toast.success(`Reklamacija ${paresedReklamacija?.brojReklamacije} je uspešno sačuvana!`, {
+        position: "top-center",
       });
       setNovaReklamacija(praznaReklamacija);
       navigate("/reklamacije/prijem-reklamacija");
     } catch (error) {
-      toast.error(`UPS!!! Došlo je do greške: ${error} `, {
-        position: toast.POSITION.TOP_CENTER,
-      });
+      console.log(error);
+      handleCustomErrors(JSON.stringify(error));
     } finally {
       setShowModal(false);
       setShowSpinner(false);
@@ -67,10 +75,18 @@ const NovaReklamacija: React.FC = () => {
     setShowModal(false);
   };
 
-  const handleChange = (e: any) => {
-    setNovaReklamacija((prev: any) => ({
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+    const { id, value } = e.target;
+
+    if (id === "telefon") {
+      const cleaned = value.replace(/[^\d+\s\-()/]/g, "");
+      setNovaReklamacija((prev) => ({ ...prev, telefon: cleaned }));
+      return;
+    }
+
+    setNovaReklamacija((prev) => ({
       ...prev,
-      [e.target.id]: e.target.value,
+      [id]: value,
     }));
   };
 
@@ -89,21 +105,21 @@ const NovaReklamacija: React.FC = () => {
 
         <div className="my-3 grid grid-cols-1 gap-2 md:grid-cols-2 xl:grid-cols-4 ">
           <div>
-            <label htmlFor="broj_reklamacije">Broj reklamacije</label>
-            <input value={novaReklamacija?.broj_reklamacije} type="text" id="broj_reklamacije" aria-describedby=" Broj reklamacije" disabled />
+            <label htmlFor="brojReklamacije">Broj reklamacije</label>
+            <input value={novaReklamacija.brojReklamacije} type="text" id="brojReklamacije" aria-describedby=" Broj reklamacije" disabled />
           </div>
           <div>
-            <label htmlFor="datum_prijema">Datum prijema</label>
+            <label htmlFor="datumPrijema">Datum prijema</label>
             <div>
               <DatePicker
-                id="datum_prijema"
+                id="datumPrijema"
                 locale="sr-Latn"
                 autoComplete="off"
-                selected={novaReklamacija?.datum_prijema}
-                onChange={(date: any) =>
-                  setNovaReklamacija((prev: any) => ({
+                selected={novaReklamacija.datumPrijema || null}
+                onChange={(date: Date | null) =>
+                  setNovaReklamacija((prev) => ({
                     ...prev,
-                    datum_prijema: date,
+                    datumPrijema: date,
                   }))
                 }
                 dateFormat="dd - MM - yyyy"
@@ -112,8 +128,8 @@ const NovaReklamacija: React.FC = () => {
             </div>
           </div>
           <div>
-            <label htmlFor="zemlja_reklamacije">Zemlja reklamacije</label>
-            <select id="zemlja_reklamacije" aria-label="Odaberi zemlju" required value={novaReklamacija?.zemlja_reklamacije} onChange={handleChange}>
+            <label htmlFor="zemljaReklamacije">Zemlja reklamacije</label>
+            <select id="zemljaReklamacije" aria-label="Odaberi zemlju" required value={novaReklamacija.zemljaReklamacije} onChange={handleChange}>
               <option value="">Odaberite zemlju</option>
               <option value="SRBIJA">Srbija</option>
               <option value="CRNAGORA">Crna Gora</option>
@@ -127,20 +143,20 @@ const NovaReklamacija: React.FC = () => {
 
         <div className="my-3 grid grid-cols-1 gap-2 md:grid-cols-2 xl:grid-cols-4 ">
           <div>
-            <label htmlFor="ime_prezime">Ime i prezime</label>
-            <input type="text" id="ime_prezime" aria-describedby="Ime i prezime" value={novaReklamacija?.ime_prezime} onChange={handleChange} maxLength={190} required />
+            <label htmlFor="imePrezime">Ime i prezime</label>
+            <input type="text" id="imePrezime" aria-describedby="Ime i prezime" value={novaReklamacija.imePrezime} onChange={handleChange} maxLength={190} required />
           </div>
           <div>
             <label htmlFor="adresa">Adresa</label>
-            <input type="text" id="adresa" aria-describedby="Adresa" value={novaReklamacija?.adresa} onChange={handleChange} maxLength={190} />
+            <input type="text" id="adresa" aria-describedby="Adresa" value={novaReklamacija.adresa || ""} onChange={handleChange} maxLength={190} />
           </div>
           <div>
             <label htmlFor="telefon">Telefon</label>
-            <input type="text" id="telefon" aria-describedby="Telefon" value={novaReklamacija?.telefon} onChange={handleChange} maxLength={190} required />
+            <input type="tel" id="telefon" value={novaReklamacija.telefon} onChange={handleChange} required minLength={6} maxLength={20} />
           </div>
           <div>
             <label htmlFor="email">Email</label>
-            <input type="email" id="email" autoComplete="on" aria-describedby="Email" value={novaReklamacija?.email} onChange={handleChange} maxLength={190} />
+            <input type="email" id="email" autoComplete="on" aria-describedby="Email" value={novaReklamacija.email || ""} onChange={handleChange} maxLength={190} />
           </div>
         </div>
 
@@ -150,17 +166,17 @@ const NovaReklamacija: React.FC = () => {
 
         <div className="my-3 grid grid-cols-1 gap-2 md:grid-cols-2 xl:grid-cols-4 ">
           <div>
-            <label htmlFor="datum_kupovine">Datum kupovine</label>
+            <label htmlFor="datumKupovine">Datum kupovine</label>
             <div>
               <DatePicker
-                id="datum_kupovine"
+                id="datumKupovine"
                 locale="sr-Latn"
                 autoComplete="off"
-                selected={novaReklamacija?.datum_kupovine}
+                selected={novaReklamacija.datumKupovine}
                 onChange={(date) =>
                   setNovaReklamacija((prev) => ({
                     ...prev,
-                    datum_kupovine: date,
+                    datumKupovine: date,
                   }))
                 }
                 dateFormat="dd - MM - yyyy"
@@ -169,24 +185,24 @@ const NovaReklamacija: React.FC = () => {
             </div>
           </div>
           <div>
-            <label htmlFor="broj_racuna">Broj računa</label>
-            <input type="text" id="broj_racuna" aria-describedby="Broj računa" value={novaReklamacija?.broj_racuna} onChange={handleChange} maxLength={190} required />
+            <label htmlFor="brojRacuna">Broj računa</label>
+            <input type="text" id="brojRacuna" aria-describedby="Broj računa" value={novaReklamacija.brojRacuna || ""} onChange={handleChange} maxLength={190} required />
           </div>
           <div>
-            <label htmlFor="naziv_poizvoda">Naziv proizvoda</label>
-            <input type="text" id="naziv_poizvoda" aria-describedby="Naziv proizvoda" value={novaReklamacija?.naziv_poizvoda} onChange={handleChange} maxLength={190} required />
+            <label htmlFor="nazivProizvoda">Naziv proizvoda</label>
+            <input type="text" id="nazivProizvoda" aria-describedby="Naziv proizvoda" value={novaReklamacija.nazivProizvoda || ""} onChange={handleChange} maxLength={190} required />
           </div>
         </div>
         <div className="my-3 grid grid-cols-1 gap-2">
           <div className="mb-3">
-            <label htmlFor="opis_reklamacije">Opis reklamacije</label>
-            <textarea type="text" id="opis_reklamacije" aria-describedby="Opis reklamacije" value={novaReklamacija?.opis_reklamacije} onChange={handleChange} maxLength={512} required />
+            <label htmlFor="opisReklamacije">Opis reklamacije</label>
+            <textarea id="opisReklamacije" aria-describedby="Opis reklamacije" value={novaReklamacija.opisReklamacije || ""} onChange={handleChange} maxLength={512} required />
           </div>
         </div>
         <div className="my-3 grid grid-cols-1 gap-2">
           <div>
             <label htmlFor="komentar">Komentar</label>
-            <input type="text" id="komentar" aria-describedby="Komentar" value={novaReklamacija?.komentar} onChange={handleChange} maxLength={512} />
+            <input type="text" id="komentar" aria-describedby="Komentar" value={novaReklamacija.komentar || ""} onChange={handleChange} maxLength={512} />
           </div>
         </div>
 
@@ -204,7 +220,7 @@ const NovaReklamacija: React.FC = () => {
 
       {/* Modal and Spinner component */}
 
-      {showModal && <Modal onOK={handleOK} onCancel={handleCancel} title="Potvrda unosa nacrta Nove reklamacije" question={`Da li ste sigurni da želite da sačuvate nacrt Nove reklamacije za kupca ${novaReklamacija?.ime_prezime}?`} />}
+      {showModal && <Modal onOK={handleOK} onCancel={handleCancel} title="Potvrda unosa nacrta Nove reklamacije" question={`Da li ste sigurni da želite da sačuvate nacrt Nove reklamacije za kupca ${novaReklamacija.imePrezime}?`} />}
       {showSpinner && <Spinner />}
     </div>
   );

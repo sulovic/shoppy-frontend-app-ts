@@ -40,7 +40,7 @@ input {
 }
 
 textarea {
-  @apply min-h-20 w-full appearance-none rounded border px-3 py-2 leading-tight text-gray-600  dark:text-gray-50 shadow focus:outline-none dark:disabled:bg-gray-200;
+  @apply min-h-20 w-full appearance-none rounded border px-3 py-2 leading-tight text-gray-600  dark:text-gray-50 shadow focus:outline-none;
 }
 
 select {
