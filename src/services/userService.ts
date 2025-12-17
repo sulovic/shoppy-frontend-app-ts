@@ -1,56 +1,58 @@
-import useAxiosPrivate from "../hooks/useAxiosPrivate";
-import { useAuth } from "../hooks/useAuth";
-import priviledges from "../config/priviledges";
+import type { AxiosInstance } from "axios";
+import priviledges from "../config/dataAccessPriviledges";
+import createApiParams from "./createApiParams";
 
-const axiosPrivate = useAxiosPrivate();
-const { authUser } = useAuth();
+const createUserService = (axiosPrivate: AxiosInstance, authUser: AuthUser | null) => {
+  const getAllUsers = (apiParams: QueryParams | null): Promise<{ data: { data: UserData[] } }> => {
+    if (!authUser || authUser.roleId < priviledges.users.GET) {
+      throw new Error("Unauthorized");
+    }
+    return axiosPrivate.get(`/users${createApiParams(apiParams)}`);
+  };
 
-const getAllUsers = async () => {
-  if (!authUser || authUser.roleId < priviledges.users.GET) {
-    throw new Error("Unauthorized");
-  }
-  const response: { data: UserData[] } = await axiosPrivate.get("/users");
-  return response.data;
+  const getAllUsersCount = (apiParams: QueryParams | null): Promise<{ data: { count: number } }> => {
+    if (!authUser || authUser.roleId < priviledges.users.GET) {
+      throw new Error("Unauthorized");
+    }
+    return axiosPrivate.get(`/users/count${createApiParams(apiParams)}`);
+  };
+
+  const getUser = (id: string): Promise<{ data: { data: UserData } }> => {
+    if (!authUser || authUser.roleId < priviledges.users.GET) {
+      throw new Error("Unauthorized");
+    }
+    return axiosPrivate.get(`/users/${id}`);
+  };
+
+  const createUser = (user: UserData): Promise<{ data: { message: string; data: UserData } }> => {
+    if (!authUser || authUser.roleId < priviledges.users.POST) {
+      throw new Error("Unauthorized");
+    }
+    return axiosPrivate.post("/users", user);
+  };
+
+  const updateUser = (user: UserData): Promise<{ data: { message: string; data: UserData } }> => {
+    if (!authUser || authUser.roleId < priviledges.users.PUT) {
+      throw new Error("Unauthorized");
+    }
+    return axiosPrivate.put(`/users/${user.userId}`, user);
+  };
+
+  const deleteUser = (user: UserData): Promise<{ data: { message: string; data: UserData } }> => {
+    if (!authUser || authUser.roleId < priviledges.users.DELETE) {
+      throw new Error("Unauthorized");
+    }
+    return axiosPrivate.delete(`/users/${user.userId}`);
+  };
+
+  return {
+    getAllUsers,
+    getAllUsersCount,
+    getUser,
+    createUser,
+    updateUser,
+    deleteUser,
+  };
 };
 
-const getAllUsersCount = async () => {
-  if (!authUser || authUser.roleId < priviledges.users.GET) {
-    throw new Error("Unauthorized");
-  }
-  const response: { data: number } = await axiosPrivate.get("/users/count");
-  return response.data;
-};
-
-const getUser = async (id: string) => {
-  if (!authUser || authUser.roleId < priviledges.users.GET) {
-    throw new Error("Unauthorized");
-  }
-  const response: { data: UserData } = await axiosPrivate.get(`/users/${id}`);
-  return response.data;
-};
-
-const createUser = async (user: UserData) => {
-  if (!authUser || authUser.roleId < priviledges.users.POST) {
-    throw new Error("Unauthorized");
-  }
-  const response: { data: { message: string; data: UserData } } = await axiosPrivate.post("/users", user);
-  return response.data;
-};
-
-const updateUser = async (user: UserData) => {
-  if (!authUser || authUser.roleId < priviledges.users.PUT) {
-    throw new Error("Unauthorized");
-  }
-  const response: { data: { message: string; data: UserData } } = await axiosPrivate.put(`/users/${user.userId}`, user);
-  return response.data;
-};
-
-const deleteUser = async (user: UserData) => {
-  if (!authUser || authUser.roleId < priviledges.users.DELETE) {
-    throw new Error("Unauthorized");
-  }
-  const response: { data: { message: string; data: UserData } } = await axiosPrivate.delete(`/users/${user.userId}`);
-  return response.data;
-};
-
-export default { getAllUsers, getAllUsersCount, getUser, createUser, updateUser, deleteUser };
+export default createUserService;

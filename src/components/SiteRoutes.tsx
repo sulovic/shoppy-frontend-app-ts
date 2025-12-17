@@ -28,7 +28,7 @@ import DodeljivanjeOdsustva from "../pages/Odsustva/DodeljivanjeOdsustva";
 import NewDodeljivanjeOdsustva from "../pages/Odsustva/NewDodeljivanjeOdsustva";
 import OdobravanjeOdsustva from "../pages/Odsustva/OdobravanjeOdsustva";
 import ResenjeOdmor from "../pages/Odsustva/ResenjeOdmor";
-import { Priviledges } from "../config/Config.js";
+import { Priviledges } from "../config/appConfig.js";
 import Administrator from "../pages/Odsustva/Administrator";
 import Racuni from "../pages/Racuni/Racuni";
 import NabavkeProizvodi from "../pages/Nabavke/Proizvodi";

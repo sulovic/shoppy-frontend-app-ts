@@ -4,8 +4,8 @@ import Spinner from "./Spinner";
 import { toast } from "react-toastify";
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
 import useAxiosPrivateFiles from "../hooks/useAxiosPrivateFiles";
-import { allowedFileTypes } from "../config/Config";
-import { allowedExtensions } from "../config/Config";
+import { allowedFileTypes } from "../config/appConfig";
+import { allowedExtensions } from "../config/appConfig";
 import { useAuth } from "../hooks/useAuth";
 
 const HandleFiles = ({ url, id, data, setShowHandleFiles, fetchData }: { url: string; id: number; data: Reklamacija; setShowHandleFiles: React.Dispatch<React.SetStateAction<boolean>>; fetchData: () => void }) => {

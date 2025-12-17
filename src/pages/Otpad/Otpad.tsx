@@ -2,7 +2,7 @@ import React from "react";
 import Navbar from "../../components/Navbar";
 import { Outlet, useLocation } from "react-router-dom";
 import AppCards from "../../components/AppCards";
-import { OtpadLinks } from "../../config/Config";
+import { OtpadLinks } from "../../config/appConfig";
 
 const Otpad: React.FC = () => {
   const AppName = "Otpad";

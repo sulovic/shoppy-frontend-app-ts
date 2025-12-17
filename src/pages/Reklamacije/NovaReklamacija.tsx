@@ -5,7 +5,7 @@ import Modal from "../../components/Modal";
 import { toast } from "react-toastify";
 import Spinner from "../../components/Spinner";
 import { handleCustomErrors } from "../../services/errorHandler";
-import reklamacijeServiceBuilder from "../../services/reklamacijeService";
+import reklamacijeServiceBuilder from "../../services/reklamacijaService";
 import { useAuth } from "../../hooks/useAuth";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import { ReklamacijaSchema } from "../../schemas/schemas";
@@ -85,13 +85,12 @@ const NovaReklamacija: React.FC = () => {
 
     // normalize empty string to null
     if (id === "email") {
-    setNovaReklamacija((prev) => ({
-      ...prev,
-      email: value === "" ? null : value, 
-    }));
-    return;
-  }
-
+      setNovaReklamacija((prev) => ({
+        ...prev,
+        email: value === "" ? null : value,
+      }));
+      return;
+    }
 
     setNovaReklamacija((prev) => ({
       ...prev,

@@ -3,7 +3,7 @@ import AppMenu from "./AppMenu";
 import UserMenu from "./UserMenu";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
-import { AppLinks } from "../config/Config";
+import { AppLinks } from "../config/appConfig";
 
 const Navbar = ({ AppName = "Unauthorized", Links = [] }: { AppName: string; Links: AppLink[] }) => {
   const { authUser } = useAuth();

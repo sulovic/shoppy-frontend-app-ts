@@ -2,7 +2,7 @@ import React from "react";
 import Navbar from "../../components/Navbar";
 import { Outlet, useLocation } from "react-router-dom";
 import AppCards from "../../components/AppCards";
-import { NabavkeLinks } from "../../config/Config.js";
+import { NabavkeLinks } from "../../config/appConfig.js";
 
 const Nabavke = () => {
   const AppName = "Nabavke";

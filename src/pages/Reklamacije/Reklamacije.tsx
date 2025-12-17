@@ -2,7 +2,7 @@ import React from "react";
 import Navbar from "../../components/Navbar";
 import { Outlet, useLocation } from "react-router-dom";
 import AppCards from "../../components/AppCards";
-import { ReklamacijeLinks } from "../../config/Config";
+import { ReklamacijeLinks } from "../../config/appConfig";
 
 const Reklamacije: React.FC = () => {
   const AppName = "Reklamacije";

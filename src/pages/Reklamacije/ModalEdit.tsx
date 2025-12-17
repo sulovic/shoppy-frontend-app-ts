@@ -47,10 +47,28 @@ const ModalEdit = ({ row, setShowEditModal, fetchData }: { row: Reklamacija; set
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    setUpdateData((prev: Reklamacija) => ({
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+    const { id, value } = e.target;
+
+    // normalize phone number
+    if (id === "telefon") {
+      const cleaned = value.replace(/[^\d+\s\-()/]/g, "");
+      setUpdateData((prev) => ({ ...prev, telefon: cleaned }));
+      return;
+    }
+
+    // normalize empty string to null
+    if (id === "email") {
+      setUpdateData((prev) => ({
+        ...prev,
+        email: value === "" ? null : value,
+      }));
+      return;
+    }
+
+    setUpdateData((prev) => ({
       ...prev,
-      [e.target.id]: e.target.value,
+      [id]: value,
     }));
   };
 

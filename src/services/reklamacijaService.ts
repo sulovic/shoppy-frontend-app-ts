@@ -1,8 +1,8 @@
 import type { AxiosInstance } from "axios";
-import priviledges from "../config/priviledges";
+import priviledges from "../config/dataAccessPriviledges";
 import createApiParams from "./createApiParams";
 
-const createReklamacijeService = (axiosPrivate: AxiosInstance, authUser: AuthUser | null) => {
+const createReklamacijaService = (axiosPrivate: AxiosInstance, authUser: AuthUser | null) => {
   const getAllReklamacije = (apiParams: QueryParams | null): Promise<{ data: { data: Reklamacija[] } }> => {
     if (!authUser || authUser.roleId < priviledges.reklamacije.GET) {
       throw new Error("Unauthorized");
@@ -55,4 +55,4 @@ const createReklamacijeService = (axiosPrivate: AxiosInstance, authUser: AuthUse
   };
 };
 
-export default createReklamacijeService;
+export default createReklamacijaService;

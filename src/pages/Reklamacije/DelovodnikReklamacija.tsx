@@ -9,7 +9,7 @@ import HandleFiles from "../../components/HandleFiles";
 const DelovodnikReklamacija: React.FC = () => {
   const [tableData, setTableData] = useState<any[]>([]);
   const [showSpinner, setShowSpinner] = useState(false);
-  const [filter, setFilter] = useState<any>({ zemlja_reklamacije: "" });
+  const [filter, setFilter] = useState<Pick<QueryParams, "filters">>({ zemljaReklamacije: "" });
   const [selectedRowFiles, setSelectedRowFiles] = useState<any>(null);
   const [showHandleFiles, setShowHandleFiles] = useState(false);
   const axiosPrivate = useAxiosPrivate();
@@ -39,9 +39,7 @@ const DelovodnikReklamacija: React.FC = () => {
     setShowSpinner(true);
 
     try {
-      const response = await axiosPrivate.get(
-        `reklamacije?sortBy=datum_prijema&sortOrder=desc${filter?.zemlja_reklamacije !== "" ? `&zemlja_reklamacije=${filter?.zemlja_reklamacije}` : ""}`,
-      );
+      const response = await axiosPrivate.get(`reklamacije?sortBy=datum_prijema&sortOrder=desc${filter?.zemlja_reklamacije !== "" ? `&zemlja_reklamacije=${filter?.zemlja_reklamacije}` : ""}`);
       setTableData(response?.data?.data || []);
     } catch (error) {
       toast.error(`UPS!!! Došlo je do greške: ${error} `, {
@@ -58,7 +56,7 @@ const DelovodnikReklamacija: React.FC = () => {
   }, [filter]);
 
   const handleChangeFilter = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setFilter((prev: any) => ({
+    setFilter((prev) => ({
       ...prev,
       [e.target.id]: e.target.value,
     }));
@@ -77,12 +75,7 @@ const DelovodnikReklamacija: React.FC = () => {
         <div className=" flex justify-end gap-4">
           <label htmlFor="zemlja_reklamacije">Zemlja reklamacije: </label>
           <form>
-            <select
-              id="zemlja_reklamacije"
-              aria-label="Odaberi zemlju"
-              required
-              value={filter?.zemlja_reklamacije}
-              onChange={handleChangeFilter}>
+            <select id="zemlja_reklamacije" aria-label="Odaberi zemlju" required value={filter?.zemlja_reklamacije} onChange={handleChangeFilter}>
               <option value="">Sve zemlje</option>
               <option value="SRBIJA">Srbija</option>
               <option value="CRNAGORA">Crna Gora</option>
@@ -90,10 +83,7 @@ const DelovodnikReklamacija: React.FC = () => {
           </form>
         </div>
         <div className=" flex justify-end gap-4">
-          <DownloadTableExcel
-            filename="Delovodnik reklamacija"
-            sheet="Delovodna knjiga"
-            currentTableRef={tableRef.current}>
+          <DownloadTableExcel filename="Delovodnik reklamacija" sheet="Delovodna knjiga" currentTableRef={tableRef.current}>
             <button className="button button-sky"> Izvezi u Excel </button>
           </DownloadTableExcel>
         </div>
@@ -114,40 +104,32 @@ const DelovodnikReklamacija: React.FC = () => {
 
             <tbody>
               {tableData.map((row, index) => (
-                <tr key={index} className="border-b bg-white hover:!bg-zinc-100 dark:border-zinc-700 dark:bg-zinc-800">
+                <tr key={index} className="border-b bg-white hover:bg-zinc-100! dark:border-zinc-700 dark:bg-zinc-800">
                   <td key={`broj_reklamacije_${index}`}>
                     <a
                       key={`broj_reklamacije_${index}`}
                       className="font-medium text-sky-500 no-underline  hover:cursor-pointer hover:text-sky-400"
                       href={`/reklamacije/pregled-reklamacije/${row?.broj_reklamacije}`}
                       target="blank"
-                      rel="noreferrer noopener">
+                      rel="noreferrer noopener"
+                    >
                       {row?.broj_reklamacije}
                     </a>
                   </td>
                   <td key={`zemlja_reklamacije_${index}`}>{row?.zemlja_reklamacije}</td>
                   <td
-                    className={`whitespace-nowrap px-6 py-4 font-medium text-zinc-600 dark:text-white ${
-                      row?.status_reklamacije === "OPRAVDANA"
-                        ? `bg-green-300`
-                        : row?.status_reklamacije === "NEOPRAVDANA"
-                          ? `bg-red-300`
-                          : `bg-zinc-300`
-                    }`}
-                    key={`status_reklamacije_${index}`}>
+                    className={`whitespace-nowrap px-6 py-4 font-medium text-zinc-600 dark:text-white ${row?.status_reklamacije === "OPRAVDANA" ? `bg-green-300` : row?.status_reklamacije === "NEOPRAVDANA" ? `bg-red-300` : `bg-zinc-300`}`}
+                    key={`status_reklamacije_${index}`}
+                  >
                     {row?.status_reklamacije}
                   </td>
-                  <td key={`datum_prijema_${index}`}>
-                    {row?.datum_prijema && format(new Date(row?.datum_prijema), "dd.MM.yyyy")}
-                  </td>
+                  <td key={`datum_prijema_${index}`}>{row?.datum_prijema && format(new Date(row?.datum_prijema), "dd.MM.yyyy")}</td>
                   <td key={`odgovorna_osoba_${index}`}>{row?.odgovorna_osoba}</td>
                   <td key={`ime_prezime_${index}`}>{row?.ime_prezime}</td>
                   <td key={`adresa_${index}`}>{row?.adresa}</td>
                   <td key={`telefon_${index}`}>{row?.telefon}</td>
                   <td key={`email_${index}`}>{row?.email}</td>
-                  <td key={`datum_kupovine_${index}`}>
-                    {row?.datum_kupovine && format(new Date(row?.datum_kupovine), "dd.MM.yyyy")}
-                  </td>
+                  <td key={`datum_kupovine_${index}`}>{row?.datum_kupovine && format(new Date(row?.datum_kupovine), "dd.MM.yyyy")}</td>
                   <td key={`broj_racuna_${index}`}>{row?.broj_racuna}</td>
                   <td key={`naziv_poizvoda_${index}`}>{row?.naziv_poizvoda}</td>
                   <td
@@ -156,19 +138,19 @@ const DelovodnikReklamacija: React.FC = () => {
                       maxWidth: "400px",
                       overflow: "hidden",
                       textOverflow: "ellipsis",
-                    }}>
+                    }}
+                  >
                     {row?.opis_reklamacije}
                   </td>
-                  <td key={`datum_odgovora_${index}`}>
-                    {row?.datum_odgovora && format(new Date(row?.datum_odgovora), "dd.MM.yyyy")}
-                  </td>
+                  <td key={`datum_odgovora_${index}`}>{row?.datum_odgovora && format(new Date(row?.datum_odgovora), "dd.MM.yyyy")}</td>
                   <td
                     key={`opis_odluke_${index}`}
                     style={{
                       maxWidth: "400px",
                       overflow: "hidden",
                       textOverflow: "ellipsis",
-                    }}>
+                    }}
+                  >
                     {row?.opis_odluke}
                   </td>
                   <td
@@ -177,16 +159,14 @@ const DelovodnikReklamacija: React.FC = () => {
                       maxWidth: "400px",
                       overflow: "hidden",
                       textOverflow: "ellipsis",
-                    }}>
+                    }}
+                  >
                     {row?.komentar}
                   </td>
                   <td>
-                  <button
-                    key={`datoteke_list_${index}`}
-                    className="button button-sky"
-                    onClick={() => handleShowFiles(row)}>
-                    Datoteke - prikačeno {row?.files ? JSON.parse(row?.files).length : "0"}
-                  </button>
+                    <button key={`datoteke_list_${index}`} className="button button-sky" onClick={() => handleShowFiles(row)}>
+                      Datoteke - prikačeno {row?.files ? JSON.parse(row?.files).length : "0"}
+                    </button>
                   </td>
                   <td key={`files_${index}`}>
                     <input
@@ -207,15 +187,7 @@ const DelovodnikReklamacija: React.FC = () => {
 
       {showSpinner && <Spinner />}
 
-      {showHandleFiles && (
-        <HandleFiles
-          url="reklamacije"
-          id={selectedRowFiles?.broj_reklamacije}
-          data={selectedRowFiles}
-          fetchData={fetchData}
-          setShowHandleFiles={setShowHandleFiles}
-        />
-      )}
+      {showHandleFiles && <HandleFiles url="reklamacije" id={selectedRowFiles?.broj_reklamacije} data={selectedRowFiles} fetchData={fetchData} setShowHandleFiles={setShowHandleFiles} />}
     </>
   );
 };

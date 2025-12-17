@@ -9,7 +9,7 @@ import HandleFiles from "../../components/HandleFiles";
 import { useAuth } from "../../hooks/useAuth";
 import Pagination from "../../components/Pagination";
 import { handleCustomErrors } from "../../services/errorHandler";
-import reklamacijeServiceBuilder from "../../services/reklamacijeService";
+import reklamacijeServiceBuilder from "../../services/reklamacijaService";
 
 const Administrator: React.FC = () => {
   const [tableData, setTableData] = useState<Reklamacija[]>([]);

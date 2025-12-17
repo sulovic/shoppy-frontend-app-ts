@@ -5,7 +5,7 @@ import Spinner from "../../components/Spinner";
 import ModalEdit from "./ModalEdit";
 import HandleFiles from "../../components/HandleFiles";
 import { useNavigate } from "react-router-dom";
-import reklamacijeServiceBuilder from "../../services/reklamacijeService";
+import reklamacijeServiceBuilder from "../../services/reklamacijaService";
 import { handleCustomErrors } from "../../services/errorHandler";
 import ReklamacijeTable from "../../components/ReklamacijeTable";
 import { useAuth } from "../../hooks/useAuth";

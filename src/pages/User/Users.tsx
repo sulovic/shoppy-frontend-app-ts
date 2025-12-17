@@ -1,7 +1,7 @@
 import Navbar from "../../components/Navbar";
 import { Outlet, useLocation } from "react-router-dom";
 import AppCards from "../../components/AppCards";
-import { UserLinks } from "../../config/Config";
+import { UserLinks } from "../../config/appConfig";
 
 const Users = () => {
   const AppName = "Korisnici";

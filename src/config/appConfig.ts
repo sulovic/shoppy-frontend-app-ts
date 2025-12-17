@@ -1,17 +1,22 @@
-export const allowedFileTypes = [
-  "application/pdf", // PDF documents
-  "image/jpeg", // JPEG images
-  "image/jpg", // JPEG images
-  "image/png", // PNG images
-  "application/msword", // DOC
-  "application/vnd.openxmlformats-officedocument.wordprocessingml.document", // DOCX
-  "application/vnd.ms-excel", // XLS
-  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", // XLSX
-  "application/vnd.oasis.opendocument.text", // ODT
-  "application/vnd.oasis.opendocument.spreadsheet", // ODS
-  "video/mp4", // MP4 video files
-];
-export const allowedExtensions = ".pdf, .jpg, .jpeg, .png, .doc, .docx, .xls, .xslx, .odt, .ods, .mp4";
+export const allowedFileTypes = {
+  pdf: "application/pdf",
+  jpg: "image/jpeg",
+  jpeg: "image/jpeg",
+  png: "image/png",
+  doc: "application/msword",
+  docx: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  xls: "application/vnd.ms-excel",
+  xlsx: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  odt: "application/vnd.oasis.opendocument.text",
+  ods: "application/vnd.oasis.opendocument.spreadsheet",
+  mp4: "video/mp4",
+};
+
+export const allowedExtensions = Object.keys(allowedFileTypes)
+  .map((ext) => `.${ext}`)
+  .join(", ");
+
+import businessImg from "../assets/BusinessApss.jpg";
 
 export const Priviledges = {
   //Home
@@ -64,8 +69,6 @@ export const Priviledges = {
   "/users/new-user": 5000,
   "/users/super-admin": 5000,
 };
-
-import businessImg from "../assets/BusinessApss.jpg";
 
 export const AppLinks: AppLink[] = [
   {

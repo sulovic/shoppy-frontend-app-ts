@@ -3,7 +3,7 @@ import Modal from "./Modal";
 import ModalEdit from "../pages/Reklamacije/ModalEdit";
 import Spinner from "./Spinner";
 import { toast } from "react-toastify";
-import reklamacijeServiceBuilder from "../services/reklamacijeService";
+import reklamacijeServiceBuilder from "../services/reklamacijaService";
 import { useAuth } from "../hooks/useAuth";
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
 import { handleCustomErrors } from "../services/errorHandler";
@@ -34,12 +34,11 @@ const ReklamacijeActions = ({ row, fetchData }: { row: Reklamacija; fetchData: (
     try {
       await reklamacijeService.deleteReklamacija(deleteData!);
 
-      // Brisanje fajlova TODO
-      // if (deleteData && deleteData.files && deleteData.files.length > 0) {
-      //   await axiosPrivate.delete(`uploads/reklamacije`, {
-      //     data: { files: JSON.parse(deleteData?.files) },
-      //   });
-      // }
+      if (deleteData && deleteData.files && deleteData.files.length > 0) {
+        await axiosPrivate.delete(`uploads/reklamacije`, {
+          data: { files: JSON.parse(deleteData?.files) },
+        });
+      }
 
       toast.success("Reklamacija je uspešno obrisana!", {
         position: "top-center",
@@ -93,17 +92,21 @@ const ReklamacijeActions = ({ row, fetchData }: { row: Reklamacija; fetchData: (
 
   return (
     <>
-      <div className="col-span-2 grid grid-cols-1 content-end items-end gap-2 sm:col-span-4 sm:grid-cols-2">
+      <div className=" grid grid-cols-1 col-span-2 content-end items-end gap-2 sm:col-span-4 sm:grid-cols-2">
         <h5 className="sm:col-span-2">Akcije:</h5>
-        <div className="flex justify-end gap-2 sm:col-span-2">
-          <button type="button" className="button button-red" aria-label="Delete" onClick={() => handleDelete(row)}>
-            Obriši
-          </button>
-          <button type="button" className="button button-sky" aria-label="Forward" onClick={() => handleForward(row)}>
-            Zavedi i prebaci u obradu
-          </button>
+        <div className="flex gap-2 ">
+          {authUser?.superAdmin && (
+            <button type="button" className="button button-red" aria-label="Delete" onClick={() => handleDelete(row)}>
+              OBRIŠI
+            </button>
+          )}
           <button type="button" className="button button-sky" aria-label="Forward" onClick={() => handleEdit(row)}>
-            Edit
+            IZMENI
+          </button>
+        </div>
+        <div>
+          <button type="button" className="button button-sky" aria-label="Forward" onClick={() => handleForward(row)}>
+            VRATI
           </button>
         </div>
       </div>

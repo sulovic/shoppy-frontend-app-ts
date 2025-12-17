@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Spinner from "../../components/Spinner";
 import { useNavigate } from "react-router-dom";
-import reklamacijeServiceBuilder from "../../services/reklamacijeService";
+import reklamacijaServiceBuilder from "../../services/reklamacijaService";
 import { handleCustomErrors } from "../../services/errorHandler";
 import ReklamacijeTable from "../../components/ReklamacijeTable";
 import { useAuth } from "../../hooks/useAuth";
@@ -15,7 +15,7 @@ const PrijemReklamacija: React.FC = () => {
   const [showSpinner, setShowSpinner] = useState(false);
   const { authUser } = useAuth();
   const axiosPrivate = useAxiosPrivate();
-  const reklamacijeService = reklamacijeServiceBuilder(axiosPrivate, authUser);
+  const reklamacijeService = reklamacijaServiceBuilder(axiosPrivate, authUser);
   const navigate = useNavigate();
   const [queryParams, setQueryParams] = useState<QueryParams>({ filters: { statusReklamacije: "PRIJEM" }, page: 1, limit: 20, sortOrder: "desc", sortBy: "datumPrijema" });
   const filtersOptions: FiltersOptions = {
@@ -25,8 +25,7 @@ const PrijemReklamacija: React.FC = () => {
   const fetchData = async () => {
     setShowSpinner(true);
     try {
-      const response = await reklamacijeService.getAllReklamacije(queryParams);
-      const reklamacijeCount = await reklamacijeService.getAllReklamacijeCount(queryParams);
+      const [response, reklamacijeCount] = await Promise.all([reklamacijeService.getAllReklamacije(queryParams), reklamacijeService.getAllReklamacijeCount(queryParams)]);
       setTableData(response.data.data);
       setQueryParams({ ...queryParams, count: reklamacijeCount.data.count });
     } catch (error) {
