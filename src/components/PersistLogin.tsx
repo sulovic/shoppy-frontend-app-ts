@@ -8,7 +8,6 @@ function PersistLogin() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    console.log("PersistLogin");
     const verifyToken = async () => {
       try {
         if (!authUser || !accessToken) {
@@ -20,7 +19,7 @@ function PersistLogin() {
     };
 
     verifyToken();
-  }, [authUser]);
+  }, [authUser, accessToken]);
 
   return <>{loading ? <Spinner /> : <Outlet />}</>;
 }

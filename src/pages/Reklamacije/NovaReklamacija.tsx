@@ -52,7 +52,6 @@ const NovaReklamacija: React.FC = () => {
 
   const handleOK = async () => {
     setShowSpinner(true);
-    console.log("Here");
 
     try {
       const paresedReklamacija = ReklamacijaSchema.parse(novaReklamacija);
@@ -63,7 +62,6 @@ const NovaReklamacija: React.FC = () => {
       setNovaReklamacija(praznaReklamacija);
       navigate("/reklamacije/prijem-reklamacija");
     } catch (error) {
-      console.log(error);
       handleCustomErrors(JSON.stringify(error));
     } finally {
       setShowModal(false);
@@ -78,11 +76,22 @@ const NovaReklamacija: React.FC = () => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { id, value } = e.target;
 
+    // normalize phone number
     if (id === "telefon") {
       const cleaned = value.replace(/[^\d+\s\-()/]/g, "");
       setNovaReklamacija((prev) => ({ ...prev, telefon: cleaned }));
       return;
     }
+
+    // normalize empty string to null
+    if (id === "email") {
+    setNovaReklamacija((prev) => ({
+      ...prev,
+      email: value === "" ? null : value, 
+    }));
+    return;
+  }
+
 
     setNovaReklamacija((prev) => ({
       ...prev,
@@ -209,7 +218,7 @@ const NovaReklamacija: React.FC = () => {
         <div className="my-4 h-0.5 w-full bg-zinc-400"></div>
 
         <div className="float-end mb-3 mt-3 flex gap-2">
-          <button type="submit" className="button button-gray" onClick={handleClose}>
+          <button type="button" className="button button-gray" onClick={handleClose}>
             Odustani
           </button>
           <button type="submit" className="button button-sky">
