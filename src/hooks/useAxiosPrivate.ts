@@ -5,9 +5,6 @@ import { useAuth } from "../hooks/useAuth";
 import { handleApiError } from "../services/errorHandler";
 
 const axiosPrivate = axios.create({
-  headers: {
-    "Content-Type": "application/json",
-  },
   withCredentials: true,
   baseURL: import.meta.env.VITE_APP_API_BASE_URL,
 });

@@ -3,22 +3,37 @@ import Modal from "./Modal";
 import Spinner from "./Spinner";
 import { toast } from "react-toastify";
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
-import useAxiosPrivateFiles from "../hooks/useAxiosPrivateFiles";
 import { allowedFileTypes } from "../config/appConfig";
 import { allowedExtensions } from "../config/appConfig";
 import { useAuth } from "../hooks/useAuth";
+import uploadServiceBuilder from "../services/uploadService";
+import createDataService from "../services/dataService";
+import { handleCustomErrors } from "../services/errorHandler";
 
-const HandleFiles = ({ url, id, data, setShowHandleFiles, fetchData }: { url: string; id: number; data: Reklamacija; setShowHandleFiles: React.Dispatch<React.SetStateAction<boolean>>; fetchData: () => void }) => {
+const HandleFiles = <T extends { files?: string[] | null | undefined }>({
+  url,
+  id,
+  dataWithFiles,
+  setShowHandleFiles,
+  fetchData,
+}: {
+  url: "users" | "reklamacije";
+  id: number;
+  dataWithFiles: T;
+  setShowHandleFiles: React.Dispatch<React.SetStateAction<boolean>>;
+  fetchData: () => void;
+}) => {
   const [fileUrl, setFileUrl] = useState<string | null>(null);
   const [showSpinner, setShowSpinner] = useState<boolean>(false);
-  const [editedData, setEditedData] = useState<Reklamacija>(data);
+  const [editedData, setEditedData] = useState<T>(dataWithFiles);
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
   const [formFiles, setFormFiles] = useState(new FormData());
   const [uploadFileNames, setUploadFileNames] = useState<string[]>([]);
   const fileInputRef = useRef(null);
   const axiosPrivate = useAxiosPrivate();
-  const axiosPrivateFiles = useAxiosPrivateFiles();
   const { authUser } = useAuth();
+  const uploadService = uploadServiceBuilder(axiosPrivate, authUser);
+  const dataService = createDataService(axiosPrivate, authUser, url);
 
   const handleFileClick = async (fileUrl: string) => {
     try {
@@ -74,27 +89,22 @@ const HandleFiles = ({ url, id, data, setShowHandleFiles, fetchData }: { url: st
   const handleDeleteOk = async () => {
     setShowSpinner(true);
     try {
+      if (!fileUrl) return;
       //new array with removed file
-      const updatedFiles = editedData!.files!.filter((fileName) => fileName !== fileUrl);
-      const updatedData = {
-        ...editedData,
-        files: updatedFiles,
-      };
+      const updatedFiles = dataWithFiles.files!.filter((fileName) => fileName !== fileUrl);
+      const updatedData = { ...dataWithFiles, files: updatedFiles };
 
       //Update database with new object
-      await axiosPrivate.put(`${url}/${id}`, updatedData);
+      dataService.updateResource(id, updatedData);
 
       // Delete file
-      await axiosPrivate.delete(`uploads/${url}`, { data: { files: [fileUrl] } });
+      uploadService.deleteFiles({ path: url, files: [fileUrl] });
 
       toast.success("Datoteka je uspešno obrisana!", {
         position: "top-center",
       });
-      setEditedData(updatedData);
     } catch (error) {
-      toast.error(`UPS!!! Došlo je do greške: ${error} `, {
-        position: "top-center",
-      });
+      handleCustomErrors(error as string);
     } finally {
       fetchData();
       setShowSpinner(false);
@@ -126,9 +136,8 @@ const HandleFiles = ({ url, id, data, setShowHandleFiles, fetchData }: { url: st
         files: newFileNames,
       };
 
-      await axiosPrivateFiles.post(`uploads/${url}`, formFiles);
-
-      await axiosPrivate.put(`${url}/${id}`, updatedData);
+      uploadService.uploadFiles({ path: url, formData: formFiles });
+      dataService.updateResource(id, updatedData);
 
       if (fileInputRef.current) {
         fileInputRef.current = null;
@@ -136,18 +145,9 @@ const HandleFiles = ({ url, id, data, setShowHandleFiles, fetchData }: { url: st
       toast.success(`Izmena je uspešno sačuvana !`, {
         position: "top-center",
       });
-      setEditedData(updatedData);
       setFormFiles(new FormData());
-    } catch (error: any) {
-      if (error.response && error.response.status === 413) {
-        toast.error(`Neki od fajlova prelazi ograničenje od 10MB `, {
-          position: "top-center",
-        });
-      } else {
-        toast.error(`UPS!!! Došlo je do greške: ${error} `, {
-          position: "top-center",
-        });
-      }
+    } catch (error) {
+      handleCustomErrors(error as string);
     } finally {
       fetchData();
       setShowSpinner(false);
@@ -164,7 +164,7 @@ const HandleFiles = ({ url, id, data, setShowHandleFiles, fetchData }: { url: st
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
 
-        if (allowedFileTypes.includes(file.type)) {
+        if (Object.values(allowedFileTypes).includes(file.type)) {
           // File type is allowed, proceed with appending to form data
           const fileName = id + "-" + file.name.replace(/[^a-zA-Z0-9-.]/g, "");
           fileNames.push(fileName);

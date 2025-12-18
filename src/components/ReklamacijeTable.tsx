@@ -72,7 +72,7 @@ const ReklamacijeTable = ({ tableData, fetchData }: { tableData: Reklamacija[]; 
           </div>
         ))}
       </div>
-      {showHandleFiles && <HandleFiles url="reklamacije" id={selectedRowFiles!.idReklamacije!} data={selectedRowFiles!} fetchData={fetchData} setShowHandleFiles={setShowHandleFiles} />}
+      {showHandleFiles && <HandleFiles url="reklamacije" id={selectedRowFiles!.idReklamacije!} dataWithFiles={selectedRowFiles!} fetchData={fetchData} setShowHandleFiles={setShowHandleFiles} />}
     </>
   );
 };

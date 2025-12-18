@@ -5,7 +5,7 @@ import Modal from "../../components/Modal";
 import { toast } from "react-toastify";
 import Spinner from "../../components/Spinner";
 import { handleCustomErrors } from "../../services/errorHandler";
-import reklamacijeServiceBuilder from "../../services/reklamacijaService";
+import dataServiceBuilder from "../../services/dataService";
 import { useAuth } from "../../hooks/useAuth";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import { ReklamacijaSchema } from "../../schemas/schemas";
@@ -35,7 +35,7 @@ const NovaReklamacija: React.FC = () => {
   const [novaReklamacija, setNovaReklamacija] = useState<Reklamacija>(praznaReklamacija);
   const { authUser } = useAuth();
   const axiosPrivate = useAxiosPrivate();
-  const reklamacijeService = reklamacijeServiceBuilder(axiosPrivate, authUser);
+  const reklamacijeService = dataServiceBuilder(axiosPrivate, authUser, "reklamacije");
 
   const handleClose = (e: React.FormEvent) => {
     e.preventDefault();
@@ -55,7 +55,7 @@ const NovaReklamacija: React.FC = () => {
 
     try {
       const paresedReklamacija = ReklamacijaSchema.parse(novaReklamacija);
-      await reklamacijeService.createReklamacija(paresedReklamacija);
+      await reklamacijeService.createResource(paresedReklamacija);
       toast.success(`Reklamacija ${paresedReklamacija?.brojReklamacije} je uspešno sačuvana!`, {
         position: "top-center",
       });

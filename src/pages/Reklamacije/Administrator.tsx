@@ -9,7 +9,7 @@ import HandleFiles from "../../components/HandleFiles";
 import { useAuth } from "../../hooks/useAuth";
 import Pagination from "../../components/Pagination";
 import { handleCustomErrors } from "../../services/errorHandler";
-import reklamacijeServiceBuilder from "../../services/reklamacijaService";
+import dataServiceBuilder from "../../services/dataService";
 
 const Administrator: React.FC = () => {
   const [tableData, setTableData] = useState<Reklamacija[]>([]);
@@ -24,7 +24,7 @@ const Administrator: React.FC = () => {
   const [showRetrunModal, setShowRetrunModal] = useState(false);
   const axiosPrivate = useAxiosPrivate();
   const { authUser } = useAuth();
-  const reklamacijeService = reklamacijeServiceBuilder(axiosPrivate, authUser);
+  const reklamacijeService = dataServiceBuilder<Reklamacija>(axiosPrivate, authUser, "reklamacije");
 
   const [queryParams, setQueryParams] = useState<QueryParams>({ filters: { statusReklamacije: "*" }, page: 1, limit: 20, sortOrder: "desc", sortBy: "datumPrijema" });
   const filtersOptions: FiltersOptions = {
@@ -35,12 +35,11 @@ const Administrator: React.FC = () => {
   const fetchData = async () => {
     setShowSpinner(true);
     try {
-      const response = await reklamacijeService.getAllReklamacije(queryParams);
-      const reklamacijeCount = await reklamacijeService.getAllReklamacijeCount(queryParams);
+      const [response, reklamacijeCount] = await Promise.all([reklamacijeService.getAllResources(queryParams), reklamacijeService.getAllResourcesCount(queryParams)]);
       setTableData(response.data.data);
       setQueryParams({ ...queryParams, count: reklamacijeCount.data.count });
     } catch (error) {
-      handleCustomErrors(error);
+      handleCustomErrors(error as string);
     } finally {
       setShowSpinner(false);
     }
@@ -63,8 +62,9 @@ const Administrator: React.FC = () => {
 
   const handleDeleteOK = async () => {
     setShowSpinner(true);
+    if (!deleteData || !deleteData.idReklamacije) return;
     try {
-      await reklamacijeService.deleteReklamacija(deleteData!);
+      await reklamacijeService.deleteResource(deleteData.idReklamacije);
 
       // Brisanje fajlova TODO
       // if (deleteData && deleteData.files && deleteData.files.length > 0) {
@@ -77,7 +77,7 @@ const Administrator: React.FC = () => {
         position: "top-center",
       });
     } catch (error) {
-      handleCustomErrors(error);
+      handleCustomErrors(error as string);
     } finally {
       setDeleteData(null);
       setShowDeleteModal(false);

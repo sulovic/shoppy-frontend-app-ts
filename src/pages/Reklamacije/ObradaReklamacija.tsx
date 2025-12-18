@@ -5,7 +5,7 @@ import Spinner from "../../components/Spinner";
 import ModalEdit from "./ModalEdit";
 import HandleFiles from "../../components/HandleFiles";
 import { useNavigate } from "react-router-dom";
-import reklamacijeServiceBuilder from "../../services/reklamacijaService";
+import dataServiceBuilder from "../../services/dataService";
 import { handleCustomErrors } from "../../services/errorHandler";
 import ReklamacijeTable from "../../components/ReklamacijeTable";
 import { useAuth } from "../../hooks/useAuth";
@@ -27,7 +27,7 @@ const ObradaReklamacija: React.FC = () => {
   const [forwardData, setForwardData] = useState<Reklamacija | null>(null);
   const { authUser } = useAuth();
   const axiosPrivate = useAxiosPrivate();
-  const reklamacijeService = reklamacijeServiceBuilder(axiosPrivate, authUser);
+  const reklamacijeService = dataServiceBuilder<Reklamacija>(axiosPrivate, authUser, "reklamacije");
   const navigate = useNavigate();
   const [queryParams, setQueryParams] = useState<QueryParams>({ filters: { statusReklamacije: "OBRADA" }, page: 1, limit: 20, sortOrder: "desc", sortBy: "datumPrijema" });
   const filtersOptions: FiltersOptions = {
@@ -36,8 +36,7 @@ const ObradaReklamacija: React.FC = () => {
   const fetchData = async () => {
     setShowSpinner(true);
     try {
-      const response = await reklamacijeService.getAllReklamacije(queryParams);
-      const reklamacijeCount = await reklamacijeService.getAllReklamacijeCount(queryParams);
+      const [response, reklamacijeCount] = await Promise.all([reklamacijeService.getAllResources(queryParams), reklamacijeService.getAllResourcesCount(queryParams)]);
       setTableData(response.data.data);
       setQueryParams({ ...queryParams, count: reklamacijeCount.data.count });
     } catch (error) {
@@ -64,7 +63,7 @@ const ObradaReklamacija: React.FC = () => {
   const handleDeleteOK = async () => {
     setShowSpinner(true);
     try {
-      await reklamacijeService.deleteReklamacija(deleteData!);
+      await reklamacijeService.deleteResource(deleteData!.idReklamacije as number);
 
       // Brisanje fajlova TODO
       // if (deleteData && deleteData.files && deleteData.files.length > 0) {
@@ -102,7 +101,7 @@ const ObradaReklamacija: React.FC = () => {
     const forwardReklamacija: Reklamacija = { ...forwardData!, statusReklamacije: "OBRADA" };
 
     try {
-      await reklamacijeService.updateReklamacija(forwardReklamacija);
+      await reklamacijeService.updateResource(forwardData!.idReklamacije as number, forwardReklamacija);
 
       toast.success("Reklamacija je uspešno zavedena i poslata na obradu!", {
         position: "top-center",
@@ -140,11 +139,7 @@ const ObradaReklamacija: React.FC = () => {
         <Filters filtersOptions={filtersOptions} queryParams={queryParams} setQueryParams={setQueryParams} />
         <Search queryParams={queryParams} setQueryParams={setQueryParams} />
       </div>
-      {tableData && tableData.length ? (
-        <ReklamacijeTable tableData={tableData} handleEdit={handleEdit} handleDelete={handleDelete} fetchData={fetchData} handleForward={handleForward} />
-      ) : (
-        !showSpinner && <h4 className="my-4 text-zinc-600 ">Nema reklamacija koje su u prijemu...</h4>
-      )}
+      {tableData && tableData.length ? <ReklamacijeTable tableData={tableData} fetchData={fetchData} /> : !showSpinner && <h4 className="my-4 text-zinc-600 ">Nema reklamacija koje su u prijemu...</h4>}
       <div className="flex justify-end gap-4 mb-4">
         <Pagination queryParams={queryParams} setQueryParams={setQueryParams} />
       </div>
@@ -160,8 +155,8 @@ const ObradaReklamacija: React.FC = () => {
         />
       )}
 
-      {updateData && showEditModal && <ModalEdit setShowEditModal={setShowEditModal} updateData={updateData} setUpdateData={setUpdateData} fetchData={fetchData} />}
-      {showHandleFiles && <HandleFiles url="reklamacije" id={selectedRowFiles!.idReklamacije!} data={selectedRowFiles!} fetchData={fetchData} setShowHandleFiles={setShowHandleFiles} />}
+      {updateData && showEditModal && <ModalEdit setShowEditModal={setShowEditModal} row={updateData} fetchData={fetchData} />}
+      {showHandleFiles && <HandleFiles url="reklamacije" id={selectedRowFiles!.idReklamacije!} dataWithFiles={selectedRowFiles!} fetchData={fetchData} setShowHandleFiles={setShowHandleFiles} />}
       {showSpinner && <Spinner />}
     </>
   );

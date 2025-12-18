@@ -3,7 +3,7 @@ import Modal from "./Modal";
 import ModalEdit from "../pages/Reklamacije/ModalEdit";
 import Spinner from "./Spinner";
 import { toast } from "react-toastify";
-import reklamacijeServiceBuilder from "../services/reklamacijaService";
+import reklamacijeServiceBuilder from "../services/dataService";
 import { useAuth } from "../hooks/useAuth";
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
 import { handleCustomErrors } from "../services/errorHandler";
