@@ -3,6 +3,7 @@ import Modal from "./Modal";
 import Spinner from "./Spinner";
 import { toast } from "react-toastify";
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
+import useAxiosPrivateFiles from "../hooks/useAxiosPrivateFiles";
 import { allowedFileTypes } from "../config/appConfig";
 import { allowedExtensions } from "../config/appConfig";
 import { useAuth } from "../hooks/useAuth";
@@ -31,9 +32,10 @@ const HandleFiles = <T extends { files?: string[] | null | undefined }>({
   const [uploadFileNames, setUploadFileNames] = useState<string[]>([]);
   const fileInputRef = useRef(null);
   const axiosPrivate = useAxiosPrivate();
+  const axiosPrivateFiles = useAxiosPrivateFiles();
   const { authUser } = useAuth();
-  const uploadService = uploadServiceBuilder(axiosPrivate, authUser);
-  const dataService = createDataService(axiosPrivate, authUser, url);
+  const uploadService = uploadServiceBuilder(axiosPrivateFiles, authUser, url);
+  const dataService = createDataService<T>(axiosPrivate, authUser, url);
 
   const handleFileClick = async (fileUrl: string) => {
     try {
@@ -95,7 +97,7 @@ const HandleFiles = <T extends { files?: string[] | null | undefined }>({
       const updatedData = { ...dataWithFiles, files: updatedFiles };
 
       //Update database with new object
-      dataService.updateResource(id, updatedData);
+      const uploadedData = await dataService.updateResource(id, updatedData);
 
       // Delete file
       uploadService.deleteFiles({ path: url, files: [fileUrl] });
@@ -103,6 +105,7 @@ const HandleFiles = <T extends { files?: string[] | null | undefined }>({
       toast.success("Datoteka je uspešno obrisana!", {
         position: "top-center",
       });
+      // setEditedData(uploadedData.data.data);
     } catch (error) {
       handleCustomErrors(error as string);
     } finally {
@@ -135,9 +138,10 @@ const HandleFiles = <T extends { files?: string[] | null | undefined }>({
         ...editedData,
         files: newFileNames,
       };
-
-      uploadService.uploadFiles({ path: url, formData: formFiles });
-      dataService.updateResource(id, updatedData);
+      //Upload files
+      await uploadService.uploadFiles({ formData: formFiles });
+      // Update resource data
+      const uploadedData = await dataService.updateResource(id, updatedData);
 
       if (fileInputRef.current) {
         fileInputRef.current = null;
@@ -145,6 +149,7 @@ const HandleFiles = <T extends { files?: string[] | null | undefined }>({
       toast.success(`Izmena je uspešno sačuvana !`, {
         position: "top-center",
       });
+      // setEditedData(uploadedData.data.data);
       setFormFiles(new FormData());
     } catch (error) {
       handleCustomErrors(error as string);
@@ -216,7 +221,7 @@ const HandleFiles = <T extends { files?: string[] | null | undefined }>({
                         <button type="button" className="button button-sky" onClick={() => handleFileClick(fileUrl)}>
                           Pogledaj
                         </button>
-                        <button type="button" className="button button-red" disabled={!authUser?.superAdmin} onClick={() => handleDelete(fileUrl)}>
+                        <button type="button" className="button button-red" disabled={authUser!.roleId < 5000} onClick={() => handleDelete(fileUrl)}>
                           Obriši
                         </button>
                       </div>
