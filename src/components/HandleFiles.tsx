@@ -39,12 +39,12 @@ const HandleFiles = <T extends { files?: string[] | null | undefined }>({
   const deleteService = uploadServiceBuilder(axiosPrivate, authUser, url);
   const dataService = createDataService<T>(axiosPrivate, authUser, url);
 
-  const handleDelete = async (fileUrl: string) => {
+  const handleDelete = (fileUrl: string) => {
     setFileUrl(fileUrl);
     setShowDeleteModal(true);
   };
 
-  const handleDeleteCancel = async () => {
+  const handleDeleteCancel = () => {
     setShowDeleteModal(false);
   };
 
@@ -101,9 +101,9 @@ const HandleFiles = <T extends { files?: string[] | null | undefined }>({
         files: newFileNames,
       };
       //Upload files
-      const uploadedData = await dataService.updateResource(id, updatedData);
+      await uploadService.uploadFiles({ formData: formFiles });
       // Update resource data
-      await dataService.updateResource(id, updatedData);
+      const uploadedData = await dataService.updateResource(id, updatedData);
 
       toast.success(`Izmena je uspešno sačuvana !`, {
         position: "top-center",
@@ -127,7 +127,7 @@ const HandleFiles = <T extends { files?: string[] | null | undefined }>({
     const renamedFormFiles = new FormData();
 
     if (files && files.length > 0 && files.length <= 5) {
-      const fileNames = [];
+      const fileNames: string[] = [];
 
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
@@ -151,7 +151,7 @@ const HandleFiles = <T extends { files?: string[] | null | undefined }>({
         renamedFormFiles.forEach((v, k) => formData.append(k, v));
         return formData;
       });
-      setUploadFileNames(fileNames);
+      setUploadFileNames((prev) => [...prev, ...fileNames]);
     } else {
       toast.warn(`Možete dodati između 1 i 5 datoteka `, {
         position: "top-center",
@@ -166,7 +166,7 @@ const HandleFiles = <T extends { files?: string[] | null | undefined }>({
 
   return (
     <div className="relative z-10">
-      <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity">
+      <div className="fixed inset-0 bg-gray-900/90 ">
         <div className="fixed inset-0 z-10 overflow-y-auto">
           <div className="flex min-h-full items-center justify-center p-4 text-center">
             <div className="relative w-full transform overflow-hidden rounded-lg bg-white p-4 text-left shadow-xl transition-all sm:p-8 dark:bg-gray-800">
@@ -204,10 +204,10 @@ const HandleFiles = <T extends { files?: string[] | null | undefined }>({
                   <form onSubmit={handleSubmit}>
                     <div className="mt-2">
                       <div>
-                        <input ref={fileInputRef} type="file" onChange={handleAddFiles} id="addFilesForm" multiple accept={allowedExtensions} />
+                        <input ref={fileInputRef} type="file" disabled={showSpinner} onChange={handleAddFiles} id="addFilesForm" multiple accept={allowedExtensions} />
                       </div>
                       <div className="mt-2 flex items-center justify-end">
-                        <button type="submit" className="button button-sky ms-2">
+                        <button type="submit" disabled={uploadFileNames.length === 0 || showSpinner} className="button button-sky ms-2">
                           Dodaj
                         </button>
                       </div>
