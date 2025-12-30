@@ -1,18 +1,24 @@
 import React, { useEffect, useState, useRef } from "react";
 import { format } from "date-fns";
-import { toast } from "react-toastify";
+import { handleCustomErrors } from "../../services/errorHandler";
 import Spinner from "../../components/Spinner";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import { DownloadTableExcel } from "react-export-table-to-excel";
+import { useAuth } from "../../hooks/useAuth";
+import dataServiceBuilder from "../../services/dataService";
 import HandleFiles from "../../components/HandleFiles";
+import Filters from "../../components/Filters";
+import Search from "../../components/Search";
 
 const DelovodnikReklamacija: React.FC = () => {
-  const [tableData, setTableData] = useState<any[]>([]);
+  const [tableData, setTableData] = useState<Reklamacija[]>([]);
   const [showSpinner, setShowSpinner] = useState(false);
-  const [filter, setFilter] = useState<Pick<QueryParams, "filters">>({ zemljaReklamacije: "" });
-  const [selectedRowFiles, setSelectedRowFiles] = useState<any>(null);
+  const [selectedRowFiles, setSelectedRowFiles] = useState<Reklamacija | null>(null);
   const [showHandleFiles, setShowHandleFiles] = useState(false);
   const axiosPrivate = useAxiosPrivate();
+  const { authUser } = useAuth();
+  const reklamacijeService = dataServiceBuilder<Reklamacija>(axiosPrivate, authUser, "reklamacije");
+
   const tableHeaders = [
     "Broj reklamacije",
     "Zemlja reklamacije",
@@ -35,16 +41,20 @@ const DelovodnikReklamacija: React.FC = () => {
   ];
   const tableRef = useRef<HTMLTableElement | null>(null);
 
+  const [queryParams, setQueryParams] = useState<QueryParams>({ filters: { statusReklamacije: "*" }, page: 1, limit: 20, sortOrder: "desc", sortBy: "datumPrijema" });
+  const filtersOptions: FiltersOptions = {
+    zemljaReklamacije: ["SRBIJA", "CRNA_GORA"],
+    statusReklamacije: ["PRIJEM", "OBRADA", "OPRAVDANA", "NEOPRAVDANA", "DODATNI_ROK"],
+  };
+
   const fetchData = async () => {
     setShowSpinner(true);
-
     try {
-      const response = await axiosPrivate.get(`reklamacije?sortBy=datum_prijema&sortOrder=desc${filter?.zemlja_reklamacije !== "" ? `&zemlja_reklamacije=${filter?.zemlja_reklamacije}` : ""}`);
-      setTableData(response?.data?.data || []);
+      const [response, reklamacijeCount] = await Promise.all([reklamacijeService.getAllResources(queryParams), reklamacijeService.getAllResourcesCount(queryParams)]);
+      setTableData(response.data.data);
+      setQueryParams({ ...queryParams, count: reklamacijeCount.data.count });
     } catch (error) {
-      toast.error(`UPS!!! Došlo je do greške: ${error} `, {
-        position: toast.POSITION.TOP_CENTER,
-      });
+      handleCustomErrors(error as string);
     } finally {
       setShowSpinner(false);
     }
@@ -53,16 +63,9 @@ const DelovodnikReklamacija: React.FC = () => {
   useEffect(() => {
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filter]);
+  }, [queryParams.filters, queryParams.search, queryParams.page, queryParams.limit, queryParams.sortOrder, queryParams.sortBy]);
 
-  const handleChangeFilter = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setFilter((prev) => ({
-      ...prev,
-      [e.target.id]: e.target.value,
-    }));
-  };
-
-  const handleShowFiles = (row: any) => {
+  const handleShowFiles = (row: Reklamacija) => {
     setSelectedRowFiles(row);
     setShowHandleFiles(true);
   };
@@ -71,17 +74,12 @@ const DelovodnikReklamacija: React.FC = () => {
     <>
       <h3 className="mt-4 ">Reklamacije - Delovodna knjiga</h3>
 
+      <div className="mb-4 flex gap-4 justify-end">
+        <Filters filtersOptions={filtersOptions} queryParams={queryParams} setQueryParams={setQueryParams} />
+        <Search queryParams={queryParams} setQueryParams={setQueryParams} />
+      </div>
+
       <div className="grid grid-cols-1 justify-end gap-4 md:flex">
-        <div className=" flex justify-end gap-4">
-          <label htmlFor="zemlja_reklamacije">Zemlja reklamacije: </label>
-          <form>
-            <select id="zemlja_reklamacije" aria-label="Odaberi zemlju" required value={filter?.zemlja_reklamacije} onChange={handleChangeFilter}>
-              <option value="">Sve zemlje</option>
-              <option value="SRBIJA">Srbija</option>
-              <option value="CRNAGORA">Crna Gora</option>
-            </select>
-          </form>
-        </div>
         <div className=" flex justify-end gap-4">
           <DownloadTableExcel filename="Delovodnik reklamacija" sheet="Delovodna knjiga" currentTableRef={tableRef.current}>
             <button className="button button-sky"> Izvezi u Excel </button>
@@ -109,29 +107,29 @@ const DelovodnikReklamacija: React.FC = () => {
                     <a
                       key={`broj_reklamacije_${index}`}
                       className="font-medium text-sky-500 no-underline  hover:cursor-pointer hover:text-sky-400"
-                      href={`/reklamacije/pregled-reklamacije/${row?.broj_reklamacije}`}
+                      href={`/reklamacije/pregled-reklamacije/${row.brojReklamacije}`}
                       target="blank"
                       rel="noreferrer noopener"
                     >
-                      {row?.broj_reklamacije}
+                      {row.brojReklamacije}
                     </a>
                   </td>
-                  <td key={`zemlja_reklamacije_${index}`}>{row?.zemlja_reklamacije}</td>
+                  <td key={`zemlja_reklamacije_${index}`}>{row.zemljaReklamacije}</td>
                   <td
-                    className={`whitespace-nowrap px-6 py-4 font-medium text-zinc-600 dark:text-white ${row?.status_reklamacije === "OPRAVDANA" ? `bg-green-300` : row?.status_reklamacije === "NEOPRAVDANA" ? `bg-red-300` : `bg-zinc-300`}`}
+                    className={`whitespace-nowrap px-6 py-4 font-medium text-zinc-600 dark:text-white ${row.statusReklamacije === "OPRAVDANA" ? `bg-green-300` : row.statusReklamacije === "NEOPRAVDANA" ? `bg-red-300` : `bg-zinc-300`}`}
                     key={`status_reklamacije_${index}`}
                   >
-                    {row?.status_reklamacije}
+                    {row.statusReklamacije}
                   </td>
-                  <td key={`datum_prijema_${index}`}>{row?.datum_prijema && format(new Date(row?.datum_prijema), "dd.MM.yyyy")}</td>
-                  <td key={`odgovorna_osoba_${index}`}>{row?.odgovorna_osoba}</td>
-                  <td key={`ime_prezime_${index}`}>{row?.ime_prezime}</td>
-                  <td key={`adresa_${index}`}>{row?.adresa}</td>
-                  <td key={`telefon_${index}`}>{row?.telefon}</td>
-                  <td key={`email_${index}`}>{row?.email}</td>
-                  <td key={`datum_kupovine_${index}`}>{row?.datum_kupovine && format(new Date(row?.datum_kupovine), "dd.MM.yyyy")}</td>
-                  <td key={`broj_racuna_${index}`}>{row?.broj_racuna}</td>
-                  <td key={`naziv_poizvoda_${index}`}>{row?.naziv_poizvoda}</td>
+                  <td key={`datum_prijema_${index}`}>{row.datumPrijema && format(new Date(row.datumPrijema), "dd.MM.yyyy")}</td>
+                  <td key={`odgovorna_osoba_${index}`}>{row.odgovornaOsoba}</td>
+                  <td key={`ime_prezime_${index}`}>{row.imePrezime}</td>
+                  <td key={`adresa_${index}`}>{row.adresa}</td>
+                  <td key={`telefon_${index}`}>{row.telefon}</td>
+                  <td key={`email_${index}`}>{row.email}</td>
+                  <td key={`datum_kupovine_${index}`}>{row.datumKupovine && format(new Date(row.datumKupovine), "dd.MM.yyyy")}</td>
+                  <td key={`broj_racuna_${index}`}>{row.brojRacuna}</td>
+                  <td key={`naziv_poizvoda_${index}`}>{row.nazivProizvoda}</td>
                   <td
                     key={`opis_reklamacije_${index}`}
                     style={{
@@ -140,9 +138,9 @@ const DelovodnikReklamacija: React.FC = () => {
                       textOverflow: "ellipsis",
                     }}
                   >
-                    {row?.opis_reklamacije}
+                    {row.opisReklamacije}
                   </td>
-                  <td key={`datum_odgovora_${index}`}>{row?.datum_odgovora && format(new Date(row?.datum_odgovora), "dd.MM.yyyy")}</td>
+                  <td key={`datum_odgovora_${index}`}>{row.datumOdgovora && format(new Date(row.datumOdgovora), "dd.MM.yyyy")}</td>
                   <td
                     key={`opis_odluke_${index}`}
                     style={{
@@ -151,7 +149,7 @@ const DelovodnikReklamacija: React.FC = () => {
                       textOverflow: "ellipsis",
                     }}
                   >
-                    {row?.opis_odluke}
+                    {row.opisOdluke}
                   </td>
                   <td
                     key={`komentar_${index}`}
@@ -161,17 +159,17 @@ const DelovodnikReklamacija: React.FC = () => {
                       textOverflow: "ellipsis",
                     }}
                   >
-                    {row?.komentar}
+                    {row.komentar}
                   </td>
                   <td>
-                    <button key={`datoteke_list_${index}`} className="button button-sky" onClick={() => handleShowFiles(row)}>
-                      Datoteke - prikačeno {row?.files ? JSON.parse(row?.files).length : "0"}
+                    <button className="button button-sky" onClick={() => handleShowFiles(row)}>
+                      Rad sa datotekama - prikačeno {row.files ? row.files.length : "0"}
                     </button>
                   </td>
                   <td key={`files_${index}`}>
                     <input
                       type="checkbox"
-                      checked={Boolean(row?.sms_sent)}
+                      checked={Boolean(row.smsSent)}
                       disabled
                       className="h-4 w-4 appearance-auto rounded border-zinc-300 bg-zinc-100 p-2 text-zinc-600 focus:ring-2 focus:ring-zinc-500 dark:border-zinc-600 dark:bg-zinc-700 dark:ring-offset-zinc-800 dark:focus:ring-zinc-600"
                     />
@@ -187,7 +185,7 @@ const DelovodnikReklamacija: React.FC = () => {
 
       {showSpinner && <Spinner />}
 
-      {showHandleFiles && <HandleFiles url="reklamacije" id={selectedRowFiles?.broj_reklamacije} data={selectedRowFiles} fetchData={fetchData} setShowHandleFiles={setShowHandleFiles} />}
+      {showHandleFiles && <HandleFiles url="reklamacije" id={selectedRowFiles!.idReklamacije!} dataWithFiles={selectedRowFiles!} fetchData={fetchData} setShowHandleFiles={setShowHandleFiles} />}
     </>
   );
 };

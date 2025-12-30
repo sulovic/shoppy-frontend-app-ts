@@ -3,7 +3,7 @@ import Spinner from "../../components/Spinner";
 import { useNavigate } from "react-router-dom";
 import dataServiceBuilder from "../../services/dataService";
 import { handleCustomErrors } from "../../services/errorHandler";
-import ReklamacijeTable from "../../components/ReklamacijeTable";
+import ReklamacijeTable from "../../components/Reklamacije/ReklamacijeTable";
 import { useAuth } from "../../hooks/useAuth";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import Filters from "../../components/Filters";
@@ -20,7 +20,7 @@ const PrijemReklamacija: React.FC = () => {
   const [queryParams, setQueryParams] = useState<QueryParams>({ filters: { statusReklamacije: "PRIJEM" }, page: 1, limit: 20, sortOrder: "desc", sortBy: "datumPrijema" });
   const filtersOptions: FiltersOptions = {
     zemljaReklamacije: ["SRBIJA", "CRNA_GORA"],
-    statusReklamacije: ["PRIJEM", "OBRADA", "OPRAVDANA", "NEOPRAVDANA", "DODATNI_ROK"],
+    // statusReklamacije: ["PRIJEM", "OBRADA", "OPRAVDANA", "NEOPRAVDANA", "DODATNI_ROK"],
   };
   const fetchData = async () => {
     setShowSpinner(true);

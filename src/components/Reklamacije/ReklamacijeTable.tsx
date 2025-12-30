@@ -1,6 +1,6 @@
 import { format } from "date-fns";
 import { useState } from "react";
-import HandleFiles from "./HandleFiles";
+import HandleFiles from "../HandleFiles";
 import ReklamacijeActions from "./ReklamacijeActions";
 
 const ReklamacijeTable = ({ tableData, fetchData }: { tableData: Reklamacija[]; fetchData: () => void }) => {
@@ -24,7 +24,7 @@ const ReklamacijeTable = ({ tableData, fetchData }: { tableData: Reklamacija[]; 
 
               <p>{row.datumPrijema && format(row.datumPrijema, "dd.MM.yyyy")}</p>
               <p>{row.brojReklamacije}</p>
-              <p className={`whitespace-nowrap px-6 py-4 font-medium text-gray-800! ${row?.statusReklamacije === "OPRAVDANA" ? `bg-green-300` : row?.statusReklamacije === "NEOPRAVDANA" ? `bg-red-300` : `bg-gray-300`}`}>
+              <p className={`whitespace-nowrap text-center px-6 py-4 font-medium text-gray-800! ${row?.statusReklamacije === "OPRAVDANA" ? `bg-green-300` : row?.statusReklamacije === "NEOPRAVDANA" ? `bg-red-300` : `bg-gray-300`}`}>
                 {row.statusReklamacije}
               </p>
               <p>{row.zemljaReklamacije}</p>

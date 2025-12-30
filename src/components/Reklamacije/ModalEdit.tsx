@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import DatePicker from "react-datepicker";
 import { toast } from "react-toastify";
-import Spinner from "../../components/Spinner";
+import Spinner from "../Spinner";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
-import Modal from "../../components/Modal";
+import Modal from "../Modal";
 import { useAuth } from "../../hooks/useAuth";
 import { handleCustomErrors } from "../../services/errorHandler";
 
