@@ -22,6 +22,7 @@ const PrijemReklamacija: React.FC = () => {
     zemljaReklamacije: ["SRBIJA", "CRNA_GORA"],
     // statusReklamacije: ["PRIJEM", "OBRADA", "OPRAVDANA", "NEOPRAVDANA", "DODATNI_ROK"],
   };
+
   const fetchData = async () => {
     setShowSpinner(true);
     try {

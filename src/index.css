@@ -58,7 +58,7 @@ select {
 }
 
 td {
-  @apply whitespace-nowrap px-4 py-2 font-medium text-gray-600 dark:text-gray-50 dark:hover:text-gray-600;
+  @apply whitespace-nowrap px-4 py-2 font-medium;
 }
 
 .button {

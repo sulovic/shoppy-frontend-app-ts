@@ -1,4 +1,6 @@
-const Modal = ({ onOK, onCancel, title = "", question = "" }: { onOK: () => void; onCancel: () => void; title?: string; question?: string }) => {
+import type { ReactNode } from "react";
+
+const Modal = ({ onOK, onCancel, title = "", question = "" }: { onOK: () => void; onCancel: () => void; title?: string; question?: string | ReactNode }) => {
   return (
     <div className="relative z-10">
       <div className="fixed inset-0 bg-gray-900/90 ">
@@ -9,9 +11,7 @@ const Modal = ({ onOK, onCancel, title = "", question = "" }: { onOK: () => void
                 <div className="text-left">
                   <h5>{title}</h5>
                   <div className="my-4 w-full h-0.5 bg-zinc-400"></div>
-                  <div className="my-2">
-                    <p>{question}</p>
-                  </div>
+                  <div className="my-2">{typeof question === "string" ? <p>{question}</p> : question}</div>
                   <div className="my-4 w-full h-0.5 bg-zinc-400"></div>
                 </div>
               </div>

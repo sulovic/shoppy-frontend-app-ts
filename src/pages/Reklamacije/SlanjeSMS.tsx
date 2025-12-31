@@ -1,46 +1,44 @@
-import React, { useEffect, useState, useRef } from "react";
-import { format } from "date-fns";
-import { toast } from "react-toastify";
+import React, { useEffect, useState } from "react";
 import Spinner from "../../components/Spinner";
+import dataServiceBuilder from "../../services/dataService";
+import { handleCustomErrors } from "../../services/errorHandler";
+import { useAuth } from "../../hooks/useAuth";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
-import Modal from "../../components/Modal";
 import Pagination from "../../components/Pagination";
+import Filters from "../../components/Filters";
+import Search from "../../components/Search";
+import Modal from "../../components/Modal";
+import { useRef } from "react";
+import { toast } from "react-toastify";
+import { format } from "date-fns";
 
 const SlanjeSMS: React.FC = () => {
-  const [tableData, setTableData] = useState<any[]>([]);
+  const [tableData, setTableData] = useState<Reklamacija[]>([]);
   const [showSpinner, setShowSpinner] = useState(false);
-  const [filter, setFilter] = useState<any>({ zemlja_reklamacije: "" });
-  const [showModal, setShowModal] = useState(false);
-  const [reklamacija, setReklamacija] = useState<any>(null);
-  const [smsText, setSmsText] = useState<string | null>(null);
-  const [pagination, setPagination] = useState<any>({ limit: 20, page: 1, count: 0 });
+  const { authUser } = useAuth();
   const axiosPrivate = useAxiosPrivate();
-  const tableHeaders = [
-    "Pregled reklamacije",
-    "Pošalji SMS",
-    "SMS je poslat",
-    "Datum prijema",
-    "Ime i prezime",
-    "Naziv proizvoda",
-    "Zemlja reklamacije",
-    "Status reklamacije",
-  ];
+  const [queryParams, setQueryParams] = useState<QueryParams>({ filters: { statusReklamacije: "*" }, page: 1, limit: 20, sortOrder: "desc", sortBy: "datumPrijema" });
+
+  const reklamacijeService = dataServiceBuilder<Reklamacija>(axiosPrivate, authUser, "reklamacije");
+
+  const [showModal, setShowModal] = useState(false);
+  const [reklamacija, setReklamacija] = useState<Reklamacija | null>(null);
+  const [smsText, setSmsText] = useState<string | null>(null);
+  const tableHeaders = ["Pregled reklamacije", "Pošalji SMS", "SMS je poslat", "Datum prijema", "Ime i prezime", "Naziv proizvoda", "Zemlja reklamacije", "Status reklamacije"];
+  const filtersOptions: FiltersOptions = {
+    zemljaReklamacije: ["SRBIJA", "CRNA_GORA"],
+    // statusReklamacije: ["PRIJEM", "OBRADA", "OPRAVDANA", "NEOPRAVDANA", "DODATNI_ROK"],
+  };
   const tableRef = useRef<HTMLTableElement | null>(null);
 
   const fetchData = async () => {
     setShowSpinner(true);
-
     try {
-      const response = await axiosPrivate.get(
-        `reklamacije?sortBy=datum_prijema&sortOrder=desc${filter?.zemlja_reklamacije !== "" ? `&zemlja_reklamacije=${filter?.zemlja_reklamacije}` : ""}&page=${pagination.page}&limit=${pagination.limit}`,
-      );
-      setTableData(response?.data?.data || []);
-      setPagination({ ...pagination, count: response?.data?.count });
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      const [response, reklamacijeCount] = await Promise.all([reklamacijeService.getAllResources(queryParams), reklamacijeService.getAllResourcesCount(queryParams)]);
+      setTableData(response.data.data);
+      setQueryParams({ ...queryParams, count: reklamacijeCount.data.count });
     } catch (error) {
-      toast.error(`UPS!!! Došlo je do greške: ${error} `, {
-        position: toast.POSITION.TOP_CENTER,
-      });
+      handleCustomErrors(error as string);
     } finally {
       setShowSpinner(false);
     }
@@ -49,29 +47,22 @@ const SlanjeSMS: React.FC = () => {
   useEffect(() => {
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filter, pagination.page, pagination.limit]);
+  }, [queryParams.filters, queryParams.search, queryParams.page, queryParams.limit, queryParams.sortOrder, queryParams.sortBy]);
 
-  const handleChangeFilter = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setFilter((prev: any) => ({ ...prev, [e.target.id]: e.target.value }));
-    setPagination({ ...pagination, page: 1 });
-  };
-
-  const handleSendSms = (row: any) => {
+  const handleSendSms = (row: Reklamacija) => {
     setReklamacija(row);
-    switch (row?.status_reklamacije) {
+    switch (row?.statusReklamacije) {
       case "OBRADA":
-        setSmsText(
-          `Reklamacija ${row?.broj_reklamacije} za kupca ${row?.ime_prezime} je PRIMLJENA. Status reklamacije možete pratiti na linku ${process.env.REACT_APP_BASE_URL}/reklamacije/pregled-reklamacije/${row?.broj_reklamacije}`,
-        );
+        setSmsText(`Reklamacija ${row?.brojReklamacije} za kupca ${row?.imePrezime} je PRIMLJENA. Status reklamacije možete pratiti na linku ${import.meta.env.REACT_APP_BASE_URL}/reklamacije/pregled-reklamacije/${row?.brojReklamacije}`);
         break;
       case "OPRAVDANA":
         setSmsText(
-          `Reklamacija ${row?.broj_reklamacije} za kupca ${row?.ime_prezime} je OPRAVDANA. Odgovor na reklamaciju možete pogledati na linku ${process.env.REACT_APP_BASE_URL}/reklamacije/pregled-reklamacije/${row?.broj_reklamacije}`,
+          `Reklamacija ${row?.brojReklamacije} za kupca ${row?.imePrezime} je OPRAVDANA. Odgovor na reklamaciju možete pogledati na linku ${import.meta.env.REACT_APP_BASE_URL}/reklamacije/pregled-reklamacije/${row?.brojReklamacije}`
         );
         break;
       case "NEOPRAVDANA":
         setSmsText(
-          `Reklamacija ${row?.broj_reklamacije} za kupca ${row?.ime_prezime} je NEOPRAVDANA. Odgovor na reklamaciju možete pogledati na linku ${process.env.REACT_APP_BASE_URL}/reklamacije/pregled-reklamacije/${row?.broj_reklamacije}`,
+          `Reklamacija ${row?.brojReklamacije} za kupca ${row?.imePrezime} je NEOPRAVDANA. Odgovor na reklamaciju možete pogledati na linku ${import.meta.env.REACT_APP_BASE_URL}/reklamacije/pregled-reklamacije/${row?.brojReklamacije}`
         );
         break;
       default:
@@ -81,18 +72,17 @@ const SlanjeSMS: React.FC = () => {
   };
 
   const handleSendSmsOK = async () => {
-    const updatedReklamacija = { ...reklamacija, sms_sent: true };
+    const updatedReklamacija = { ...reklamacija!, brojReklamacije: reklamacija!.brojReklamacije!, sms_sent: true };
 
     try {
       setShowSpinner(true);
-      await axiosPrivate.put(`reklamacije/${updatedReklamacija?.broj_reklamacije}`, updatedReklamacija);
-      toast.success(`SMS za reklamaciju ${reklamacija?.ime_prezime} - ${reklamacija?.broj_reklamacije} je uspešno poslat!`, {
-        position: toast.POSITION.TOP_CENTER,
+
+      await reklamacijeService.updateResource(Number(updatedReklamacija.brojReklamacije), updatedReklamacija);
+      toast.success(`SMS za reklamaciju ${reklamacija?.imePrezime} - ${reklamacija?.brojReklamacije} je uspešno poslat!`, {
+        position: "top-center",
       });
     } catch (error) {
-      toast.error(`UPS!!! Došlo je do greške...`, {
-        position: toast.POSITION.TOP_CENTER,
-      });
+      handleCustomErrors(error as string);
     } finally {
       setShowSpinner(false);
     }
@@ -113,17 +103,9 @@ const SlanjeSMS: React.FC = () => {
       <div className="mb-4">
         <h3 className="mt-4">Reklamacije - Slanje SMS poruka</h3>
 
-        <div className="grid grid-cols-1 justify-end gap-4 md:flex">
-          <div className=" flex justify-end gap-4">
-            <label htmlFor="zemlja_reklamacije">Zemlja reklamacije: </label>
-            <form>
-              <select id="zemlja_reklamacije" aria-label="Odaberi zemlju" required value={filter?.zemlja_reklamacije} onChange={handleChangeFilter}>
-                <option value="">Sve zemlje</option>
-                <option value="SRBIJA">Srbija</option>
-                <option value="CRNAGORA">Crna Gora</option>
-              </select>
-            </form>
-          </div>
+        <div className="mb-4 flex gap-4 justify-end">
+          <Filters filtersOptions={filtersOptions} queryParams={queryParams} setQueryParams={setQueryParams} />
+          <Search queryParams={queryParams} setQueryParams={setQueryParams} />
         </div>
 
         {tableData.length ? (
@@ -141,26 +123,34 @@ const SlanjeSMS: React.FC = () => {
 
               <tbody>
                 {tableData.map((row, index) => (
-                  <tr key={index} className="border-b bg-white hover:!bg-zinc-100 dark:border-zinc-700 dark:bg-zinc-800">
+                  <tr key={index} className="border-b bg-white hover:bg-zinc-100! dark:border-zinc-700 dark:bg-zinc-800">
                     <td key={`broj_reklamacije_${index}`}>
-                      <a className="font-medium text-sky-500 no-underline  hover:cursor-pointer hover:text-sky-400" href={`/reklamacije/pregled-reklamacije/${row?.broj_reklamacije}`} target="blank" rel="noreferrer noopener">
-                        {row?.broj_reklamacije}
+                      <a className="font-medium text-sky-500 no-underline  hover:cursor-pointer hover:text-sky-400" href={`/reklamacije/pregled-reklamacije/${row?.brojReklamacije}`} target="blank" rel="noreferrer noopener">
+                        {row?.brojReklamacije}
                       </a>
                     </td>
                     <td>
-                      <button type="button" className="button button-sky" disabled={row?.status_reklamacije === "PRIJEM"} onClick={() => handleSendSms(row)}>
+                      <button type="button" className="button button-sky" disabled={row?.statusReklamacije === "PRIJEM"} onClick={() => handleSendSms(row)}>
                         Pošalji SMS
                       </button>
                     </td>
                     <td key={`files_${index}`}>
-                      <input type="checkbox" checked={Boolean(row?.sms_sent)} disabled className="h-4 w-4 appearance-auto rounded border-zinc-300 bg-zinc-100 p-2 text-zinc-600 focus:ring-2 focus:ring-zinc-500 dark:border-zinc-600 dark:bg-zinc-700 dark:ring-offset-zinc-800 dark:focus:ring-zinc-600" />
+                      <input
+                        type="checkbox"
+                        checked={Boolean(row?.smsSent)}
+                        disabled
+                        className="h-4 w-4 appearance-auto rounded border-zinc-300 bg-zinc-100 p-2 text-zinc-600 focus:ring-2 focus:ring-zinc-500 dark:border-zinc-600 dark:bg-zinc-700 dark:ring-offset-zinc-800 dark:focus:ring-zinc-600"
+                      />
                     </td>
-                    <td key={`datum_prijema_${index}`}>{row?.datum_prijema && format(new Date(row?.datum_prijema), "dd.MM.yyyy")}</td>
-                    <td key={`ime_prezime_${index}`}>{row?.ime_prezime}</td>
-                    <td key={`naziv_poizvoda_${index}`}>{row?.naziv_poizvoda}</td>
-                    <td key={`zemlja_reklamacije_${index}`}>{row?.zemlja_reklamacije}</td>
-                    <td className={`whitespace-nowrap px-6 py-4 font-medium text-zinc-600 dark:text-white ${row?.status_reklamacije === "OPRAVDANA" ? `bg-green-300` : row?.status_reklamacije === "NEOPRAVDANA" ? `bg-red-300` : `bg-zinc-300`}`} key={`status_reklamacije_${index}`}>
-                      {row?.status_reklamacije}
+                    <td key={`datum_prijema_${index}`}>{row?.datumPrijema && format(new Date(row?.datumPrijema), "dd.MM.yyyy")}</td>
+                    <td key={`ime_prezime_${index}`}>{row?.imePrezime}</td>
+                    <td key={`naziv_poizvoda_${index}`}>{row?.nazivProizvoda}</td>
+                    <td key={`zemlja_reklamacije_${index}`}>{row?.zemljaReklamacije}</td>
+                    <td
+                      className={`whitespace-nowrap px-6 py-4 font-medium text-zinc-600 dark:text-white ${row?.statusReklamacije === "OPRAVDANA" ? `bg-green-300` : row?.statusReklamacije === "NEOPRAVDANA" ? `bg-red-300` : `bg-zinc-300`}`}
+                      key={`status_reklamacije_${index}`}
+                    >
+                      {row?.statusReklamacije}
                     </td>
                   </tr>
                 ))}
@@ -168,9 +158,11 @@ const SlanjeSMS: React.FC = () => {
             </table>
           </div>
         ) : (
-          !showSpinner && <h4 className="my-4 text-zinc-600 ">Nema reklamacija koje su u prijemu...</h4>
+          !showSpinner && <h4 className="my-4 text-zinc-600 ">Nema evidentiranih reklamacija...</h4>
         )}
-        {!showSpinner && <Pagination pagination={pagination} setPagination={setPagination} />}
+        <div className="flex justify-end gap-4 mb-4">
+          <Pagination queryParams={queryParams} setQueryParams={setQueryParams} />
+        </div>
       </div>
       {showModal && (
         <Modal
@@ -181,8 +173,8 @@ const SlanjeSMS: React.FC = () => {
             <span>
               <a className="text-sky-600" href={`sms:${reklamacija?.telefon}?body=${smsText}`}>
                 Kliknite OVDE da generišete SMS poruku.
-              </a>{" "}
-              <br /> Kada pošaljete SMS potvrdite na OK.
+              </a>
+              <p> Kada pošaljete SMS potvrdite na OK. </p>
             </span>
           }
         />
