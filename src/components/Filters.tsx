@@ -1,6 +1,4 @@
 const Filters = ({ filtersOptions, queryParams, setQueryParams }: { filtersOptions: FiltersOptions; queryParams: QueryParams; setQueryParams: React.Dispatch<React.SetStateAction<QueryParams>> }) => {
- 
-  console.log("FiltersOptions:", filtersOptions);
   return (
     <div className="flex flex-wrap justify-end gap-2">
       {/* Filters */}

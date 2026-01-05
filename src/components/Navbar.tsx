@@ -30,7 +30,13 @@ const Navbar = ({ AppName = "Unauthorized", Links = [] }: { AppName: string; Lin
               (link, index) =>
                 authUser?.roleId > link?.minRole && (
                   <li className="mt-3 text-end	text-lg font-medium lg:mt-0! lg:inline-block" key={index}>
-                    <Link className={`mr-4 no-underline ${currentLocation.pathname === link?.href ? `text-sky-200` : `text-sky-100`} hover:text-white`} to={link?.href}>
+                    <Link
+                      className={`mr-4 no-underline ${currentLocation.pathname === link?.href ? `text-sky-200` : `text-sky-100`} hover:text-white`}
+                      to={link?.href}
+                      onClick={(e) => {
+                        if (currentLocation.pathname === link.href) e.preventDefault();
+                      }}
+                    >
                       {link?.label}
                     </Link>
                   </li>

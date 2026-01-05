@@ -113,7 +113,6 @@ const ReklamacijeActions = ({ row, fetchData }: { row: Reklamacija; fetchData: (
   };
 
   const availableActions: { [key: string]: Action } = reklamacijeActionMatrix[row.statusReklamacije];
-  console.log(availableActions);
 
   const handleEdit = (row: Reklamacija) => {
     setUpdateData(row);

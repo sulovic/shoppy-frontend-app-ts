@@ -3,7 +3,6 @@ import "./ToggleSwitch.css";
 
 const SuperAdmin = () => {
   const { authUser, setAuthUser } = useAuth();
-  console.log(authUser);
 
   const handleToggle = () => {
     setAuthUser((prev) => {
