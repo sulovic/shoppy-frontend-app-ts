@@ -17,8 +17,7 @@ const Dashboard: React.FC = () => {
   const [showSpinner, setShowSpinner] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [showModalEditUser, setShowModalEditUser] = useState(false);
-  const [selectedUserEmail, setSelectedUserEmail] = useState("");
-  const [updateData, setUpdateData] = useState<UserData | null>(null);
+  const [selectedUser, setSelectedUser] = useState<UserData | null>(null);
   const navigate = useNavigate();
   const axiosPrivate = useAxiosPrivate();
   const { authUser } = useAuth();
@@ -51,14 +50,14 @@ const Dashboard: React.FC = () => {
   const handleDeleteOK = async () => {
     setShowSpinner(true);
     try {
-      await axiosPrivate.delete(`users/${selectedUserEmail}`);
-      toast.success(`Korisnik ${selectedUserEmail} je uspešno obrisan!`, {
+      if (!selectedUser) return;
+      const response = await userService.deleteResource(selectedUser.userId);
+      const deletedUser = response.data.data;
+      toast.success(`Korisnik ${deletedUser?.firstName} ${deletedUser?.lastName} - ${deletedUser?.email} je uspešno obrisan!`, {
         position: "top-center",
       });
     } catch (error) {
-      toast.error(`UPS!!! Došlo je do greške: ${error} `, {
-        position: "top-center",
-      });
+      handleCustomErrors(error as string);
     } finally {
       setShowModal(false);
       setShowSpinner(false);
@@ -66,8 +65,8 @@ const Dashboard: React.FC = () => {
     }
   };
 
-  const handleDelete = (email: string) => {
-    setSelectedUserEmail(email);
+  const handleDelete = (user: UserData) => {
+    setSelectedUser(user);
     setShowModal(true);
   };
 
@@ -76,8 +75,8 @@ const Dashboard: React.FC = () => {
     setShowSpinner(false);
   };
 
-  const handleEdit = (row: UserData) => {
-    setUpdateData(row);
+  const handleEdit = (user: UserData) => {
+    setSelectedUser(user);
     setShowModalEditUser(true);
   };
 
@@ -130,7 +129,7 @@ const Dashboard: React.FC = () => {
                         </button>
                       </td>
                       <td key={`deleteUser_${index}`} className="text-center">
-                        <button type="button" className="button button-red" aria-label="Delete" disabled={authUser?.email === row?.email || !authUser?.superAdmin} onClick={() => handleDelete(row.email)}>
+                        <button type="button" className="button button-red" aria-label="Delete" disabled={authUser?.email === row?.email || !authUser?.superAdmin} onClick={() => handleDelete(row)}>
                           Obriši
                         </button>
                       </td>
@@ -143,9 +142,16 @@ const Dashboard: React.FC = () => {
                 <Pagination queryParams={queryParams} setQueryParams={setQueryParams} />
               </div>
 
-              {showModal && <Modal onOK={handleDeleteOK} onCancel={handleCancel} title="Potvrda brisanja korisnika" question={`Da li ste sigurni da želite da obrišete korisnika ${selectedUserEmail}?`} />}
+              {showModal && (
+                <Modal
+                  onOK={handleDeleteOK}
+                  onCancel={handleCancel}
+                  title="Potvrda brisanja korisnika"
+                  question={`Da li ste sigurni da želite da obrišete korisnika $ ${selectedUser?.firstName} ${selectedUser?.lastName} - ${selectedUser?.email}?`}
+                />
+              )}
 
-              {updateData && showModalEditUser && <ModalEditUser setShowModalEditUser={setShowModalEditUser} updateData={updateData} setUpdateData={setUpdateData} fetchData={fetchData} />}
+              {selectedUser && showModalEditUser && <ModalEditUser setShowModalEditUser={setShowModalEditUser} selectedUser={selectedUser} setSelectedUser={setSelectedUser} fetchData={fetchData} />}
             </div>
           </div>
         </div>

@@ -1,3 +1,9 @@
+export const USERROLES = [
+  { id: 1001, name: "BASE" },
+  { id: 3001, name: "POWER" },
+  { id: 5001, name: "ADMIN" },
+];
+
 export const allowedFileTypes = {
   pdf: "application/pdf",
   jpg: "image/jpeg",
