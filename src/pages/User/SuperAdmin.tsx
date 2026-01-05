@@ -3,6 +3,7 @@ import "./ToggleSwitch.css";
 
 const SuperAdmin = () => {
   const { authUser, setAuthUser } = useAuth();
+  console.log(authUser);
 
   const handleToggle = () => {
     setAuthUser((prev) => {
@@ -15,7 +16,7 @@ const SuperAdmin = () => {
 
   return (
     authUser &&
-    authUser.role_id > 5000 && (
+    authUser.roleId > 5000 && (
       <>
         <h3 className="my-4">Super Admin Privilegije</h3>
         <div className="my-3 mt-16 flex h-full w-full items-center justify-center gap-2">
@@ -26,8 +27,8 @@ const SuperAdmin = () => {
             <div className="grid gap-4 md:grid-cols-4">
               <div>
                 <div className="mt-5 flex justify-center">
-                  <label className="switch">
-                    <input checked={superAdmin} onChange={handleToggle} className="switch-input" type="checkbox" />
+                  <label className="switch" htmlFor="superAdminToggle">
+                    <input id="superAdminToggle" type="checkbox" checked={superAdmin} onChange={handleToggle} />
                     <span className="slider round"></span>
                   </label>
                 </div>
