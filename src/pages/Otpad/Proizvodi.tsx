@@ -6,26 +6,31 @@ import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import ModalEditProizvod from "./ModalEditProizvod";
 import Modal from "../../components/Modal";
 import { useAuth } from "../../hooks/useAuth";
+import { handleCustomErrors } from "../../services/errorHandler";
+import dataServiceBuilder from "../../services/dataService";
+import Search from "../../components/Search";
+import Pagination from "../../components/Pagination";
 
 const Proizvodi: React.FC = () => {
-  const [tableData, setTableData] = useState<any[] | null>(null);
+  const [tableData, setTableData] = useState<JciProizvodi[] | null>(null);
   const [showSpinner, setShowSpinner] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [showModalEdit, setShowModalEdit] = useState(false);
-  const [updateData, setUpdateData] = useState<any | null>(null);
+  const [updateData, setUpdateData] = useState<JciProizvodi | null>(null);
   const navigate = useNavigate();
   const axiosPrivate = useAxiosPrivate();
   const { authUser } = useAuth();
+  const proizvodiService = dataServiceBuilder<JciProizvodi>(axiosPrivate, authUser, "otpad/proizvodi");
+  const [queryParams, setQueryParams] = useState<QueryParams>({ page: 1, limit: 20, sortOrder: "desc", sortBy: "id" });
 
   const fetchData = async () => {
     setShowSpinner(true);
     try {
-      const response = await axiosPrivate.get("otpad/proizvodi");
-      setTableData(response?.data);
-    } catch (error: any) {
-      toast.error(`UPS!!! Došlo je do greške pri preuzimanju podataka: ${error} `, {
-        position: toast.POSITION.TOP_CENTER,
-      });
+      const [response, reklamacijeCount] = await Promise.all([proizvodiService.getAllResources(queryParams), proizvodiService.getAllResourcesCount(queryParams)]);
+      setTableData(response.data.data);
+      setQueryParams({ ...queryParams, count: reklamacijeCount.data.count });
+    } catch (error) {
+      handleCustomErrors(error as string);
     } finally {
       setShowSpinner(false);
     }
@@ -34,14 +39,14 @@ const Proizvodi: React.FC = () => {
   useEffect(() => {
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [queryParams.filters, queryParams.search, queryParams.page, queryParams.limit, queryParams.sortOrder, queryParams.sortBy]);
 
-  const handleEdit = (row: any) => {
+  const handleEdit = (row: JciProizvodi) => {
     setUpdateData(row);
     setShowModalEdit(true);
   };
 
-  const handleDelete = (row: any) => {
+  const handleDelete = (row: JciProizvodi) => {
     setUpdateData(row);
     setShowModal(true);
   };
@@ -49,14 +54,14 @@ const Proizvodi: React.FC = () => {
   const handleDeleteOK = async () => {
     setShowSpinner(true);
     try {
-      await axiosPrivate.delete(`otpad/proizvodi/${updateData?.id}`);
-      toast.success(`Vrsta proizvoda ${updateData?.proizvod} je uspešno obrisana!`, {
-        position: toast.POSITION.TOP_CENTER,
+      if (!updateData) return;
+      const response = await proizvodiService.deleteResource(updateData?.id);
+      const deletedProizvod = response.data.data;
+      toast.success(`Vrsta proizvoda ${deletedProizvod.proizvod} je uspešno obrisana!`, {
+        position: "top-center",
       });
-    } catch (error: any) {
-      toast.error(`UPS!!! Došlo je do greške: ${error} `, {
-        position: toast.POSITION.TOP_CENTER,
-      });
+    } catch (error) {
+      handleCustomErrors(error as string);
     } finally {
       setUpdateData(null);
       setShowModal(false);
@@ -80,6 +85,9 @@ const Proizvodi: React.FC = () => {
           Dodaj novu vrstu proizvoda
         </button>
       </div>
+      <div className="mt-4 px-3 flex justify-end">
+        <Search queryParams={queryParams} setQueryParams={setQueryParams} />
+      </div>
       {tableData?.length ? (
         <>
           <div>
@@ -96,15 +104,15 @@ const Proizvodi: React.FC = () => {
                   </thead>
                   <tbody>
                     {tableData.map((row, index) => (
-                      <tr key={index} className="border-b bg-white hover:!bg-zinc-100 dark:border-zinc-700 dark:bg-zinc-800">
-                        <td key={`id_${index}`}>{index + 1}</td>
-                        <td key={`proizvod_${index}`}>{row?.proizvod}</td>
-                        <td key={`edit_${index}`} className="text-center">
+                      <tr key={row.id} className="border-b bg-white hover:bg-zinc-100! dark:border-zinc-700 dark:bg-zinc-800">
+                        <td>{index + 1}</td>
+                        <td>{row?.proizvod}</td>
+                        <td className="text-center">
                           <button type="button" className="button button-sky float-left" aria-label="Edit" onClick={() => handleEdit(row)}>
                             Izmeni
                           </button>
                         </td>
-                        <td key={`delete_${index}`} className="text-center">
+                        <td className="text-center">
                           <button type="button" className="button button-red float-left" aria-label="Delete" disabled={!authUser?.superAdmin} onClick={() => handleDelete(row)}>
                             Obriši
                           </button>
@@ -113,13 +121,15 @@ const Proizvodi: React.FC = () => {
                     ))}
                   </tbody>
                 </table>
-
-                {showModal && <Modal onOK={handleDeleteOK} onCancel={handleCancel} title="Potvrda brisanja vrste proizvoda" question={`Da li ste sigurni da želite da obrišete vrstu proizvoda: ${updateData?.proizvod}?`} />}
-
-                {updateData && showModalEdit && <ModalEditProizvod setShowModalEdit={setShowModalEdit} updateData={updateData} setUpdateData={setUpdateData} fetchData={fetchData} />}
+              </div>
+              <div className="flex justify-end gap-4 my-4">
+                <Pagination queryParams={queryParams} setQueryParams={setQueryParams} />
               </div>
             </div>
           </div>
+          {showModal && <Modal onOK={handleDeleteOK} onCancel={handleCancel} title="Potvrda brisanja vrste proizvoda" question={`Da li ste sigurni da želite da obrišete vrstu proizvoda: ${updateData?.proizvod}?`} />}
+
+          {updateData && showModalEdit && <ModalEditProizvod setShowModalEdit={setShowModalEdit} updateData={updateData} setUpdateData={setUpdateData} fetchData={fetchData} />}
         </>
       ) : (
         !showSpinner && <div className="p-3">Nema podataka o proizvodima...</div>

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import Modal from "../../components/Modal";
-import ModalEditUser from "./ModalEditUser";
+import ModalEditUser from "../../components/Users/ModalEditUser";
 import { toast } from "react-toastify";
 import Spinner from "../../components/Spinner";
 import { useNavigate } from "react-router-dom";
