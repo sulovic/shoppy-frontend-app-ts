@@ -4,25 +4,32 @@ import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import Modal from "../../components/Modal";
 import { toast } from "react-toastify";
 import Spinner from "../../components/Spinner";
+import { handleCustomErrors } from "../../services/errorHandler";
+import dataServiceBuilder from "../../services/dataService";
+import { useAuth } from "../../hooks/useAuth";
 
 const NewProizvod: React.FC = () => {
-  const [proizvod, setProizvod] = useState<any | null>(null);
-  const [vrsteOtpada, setVrsteOtpada] = useState<any[] | null>(null);
+  const newProizvod: Omit<JciProizvodi, "id"> = {
+    proizvod: "",
+    ProizvodMasaOtpada: [],
+  };
+  const [proizvod, setProizvod] = useState<Omit<JciProizvodi, "id">>(newProizvod);
+  const [vrsteOtpada, setVrsteOtpada] = useState<VrstaOtpada[] | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [showSpinner, setShowSpinner] = useState(false);
   const navigate = useNavigate();
   const axiosPrivate = useAxiosPrivate();
+  const { authUser } = useAuth();
+  const vrsteOtpadaService = dataServiceBuilder<VrstaOtpada>(axiosPrivate, authUser, "otpad/vrste-otpada");
+  const proizvodiService = dataServiceBuilder<Omit<JciProizvodi, "id">>(axiosPrivate, authUser, "otpad/proizvodi");
 
   const fetchData = async () => {
     setShowSpinner(true);
-
     try {
-      const response = await axiosPrivate.get(`otpad/vrste-otpada`);
-      setVrsteOtpada(response?.data);
-    } catch (error: any) {
-      toast.error(`UPS!!! Došlo je do greške pri preuzimanju vrsta otpada: ${error} `, {
-        position: toast.POSITION.TOP_CENTER,
-      });
+      const response = await vrsteOtpadaService.getAllResources(null);
+      setVrsteOtpada(response.data.data);
+    } catch (error) {
+      handleCustomErrors(error as string);
     } finally {
       setShowSpinner(false);
     }
@@ -33,6 +40,22 @@ const NewProizvod: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  //Preinitialize ProizvodMasaOtpada with the fetched data and use that data later
+  useEffect(() => {
+    if (!vrsteOtpada) return;
+
+    setProizvod((prev) => ({
+      ...prev,
+      ProizvodMasaOtpada: vrsteOtpada.map((v) => ({
+        masa: 0,
+        VrstaOtpada: {
+          id: v.id,
+          vrstaOtpada: v.vrstaOtpada,
+        },
+      })),
+    }));
+  }, [vrsteOtpada]);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setShowModal(true);
@@ -41,15 +64,15 @@ const NewProizvod: React.FC = () => {
   const handleOK = async () => {
     setShowSpinner(true);
     try {
-      const response = await axiosPrivate.post("otpad/proizvodi", proizvod);
-      toast.success(`Nova vrsta proizvoda ${response?.data?.proizvod} je uspešno dodata!`, {
-        position: toast.POSITION.TOP_CENTER,
+      if (!proizvod) return;
+      const response = await proizvodiService.createResource(proizvod);
+      const newProizvod = response.data.data;
+      toast.success(`Nova vrsta proizvoda ${newProizvod.proizvod} je uspešno dodata!`, {
+        position: "top-center",
       });
       navigate("/otpad/proizvodi");
-    } catch (error: any) {
-      toast.error(`UPS!!! Došlo je do greške: ${error} `, {
-        position: toast.POSITION.TOP_CENTER,
-      });
+    } catch (error) {
+      handleCustomErrors(error as string);
     } finally {
       setShowModal(false);
       setShowSpinner(false);
@@ -58,7 +81,7 @@ const NewProizvod: React.FC = () => {
 
   const handleClose = (e: React.FormEvent) => {
     e.preventDefault();
-    setProizvod(null);
+    setProizvod(newProizvod);
     setShowModal(false);
     setShowSpinner(false);
     navigate("/otpad/proizvodi");
@@ -68,25 +91,20 @@ const NewProizvod: React.FC = () => {
     setShowModal(false);
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setProizvod((prev: any) => ({
+  const handleChangeName = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setProizvod((prev) => ({
       ...prev,
       [e.target.id]: e.target.value,
     }));
   };
 
-  const handleChangeVrsta = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (parseFloat(e.target.value) >= 0) {
-      setProizvod((prev: any) => ({
-        ...prev,
-        vrsteOtpada: {
-          ...prev?.vrsteOtpada,
-          [e.target.id]: parseFloat(e.target.value),
-        },
-      }));
-    } else {
-      e.target.value = "0";
-    }
+  const handleChangeVrstaMasaOtpada = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const id = parseInt(e.target.id);
+    const masa = parseFloat(e.target.value);
+    setProizvod((prev) => ({
+      ...prev,
+      ProizvodMasaOtpada: prev.ProizvodMasaOtpada.map((item) => (item.VrstaOtpada.id === id ? { ...item, masa: Math.max(0, masa) } : item)),
+    }));
   };
 
   return (
@@ -100,30 +118,22 @@ const NewProizvod: React.FC = () => {
             <div>
               <div className="mb-3">
                 <label htmlFor="proizvod">Vrsta proizvoda</label>
-                <input
-                  type="text"
-                  id="proizvod"
-                  aria-describedby="Vrsta proizvoda"
-                  value={proizvod?.proizvod}
-                  onChange={handleChange}
-                  maxLength={190}
-                  required
-                />
+                <input type="text" id="proizvod" placeholder="Usesite naziv proizvoda" aria-describedby="Vrsta proizvoda" value={proizvod?.proizvod} onChange={handleChangeName} maxLength={190} required />
               </div>
 
               <h4 className="my-3">Parametrizacija otpada</h4>
 
               {vrsteOtpada &&
-                vrsteOtpada.map((row: any, index: number) => (
-                  <div key={`vrstaOtpada_${index}`}>
+                vrsteOtpada.map((row) => (
+                  <div key={row.id}>
                     <label>{row?.vrstaOtpada}</label>
                     <input
                       type="number"
                       step="0.001"
-                      id={row?.id}
+                      id={row.id.toString()}
                       aria-describedby="Kolicina"
-                      value={proizvod?.vrstaOtpada?.id}
-                      onChange={handleChangeVrsta}
+                      value={proizvod.ProizvodMasaOtpada.find((item) => item.VrstaOtpada.id === row.id)?.masa ?? ""}
+                      onChange={handleChangeVrstaMasaOtpada}
                       maxLength={190}
                       required
                     />
@@ -133,7 +143,7 @@ const NewProizvod: React.FC = () => {
               <div className="my-4 h-0.5 w-full bg-zinc-400"></div>
 
               <div className="float-end mb-3 mt-3 flex gap-2">
-                <button type="submit" className="button button-gray" onClick={handleClose}>
+                <button type="button" className="button button-gray" onClick={handleClose}>
                   Odustani
                 </button>
                 <button type="submit" className="button button-sky">
@@ -144,14 +154,7 @@ const NewProizvod: React.FC = () => {
           </form>
         </div>
 
-        {showModal && (
-          <Modal
-            onOK={handleOK}
-            onCancel={handleCancel}
-            title="Potvrda dodavanja nove vrste proizvoda"
-            question={`Da li ste sigurni da želite da dodate novu vrstu proizvoda: ${proizvod?.proizvod}?`}
-          />
-        )}
+        {showModal && <Modal onOK={handleOK} onCancel={handleCancel} title="Potvrda dodavanja nove vrste proizvoda" question={`Da li ste sigurni da želite da dodate novu vrstu proizvoda: ${proizvod?.proizvod}?`} />}
         {showSpinner && <Spinner />}
       </div>
     </>
