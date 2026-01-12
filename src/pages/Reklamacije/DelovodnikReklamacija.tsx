@@ -9,6 +9,7 @@ import dataServiceBuilder from "../../services/dataService";
 import HandleFiles from "../../components/HandleFiles";
 import Filters from "../../components/Filters";
 import Search from "../../components/Search";
+import Pagination from "../../components/Pagination";
 
 const DelovodnikReklamacija: React.FC = () => {
   const [tableData, setTableData] = useState<Reklamacija[]>([]);
@@ -52,6 +53,7 @@ const DelovodnikReklamacija: React.FC = () => {
     try {
       const [response, reklamacijeCount] = await Promise.all([reklamacijeService.getAllResources(queryParams), reklamacijeService.getAllResourcesCount(queryParams)]);
       setTableData(response.data.data);
+      console.log(response.data.data);
       setQueryParams({ ...queryParams, count: reklamacijeCount.data.count });
     } catch (error) {
       handleCustomErrors(error as string);
@@ -101,37 +103,27 @@ const DelovodnikReklamacija: React.FC = () => {
             </thead>
 
             <tbody>
-              {tableData.map((row, index) => (
-                <tr key={index} className="border-b bg-white hover:bg-zinc-100! dark:border-zinc-700 dark:bg-zinc-800">
-                  <td key={`broj_reklamacije_${index}`}>
-                    <a
-                      key={`broj_reklamacije_${index}`}
-                      className="font-medium text-sky-500 no-underline  hover:cursor-pointer hover:text-sky-400"
-                      href={`/reklamacije/pregled-reklamacije/${row.brojReklamacije}`}
-                      target="blank"
-                      rel="noreferrer noopener"
-                    >
+              {tableData.map((row) => (
+                <tr key={row.brojReklamacije} className="border-b bg-white hover:bg-zinc-100! dark:border-zinc-700 dark:bg-zinc-800">
+                  <td>
+                    <a className="font-medium text-sky-500 no-underline  hover:cursor-pointer hover:text-sky-400" href={`/reklamacije/pregled-reklamacije/${row.brojReklamacije}`} target="blank" rel="noreferrer noopener">
                       {row.brojReklamacije}
                     </a>
                   </td>
-                  <td key={`zemlja_reklamacije_${index}`}>{row.zemljaReklamacije}</td>
-                  <td
-                    className={`whitespace-nowrap px-6 py-4 font-medium text-zinc-600 dark:text-white ${row.statusReklamacije === "OPRAVDANA" ? `bg-green-300` : row.statusReklamacije === "NEOPRAVDANA" ? `bg-red-300` : `bg-zinc-300`}`}
-                    key={`status_reklamacije_${index}`}
-                  >
+                  <td>{row.zemljaReklamacije}</td>
+                  <td className={`whitespace-nowrap px-6 py-4 font-medium text-zinc-600 dark:text-white ${row.statusReklamacije === "OPRAVDANA" ? `bg-green-300` : row.statusReklamacije === "NEOPRAVDANA" ? `bg-red-300` : `bg-zinc-300`}`}>
                     {row.statusReklamacije}
                   </td>
-                  <td key={`datum_prijema_${index}`}>{row.datumPrijema && format(new Date(row.datumPrijema), "dd.MM.yyyy")}</td>
-                  <td key={`odgovorna_osoba_${index}`}>{row.odgovornaOsoba}</td>
-                  <td key={`ime_prezime_${index}`}>{row.imePrezime}</td>
-                  <td key={`adresa_${index}`}>{row.adresa}</td>
-                  <td key={`telefon_${index}`}>{row.telefon}</td>
-                  <td key={`email_${index}`}>{row.email}</td>
-                  <td key={`datum_kupovine_${index}`}>{row.datumKupovine && format(new Date(row.datumKupovine), "dd.MM.yyyy")}</td>
-                  <td key={`broj_racuna_${index}`}>{row.brojRacuna}</td>
-                  <td key={`naziv_poizvoda_${index}`}>{row.nazivProizvoda}</td>
+                  <td>{row.datumPrijema && format(new Date(row.datumPrijema), "dd.MM.yyyy")}</td>
+                  <td>{row.odgovornaOsoba}</td>
+                  <td>{row.imePrezime}</td>
+                  <td>{row.adresa}</td>
+                  <td>{row.telefon}</td>
+                  <td>{row.email}</td>
+                  <td>{row.datumKupovine && format(new Date(row.datumKupovine), "dd.MM.yyyy")}</td>
+                  <td>{row.brojRacuna}</td>
+                  <td>{row.nazivProizvoda}</td>
                   <td
-                    key={`opis_reklamacije_${index}`}
                     style={{
                       maxWidth: "400px",
                       overflow: "hidden",
@@ -140,9 +132,8 @@ const DelovodnikReklamacija: React.FC = () => {
                   >
                     {row.opisReklamacije}
                   </td>
-                  <td key={`datum_odgovora_${index}`}>{row.datumOdgovora && format(new Date(row.datumOdgovora), "dd.MM.yyyy")}</td>
+                  <td>{row.datumOdgovora && format(new Date(row.datumOdgovora), "dd.MM.yyyy")}</td>
                   <td
-                    key={`opis_odluke_${index}`}
                     style={{
                       maxWidth: "400px",
                       overflow: "hidden",
@@ -152,7 +143,6 @@ const DelovodnikReklamacija: React.FC = () => {
                     {row.opisOdluke}
                   </td>
                   <td
-                    key={`komentar_${index}`}
                     style={{
                       maxWidth: "400px",
                       overflow: "hidden",
@@ -166,18 +156,16 @@ const DelovodnikReklamacija: React.FC = () => {
                       Rad sa datotekama - prikačeno {row.files ? row.files.length : "0"}
                     </button>
                   </td>
-                  <td key={`files_${index}`}>
-                    <input
-                      type="checkbox"
-                      checked={Boolean(row.smsSent)}
-                      disabled
-                      className="h-4 w-4 appearance-auto rounded border-zinc-300 bg-zinc-100 p-2 text-zinc-600 focus:ring-2 focus:ring-zinc-500 dark:border-zinc-600 dark:bg-zinc-700 dark:ring-offset-zinc-800 dark:focus:ring-zinc-600"
-                    />
+                  <td className="px-6 py-4 text-center">
+                    <input type="checkbox" checked={row.smsSent} disabled className="scale-150" />
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
+          <div className="flex justify-end gap-4 mb-4">
+            <Pagination queryParams={queryParams} setQueryParams={setQueryParams} />
+          </div>
         </div>
       ) : (
         !showSpinner && <h4 className="my-4 text-zinc-600 ">Nema reklamacija koje su u prijemu...</h4>

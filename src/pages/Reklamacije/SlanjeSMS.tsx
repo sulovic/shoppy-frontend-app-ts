@@ -122,9 +122,9 @@ const SlanjeSMS: React.FC = () => {
               </thead>
 
               <tbody>
-                {tableData.map((row, index) => (
-                  <tr key={index} className="border-b bg-white hover:bg-zinc-100! dark:border-zinc-700 dark:bg-zinc-800">
-                    <td key={`broj_reklamacije_${index}`}>
+                {tableData.map((row) => (
+                  <tr key={row.brojReklamacije} className="border-b bg-white hover:bg-zinc-100! dark:border-zinc-700 dark:bg-zinc-800">
+                    <td>
                       <a className="font-medium text-sky-500 no-underline  hover:cursor-pointer hover:text-sky-400" href={`/reklamacije/pregled-reklamacije/${row?.brojReklamacije}`} target="blank" rel="noreferrer noopener">
                         {row?.brojReklamacije}
                       </a>
@@ -134,21 +134,15 @@ const SlanjeSMS: React.FC = () => {
                         Pošalji SMS
                       </button>
                     </td>
-                    <td key={`files_${index}`}>
-                      <input
-                        type="checkbox"
-                        checked={Boolean(row?.smsSent)}
-                        disabled
-                        className="h-4 w-4 appearance-auto rounded border-zinc-300 bg-zinc-100 p-2 text-zinc-600 focus:ring-2 focus:ring-zinc-500 dark:border-zinc-600 dark:bg-zinc-700 dark:ring-offset-zinc-800 dark:focus:ring-zinc-600"
-                      />
+                    <td className="px-6 py-4 text-center">
+                      <input type="checkbox" checked={row?.smsSent} disabled className="scale-150" />
                     </td>
-                    <td key={`datum_prijema_${index}`}>{row?.datumPrijema && format(new Date(row?.datumPrijema), "dd.MM.yyyy")}</td>
-                    <td key={`ime_prezime_${index}`}>{row?.imePrezime}</td>
-                    <td key={`naziv_poizvoda_${index}`}>{row?.nazivProizvoda}</td>
-                    <td key={`zemlja_reklamacije_${index}`}>{row?.zemljaReklamacije}</td>
+                    <td>{row?.datumPrijema && format(new Date(row?.datumPrijema), "dd.MM.yyyy")}</td>
+                    <td>{row?.imePrezime}</td>
+                    <td>{row?.nazivProizvoda}</td>
+                    <td>{row?.zemljaReklamacije}</td>
                     <td
                       className={`whitespace-nowrap px-6 py-4 font-medium text-zinc-600 dark:text-white ${row?.statusReklamacije === "OPRAVDANA" ? `bg-green-300` : row?.statusReklamacije === "NEOPRAVDANA" ? `bg-red-300` : `bg-zinc-300`}`}
-                      key={`status_reklamacije_${index}`}
                     >
                       {row?.statusReklamacije}
                     </td>

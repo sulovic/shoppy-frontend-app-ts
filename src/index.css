@@ -39,6 +39,14 @@ input {
   @apply w-full appearance-none rounded border px-3 py-2 leading-tight text-gray-600 dark:text-gray-50 shadow focus:outline-none;
 }
 
+input[type="checkbox"],
+input[type="radio"] {
+  appearance: auto;
+  -webkit-appearance: auto;
+  width: auto;
+  padding: 0;
+}
+
 input[type="file"]::file-selector-button {
   @apply bg-gray-600
       dark:bg-gray-500
