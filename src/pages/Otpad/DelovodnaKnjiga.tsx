@@ -29,7 +29,7 @@ const DelovodnaKnjiga: React.FC = () => {
     zemlja: ["SRBIJA", "CRNA_GORA"],
     operacija: ["UVOZ", "IZVOZ"],
     vrstaOtpada: vrsteOtpada?.map((vrsta) => vrsta.vrstaOtpada) || [],
-    godina: Array.from({ length: 11 }, (_, i) => (new Date().getFullYear() - 7 + i).toString()),
+    godina: Array.from({ length: 10 }, (_, i) => (new Date().getFullYear() - 8 + i).toString()),
   };
   const { authUser } = useAuth();
   const vrsteOtpadaService = dataServiceBuilder<VrstaOtpada>(axiosPrivate, authUser, "otpad/vrste-otpada");

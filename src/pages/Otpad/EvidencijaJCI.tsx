@@ -23,7 +23,7 @@ const EvidencijaJCI: React.FC = () => {
   const filtersOptions: FiltersOptions = {
     zemlja: ["SRBIJA", "CRNA_GORA"],
     operacija: ["UVOZ", "IZVOZ"],
-    godina: Array.from({ length: 11 }, (_, i) => (new Date().getFullYear() - 7 + i).toString()),
+    godina: Array.from({ length: 10 }, (_, i) => (new Date().getFullYear() - 8 + i).toString()),
   };
   const { authUser } = useAuth();
   const navigate = useNavigate();

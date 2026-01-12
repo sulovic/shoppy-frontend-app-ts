@@ -18,10 +18,11 @@ const Administrator: React.FC = () => {
   const { authUser } = useAuth();
   const reklamacijeService = dataServiceBuilder<Reklamacija>(axiosPrivate, authUser, "reklamacije");
 
-  const [queryParams, setQueryParams] = useState<QueryParams>({ filters: { statusReklamacije: "*" }, page: 1, limit: 20, sortOrder: "desc", sortBy: "datumPrijema" });
+  const [queryParams, setQueryParams] = useState<QueryParams>({ filters: { statusReklamacije: "*", zemljaReklamacije: "*", godina: "*" }, page: 1, limit: 20, sortOrder: "desc", sortBy: "datumPrijema" });
   const filtersOptions: FiltersOptions = {
     zemljaReklamacije: ["SRBIJA", "CRNA_GORA"],
     statusReklamacije: ["PRIJEM", "OBRADA", "OPRAVDANA", "NEOPRAVDANA", "DODATNI_ROK"],
+    godina: Array.from({ length: 10 }, (_, i) => (new Date().getFullYear() - 8 + i).toString()),
   };
 
   const fetchData = async () => {
