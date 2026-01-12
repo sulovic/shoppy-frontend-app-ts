@@ -30,7 +30,7 @@ const NewVrstaOtpada: React.FC = () => {
     setShowSpinner(true);
 
     try {
-      const parsedVrstaOtpada = VrstaOtpadaSchema.parse(vrstaOtpada);
+      const parsedVrstaOtpada = VrstaOtpadaSchema.omit({ id: true }).parse(vrstaOtpada);
       const response = await vrsteOtpadaService.createResource(parsedVrstaOtpada);
       const newVrstaOtpada = response.data.data;
       toast.success(`Nova vrsta otpada ${newVrstaOtpada.vrstaOtpada} je uspešno dodata!`, {
@@ -45,8 +45,7 @@ const NewVrstaOtpada: React.FC = () => {
     }
   };
 
-  const handleClose = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleClose = () => {
     setVrstaOtpada(newVrstaOtpada);
     setShowModal(false);
     setShowSpinner(false);
@@ -79,11 +78,11 @@ const NewVrstaOtpada: React.FC = () => {
               </div>
               <div className="my-4 h-0.5 w-full bg-zinc-400"></div>
               <div className="float-end mb-3 mt-3 flex gap-2">
-                <button type="submit" className="button button-gray" onClick={handleClose}>
+                <button type="button" className="button button-gray" onClick={handleClose}>
                   Odustani
                 </button>
-                <button type="submit" className="button button-sky">
-                  Dodaj
+                <button type="submit" className="button button-sky" disabled={showSpinner}>
+                  {showSpinner ? "Dodavanje..." : "Dodaj"}
                 </button>
               </div>
             </div>

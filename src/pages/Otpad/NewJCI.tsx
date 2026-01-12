@@ -70,7 +70,7 @@ const NewJCI: React.FC = () => {
   const handleOK = async () => {
     setShowSpinner(true);
     try {
-      const parsedJci = JciPodaciSchema.parse(jci);
+      const parsedJci = JciPodaciSchema.omit({ id: true }).parse(jci);
       const response = await jciService.createResource(parsedJci);
       const createdJci = response.data.data;
       toast.success(`Nova JCI broj ${createdJci.brojJci} je uspešno dodata!`, {
@@ -85,8 +85,7 @@ const NewJCI: React.FC = () => {
     }
   };
 
-  const handleClose = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleClose = () => {
     setJci(newJci);
     setShowModal(false);
     setShowSpinner(false);
@@ -182,11 +181,11 @@ const NewJCI: React.FC = () => {
             <div className="my-4 h-0.5 w-full bg-zinc-400"></div>
 
             <div className="float-end mb-3 mt-3 flex gap-2">
-              <button type="submit" className="button button-gray" onClick={handleClose}>
+              <button type="button" className="button button-gray" onClick={handleClose}>
                 Odustani
               </button>
-              <button type="submit" className="button button-sky">
-                Dodaj
+              <button type="submit" className="button button-sky" disabled={showSpinner}>
+                {showSpinner ? "Dodavanje..." : "Dodaj"}
               </button>
             </div>
           </form>

@@ -66,7 +66,7 @@ const NewProizvod: React.FC = () => {
     setShowSpinner(true);
     try {
       if (!proizvod) return;
-      const paresedProizvod = JciProizvodiSchema.parse(proizvod);
+      const paresedProizvod = JciProizvodiSchema.omit({ id: true }).parse(proizvod);
       const response = await proizvodiService.createResource(paresedProizvod);
       const newProizvod = response.data.data;
       toast.success(`Nova vrsta proizvoda ${newProizvod.proizvod} je uspešno dodata!`, {
@@ -81,8 +81,7 @@ const NewProizvod: React.FC = () => {
     }
   };
 
-  const handleClose = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleClose = () => {
     setProizvod(newProizvod);
     setShowModal(false);
     setShowSpinner(false);
@@ -148,8 +147,8 @@ const NewProizvod: React.FC = () => {
                 <button type="button" className="button button-gray" onClick={handleClose}>
                   Odustani
                 </button>
-                <button type="submit" className="button button-sky">
-                  Dodaj
+                <button type="submit" className="button button-sky" disabled={showSpinner}>
+                  {showSpinner ? "Dodavanje..." : "Dodaj"}
                 </button>
               </div>
             </div>

@@ -1,4 +1,3 @@
-import React from "react";
 import Navbar from "../../components/Navbar";
 import { Outlet, useLocation } from "react-router-dom";
 import AppCards from "../../components/AppCards";

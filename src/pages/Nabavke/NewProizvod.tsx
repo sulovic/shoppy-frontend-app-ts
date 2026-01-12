@@ -1,21 +1,28 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import Modal from "../../components/Modal";
 import { toast } from "react-toastify";
 import Spinner from "../../components/Spinner";
+import { handleCustomErrors } from "../../services/errorHandler";
+import dataServiceBuilder from "../../services/dataService";
+import { useAuth } from "../../hooks/useAuth";
+import { NabavkeProizvodSchema } from "../../schemas/schemas";
 
 const NewNabavkaProizvod = () => {
-  const [newProizvod, setNewProizvod] = useState({
-    SKU: "",
+  const newProizvod: Omit<NabavkeProizvod, "id"> = {
     naziv: "",
-  });
+    SKU: "",
+  };
+  const [proizvod, setProizvod] = useState<Omit<NabavkeProizvod, "id">>(newProizvod);
   const [showModal, setShowModal] = useState(false);
   const [showSpinner, setShowSpinner] = useState(false);
   const navigate = useNavigate();
   const axiosPrivate = useAxiosPrivate();
+  const { authUser } = useAuth();
+  const proizvodiService = dataServiceBuilder<Omit<NabavkeProizvod, "id">>(axiosPrivate, authUser, "nabavke/proizvodi");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setShowModal(true);
   };
@@ -24,24 +31,23 @@ const NewNabavkaProizvod = () => {
     setShowSpinner(true);
 
     try {
-      const response = await axiosPrivate.post("nabavke/proizvodi", newProizvod);
-      toast.success(`Proizvod ${response?.data?.naziv} je uspešno dodat!`, {
-        position: toast.POSITION.TOP_CENTER,
+      const parsedProizvod = NabavkeProizvodSchema.omit({ id: true }).parse(proizvod);
+      const response = await proizvodiService.createResource(parsedProizvod);
+      const createdProizvod = response.data.data;
+      toast.success(`Proizvod ${createdProizvod.naziv} je uspešno dodat!`, {
+        position: "top-center",
       });
       navigate("/nabavke/proizvodi");
     } catch (error) {
-      toast.error(`UPS!!! Došlo je do greške: ${error} `, {
-        position: toast.POSITION.TOP_CENTER,
-      });
+      handleCustomErrors(error);
     } finally {
       setShowModal(false);
       setShowSpinner(false);
     }
   };
 
-  const handleClose = (e) => {
-    e.preventDefault();
-    setNewProizvod(null);
+  const handleClose = () => {
+    setProizvod(newProizvod);
     setShowModal(false);
     setShowSpinner(false);
     navigate("/nabavke/proizvodi");
@@ -51,8 +57,8 @@ const NewNabavkaProizvod = () => {
     setShowModal(false);
   };
 
-  const handleChange = (e) => {
-    setNewProizvod((prev) => ({
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setProizvod((prev) => ({
       ...prev,
       [e.target.id]: e.target.value,
     }));
@@ -70,48 +76,25 @@ const NewNabavkaProizvod = () => {
             <div>
               <div className="mb-3">
                 <label htmlFor="SKU">SKU</label>
-                <input
-                  type="text"
-                  id="SKU"
-                  aria-describedby="SKU"
-                  value={newProizvod?.SKU}
-                  onChange={handleChange}
-                  maxLength={64}
-                  required
-                />
+                <input type="text" id="SKU" aria-describedby="SKU" value={proizvod?.SKU} onChange={handleChange} maxLength={64} required />
               </div>
               <div className="mb-3">
                 <label htmlFor="naziv">Naziv proizvoda</label>
-                <input
-                  type="text"
-                  id="naziv"
-                  aria-describedby="Naziv proizvoda"
-                  value={newProizvod?.naziv}
-                  onChange={handleChange}
-                  maxLength={64}
-                  required
-                />
+                <input type="text" id="naziv" aria-describedby="Naziv proizvoda" value={proizvod?.naziv} onChange={handleChange} maxLength={64} required />
               </div>
               <div className="float-end mb-3 mt-3 flex gap-2">
-                <button type="submit" className="button button-gray" onClick={handleClose}>
+                <button type="button" className="button button-gray" onClick={handleClose}>
                   Odustani
                 </button>
-                <button type="submit" className="button button-sky">
-                  Dodaj novi proizvod
+                <button type="submit" className="button button-sky" disabled={showSpinner}>
+                  {showSpinner ? "Dodavanje..." : "Dodaj"}
                 </button>
               </div>
             </div>
           </form>
         </div>
 
-        {showModal && (
-          <Modal
-            onOK={handleOK}
-            onCancel={handleCancel}
-            title="Potvrda dodavanja novog proizvoda"
-            question={`Da li ste sigurni da želite da dodate novi proizvod: ${newProizvod?.naziv}`}
-          />
-        )}
+        {showModal && <Modal onOK={handleOK} onCancel={handleCancel} title="Potvrda dodavanja novog proizvoda" question={`Da li ste sigurni da želite da dodate novi proizvod: ${proizvod?.naziv}`} />}
         {showSpinner && <Spinner />}
       </div>
     </>

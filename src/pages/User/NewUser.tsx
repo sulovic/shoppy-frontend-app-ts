@@ -36,7 +36,7 @@ const NewUser = () => {
     setShowSpinner(true);
 
     try {
-      const parsedNewUser = UserDataSchema.parse(newUser);
+      const parsedNewUser = UserDataSchema.omit({ userId: true }).parse(newUser);
       const response = await userService.createResource(parsedNewUser);
       const createdUser = response.data.data;
 
@@ -120,7 +120,7 @@ const NewUser = () => {
                   Odustani
                 </button>
                 <button type="submit" className="button button-sky" disabled={showSpinner}>
-                  Dodaj korisnika
+                  {showSpinner ? "Dodavanje..." : "Dodaj"}
                 </button>
               </div>
             </div>

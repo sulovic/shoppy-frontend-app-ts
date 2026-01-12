@@ -61,7 +61,7 @@ const Proizvodi: React.FC = () => {
         position: "top-center",
       });
     } catch (error) {
-      handleCustomErrors(error as string);
+      handleCustomErrors(error);
     } finally {
       setUpdateData(null);
       setShowModal(false);

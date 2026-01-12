@@ -5,7 +5,7 @@ import { ZodError } from "zod";
 export const handleCustomErrors = (error: ZodError | unknown) => {
   console.log("Custom error received:", error);
   if (error instanceof ZodError) {
-    toast.error(error.issues[0].message, {
+    toast.error(`Greška u validaciji podataka: ${error.issues[0].message}, ${error.issues[0].path}`, {
       position: "top-center",
     });
     return;

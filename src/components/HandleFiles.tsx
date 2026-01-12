@@ -19,7 +19,7 @@ const HandleFiles = <T extends { files?: string[] | null | undefined }>({
   setShowHandleFiles,
   fetchData,
 }: {
-  url: "users" | "reklamacije";
+  url: "users" | "reklamacije" | "nabavke/porudzbine";
   id: number;
   dataWithFiles: T;
   setShowHandleFiles: React.Dispatch<React.SetStateAction<boolean>>;

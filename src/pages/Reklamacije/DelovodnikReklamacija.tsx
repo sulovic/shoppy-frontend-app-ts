@@ -19,7 +19,6 @@ const DelovodnikReklamacija: React.FC = () => {
   const axiosPrivate = useAxiosPrivate();
   const { authUser } = useAuth();
   const reklamacijeService = dataServiceBuilder<Reklamacija>(axiosPrivate, authUser, "reklamacije");
-
   const tableHeaders = [
     "Broj reklamacije",
     "Zemlja reklamacije",

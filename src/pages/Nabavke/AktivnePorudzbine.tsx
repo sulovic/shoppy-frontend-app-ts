@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { format } from "date-fns";
 import Modal from "../../components/Modal";
 import { toast } from "react-toastify";
@@ -8,33 +8,40 @@ import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import HandleFiles from "../../components/HandleFiles";
 import { useNavigate } from "react-router-dom";
 import SadrzajPorudzbine from "./SadrzajPorudzbine";
+import { useAuth } from "../../hooks/useAuth";
+import Filters from "../../components/Filters";
+import Search from "../../components/Search";
+import Pagination from "../../components/Pagination";
+import { handleCustomErrors } from "../../services/errorHandler";
+import dataServiceBuilder from "../../services/dataService";
 
 const AktivnePorudzbine = () => {
-  const [tableData, setTableData] = useState();
-  const [selectedRowDelete, setSelectedRowDelete] = useState(null);
-  const [selectedRowFiles, setSelectedRowFiles] = useState(null);
-  const [selectedRowSadrzaj, setSelectedRowSadrzaj] = useState(null);
+  const [tableData, setTableData] = useState<Porudzbina[] | null>(null);
+  const [selectedRowFiles, setSelectedRowFiles] = useState<Porudzbina | null>(null);
+  const [selectedRowSadrzaj, setSelectedRowSadrzaj] = useState<Porudzbina | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showHandleFiles, setShowHandleFiles] = useState(false);
   const [showSadrzaj, setShowSadrzaj] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showSpinner, setShowSpinner] = useState(false);
-  const [updateData, setUpdateData] = useState(null);
+  const [updateData, setUpdateData] = useState<Porudzbina | null>(null);
   const axiosPrivate = useAxiosPrivate();
   const navigate = useNavigate();
+  const { authUser } = useAuth();
+  const porudzbineService = dataServiceBuilder<Porudzbina>(axiosPrivate, authUser, "nabavke/porudzbine");
+  const [queryParams, setQueryParams] = useState<QueryParams>({ filters: { status: "AKTIVNA", zemlja: "*" }, page: 1, limit: 20, sortOrder: "desc", sortBy: "id" });
+  const filtersOptions: FiltersOptions = {
+    zemlja: ["SRBIJA", "CRNA_GORA"],
+  };
 
   const fetchData = async () => {
     setShowSpinner(true);
 
     try {
-      const response = await axiosPrivate.get(
-        `nabavke/porudzbine?status=NACRT,PROIZVODNJA,TRANZIT&sortBy=id&sortOrder=desc`,
-      );
-      setTableData(response?.data);
+      const response = await porudzbineService.getAllResources(queryParams);
+      setTableData(response?.data.data);
     } catch (error) {
-      toast.error(`UPS!!! Došlo je do greške pri preuzimanju podataka: ${error} `, {
-        position: toast.POSITION.TOP_CENTER,
-      });
+      handleCustomErrors(error);
     } finally {
       setShowSpinner(false);
     }
@@ -42,35 +49,35 @@ const AktivnePorudzbine = () => {
 
   useEffect(() => {
     fetchData();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [queryParams.filters, queryParams.search, queryParams.page, queryParams.limit, queryParams.sortOrder, queryParams.sortBy]);
 
-  const handleEdit = (row) => {
+  const handleEdit = (row: Porudzbina) => {
     setUpdateData(row);
     setShowEditModal(true);
   };
-  const handleDelete = (row) => {
-    setSelectedRowDelete(row);
+  const handleDelete = (row: Porudzbina) => {
+    setUpdateData(row);
     setShowDeleteModal(true);
   };
 
   const handleDeleteOK = async () => {
     setShowSpinner(true);
     try {
-      await axiosPrivate.delete(`nabavke/porudzbine/${selectedRowDelete?.id}`);
+      if (!updateData) return;
+      await axiosPrivate.delete(`nabavke/porudzbine/${updateData?.id}`);
 
-      if (selectedRowDelete?.files.length > 0) {
+      if (updateData?.files && updateData?.files.length > 0) {
         await axiosPrivate.delete(`uploads/nabavke/porudzbine`, {
-          data: { files: JSON.parse(selectedRowDelete?.files) },
+          data: { files: updateData?.files },
         });
       }
 
       toast.success("Porudžebina je uspešno obrisana!", {
-        position: toast.POSITION.TOP_CENTER,
+        position: "top-center",
       });
     } catch (error) {
-      toast.error(`UPS!!! Došlo je do greške: ${error} `, {
-        position: toast.POSITION.TOP_CENTER,
-      });
+      handleCustomErrors(error);
     } finally {
       setShowDeleteModal(false);
       setShowSpinner(false);
@@ -83,12 +90,12 @@ const AktivnePorudzbine = () => {
     setShowSpinner(false);
   };
 
-  const handleShowFiles = (row) => {
+  const handleShowFiles = (row: Porudzbina) => {
     setSelectedRowFiles(row);
     setShowHandleFiles(true);
   };
 
-  const handleShowSadrzaj = (row) => {
+  const handleShowSadrzaj = (row: Porudzbina) => {
     setSelectedRowSadrzaj(row);
     setShowSadrzaj(true);
   };
@@ -97,13 +104,13 @@ const AktivnePorudzbine = () => {
     <>
       <h3 className="my-4 ">Pregled aktivnih porudžebina</h3>
       <div className="mb-4 flex justify-end">
-        <button
-          type="button"
-          className="button button-sky "
-          aria-label="Nova porudžebina"
-          onClick={() => navigate("/nabavke/nova-porudzbina")}>
+        <button type="button" className="button button-sky " aria-label="Nova porudžebina" onClick={() => navigate("/nabavke/nova-porudzbina")}>
           Nova porudžebina
         </button>
+      </div>
+      <div className="mb-4 flex gap-4 justify-end">
+        <Filters filtersOptions={filtersOptions} queryParams={queryParams} setQueryParams={setQueryParams} />
+        <Search queryParams={queryParams} setQueryParams={setQueryParams} />
       </div>
       {tableData ? (
         <div>
@@ -131,9 +138,7 @@ const AktivnePorudzbine = () => {
                   <h5>Špediter:</h5>
                   <p key={`spediter_${index}`}>{row?.spediter}</p>
                   <h5>Datum porudžebine:</h5>
-                  <p key={`datumPorudzbine_${index}`}>
-                    {row?.datumPorudzbine && format(row?.datumPorudzbine, "dd.MM.yyyy")}
-                  </p>
+                  <p key={`datumPorudzbine_${index}`}>{row?.datumPorudzbine && format(row?.datumPorudzbine, "dd.MM.yyyy")}</p>
                   <h5>Datum polaska:</h5>
                   <p key={`datumPolaska_${index}`}>{row?.datumPolaska && format(row?.datumPolaska, "dd.MM.yyyy")}</p>
                   <h5>Datum prijema:</h5>
@@ -150,11 +155,8 @@ const AktivnePorudzbine = () => {
 
               <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4 xl:grid-cols-8">
                 <div className="content-center sm:col-span-2">
-                  <button
-                    key={`datoteke_list_${index}`}
-                    className="button button-sky"
-                    onClick={() => handleShowFiles(row)}>
-                    Rad sa datotekama - prikačeno {row.files ? JSON.parse(row?.files).length : "0"}
+                  <button key={`datoteke_list_${index}`} className="button button-sky" onClick={() => handleShowFiles(row)}>
+                    Rad sa datotekama - prikačeno {row.files ? row?.files.length : "0"}
                   </button>
                 </div>
                 <div className="content-center sm:col-span-2">
@@ -166,22 +168,17 @@ const AktivnePorudzbine = () => {
                 <div className="col-span-2 grid grid-cols-1 content-end items-end gap-2 sm:col-span-4 sm:grid-cols-2">
                   <h5 className="sm:col-span-2">Akcije:</h5>
                   <div className="flex justify-end gap-2 sm:col-span-2">
-                    <button
-                      type="button"
-                      className="button button-sky"
-                      aria-label="Izmeni"
-                      onClick={() => handleEdit(row)}>
+                    <button type="button" className="button button-sky" aria-label="Izmeni" onClick={() => handleEdit(row)}>
                       Izmeni
                     </button>
-                    <button
-                      type="button"
-                      className="button button-red"
-                      aria-label="Obriši"
-                      onClick={() => handleDelete(row)}>
+                    <button type="button" className="button button-red" aria-label="Obriši" onClick={() => handleDelete(row)}>
                       Obriši
                     </button>
                   </div>
                 </div>
+              </div>
+              <div className="flex justify-end gap-4 mb-4">
+                <Pagination queryParams={queryParams} setQueryParams={setQueryParams} />
               </div>
             </div>
           ))}
@@ -189,34 +186,12 @@ const AktivnePorudzbine = () => {
       ) : (
         !showSpinner && <h4 className="my-4 text-zinc-600 ">Nemate aktivne porudžbine...</h4>
       )}
-      {showHandleFiles && (
-        <HandleFiles
-          url="nabavke/porudzbine"
-          id={selectedRowFiles?.id}
-          data={selectedRowFiles}
-          fetchData={fetchData}
-          setShowHandleFiles={setShowHandleFiles}
-        />
-      )}
+      {selectedRowFiles && showHandleFiles && <HandleFiles url="nabavke/porudzbine" id={selectedRowFiles.id} dataWithFiles={selectedRowFiles} fetchData={fetchData} setShowHandleFiles={setShowHandleFiles} />}
       {showSadrzaj && <SadrzajPorudzbine id={selectedRowSadrzaj?.id} setShowSadrzaj={setShowSadrzaj} />}
       {showSpinner && <Spinner />}
-      {showDeleteModal && (
-        <Modal
-          onOK={handleDeleteOK}
-          onCancel={handleDeleteCancel}
-          title="Potvrda brisanja porudžebine"
-          question={`Da li ste sigurni da želite da obrišete porudžebinu: ${selectedRowDelete?.proFaktura}?`}
-        />
-      )}
+      {showDeleteModal && <Modal onOK={handleDeleteOK} onCancel={handleDeleteCancel} title="Potvrda brisanja porudžebine" question={`Da li ste sigurni da želite da obrišete porudžebinu: ${updateData?.id}?`} />}
 
-      {updateData && showEditModal && (
-        <ModalEditPorudzbina
-          setShowEditModal={setShowEditModal}
-          updateData={updateData}
-          setUpdateData={setUpdateData}
-          fetchData={fetchData}
-        />
-      )}
+      {updateData && showEditModal && <ModalEditPorudzbina setShowEditModal={setShowEditModal} updateData={updateData} setUpdateData={setUpdateData} fetchData={fetchData} />}
     </>
   );
 };

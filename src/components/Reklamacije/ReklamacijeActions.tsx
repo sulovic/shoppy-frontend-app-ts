@@ -211,7 +211,7 @@ const ReklamacijeActions = ({ row, fetchData }: { row: Reklamacija; fetchData: (
         <div className="grid grid-cols-2 gap-2">
           {authUser?.superAdmin && (
             <button type="button" className="button button-red self-start" aria-label="Delete" onClick={() => handleDelete(row)}>
-              OBRIŠI
+              Obriši
             </button>
           )}
           <button type="button" className="button button-sky self-start" aria-label="Forward" onClick={() => handleEdit(row)}>

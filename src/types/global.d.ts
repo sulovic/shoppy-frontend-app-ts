@@ -13,6 +13,9 @@ import {
   ProizvodiSchema,
   VrstaOtpadaSchema,
   OtpadProizvodSchema,
+  NabavkeProizvodSchema,
+  NabavkeSadrzajSchema,
+  PorudzbinaSchema,
 } from "../schemas/schemas";
 
 declare global {
@@ -28,6 +31,9 @@ declare global {
   type Proizvodi = z.infer<typeof ProizvodiSchema>;
   type VrstaOtpada = z.infer<typeof VrstaOtpadaSchema>;
   type OtpadProizvod = z.infer<typeof OtpadProizvodSchema>;
+  type NabavkeProizvod = z.infer<typeof NabavkeProizvodSchema>;
+  type NabavkeSadrzaj = z.infer<typeof NabavkeSadrzajSchema>;
+  type Porudzbina = z.infer<typeof PorudzbinaSchema>;
 
   type AppLink = {
     label: string;

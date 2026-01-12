@@ -159,12 +159,12 @@ const ModalEditJCI = ({ row, setShowModalEdit, fetchData }: { row: JciPodaci; se
                     </div>
                     {/* Modal Buttons */}
 
-                    <div className="flex flex-row-reverse gap-2">
-                      <button type="submit" className="button button-sky" aria-describedby="Submit">
-                        Sačuvaj
-                      </button>
+                    <div className="flex justify-end gap-2">
                       <button type="button" className="button button-gray" aria-describedby="Cancel" onClick={handleCancel}>
                         Odustani
+                      </button>
+                      <button type="submit" className="button button-sky" aria-describedby="Submit" disabled={showSpinner}>
+                        {showSpinner ? "Čuvanje..." : "Sačuvaj"}
                       </button>
                     </div>
                   </div>

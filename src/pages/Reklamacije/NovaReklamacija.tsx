@@ -37,8 +37,7 @@ const NovaReklamacija: React.FC = () => {
   const axiosPrivate = useAxiosPrivate();
   const reklamacijeService = dataServiceBuilder<Omit<Reklamacija, "idReklamacije">>(axiosPrivate, authUser, "reklamacije");
 
-  const handleClose = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleClose = () => {
     setNovaReklamacija(praznaReklamacija);
     setShowModal(false);
     setShowSpinner(false);
@@ -54,7 +53,7 @@ const NovaReklamacija: React.FC = () => {
     setShowSpinner(true);
 
     try {
-      const paresedReklamacija = ReklamacijaSchema.parse(novaReklamacija);
+      const paresedReklamacija = ReklamacijaSchema.omit({ idReklamacije: true }).parse(novaReklamacija);
       await reklamacijeService.createResource(paresedReklamacija);
       toast.success(`Reklamacija ${paresedReklamacija?.brojReklamacije} je uspešno sačuvana!`, {
         position: "top-center",
@@ -220,8 +219,8 @@ const NovaReklamacija: React.FC = () => {
           <button type="button" className="button button-gray" onClick={handleClose}>
             Odustani
           </button>
-          <button type="submit" className="button button-sky">
-            Sačuvaj
+          <button type="submit" className="button button-sky" disabled={showSpinner}>
+            {showSpinner ? "Čuvanje..." : "Sačuvaj"}
           </button>
         </div>
       </form>

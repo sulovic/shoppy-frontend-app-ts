@@ -1,7 +1,7 @@
 import type { AxiosInstance } from "axios";
 import priviledges from "../config/dataAccessPriviledges";
 
-const createUploadService = (axiosPrivate: AxiosInstance, authUser: AuthUser | null, path: "reklamacije" | "users") => {
+const createUploadService = (axiosPrivate: AxiosInstance, authUser: AuthUser | null, path: "reklamacije" | "users" | "nabavke/porudzbine") => {
   const uploadFiles = ({
     formData,
   }: {
