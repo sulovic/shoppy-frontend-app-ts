@@ -90,7 +90,7 @@ const Dashboard: React.FC = () => {
         </button>
       </div>
 
-      <div className="mb-4 flex gap-4 justify-end px-3">
+      <div className="mb-4 flex gap-4 justify-end ">
         <Filters filtersOptions={filtersOptions} queryParams={queryParams} setQueryParams={setQueryParams} />
         <Search queryParams={queryParams} setQueryParams={setQueryParams} />
       </div>
@@ -98,7 +98,7 @@ const Dashboard: React.FC = () => {
       {tableData?.length ? (
         <div>
           <div className="relative my-4 overflow-x-auto shadow-lg sm:rounded-lg">
-            <div className="table-responsive p-3">
+            <div className="table-responsive ">
               <table className="w-full text-left text-sm text-zinc-500 rtl:text-right dark:text-zinc-400 ">
                 <thead className=" bg-zinc-200 uppercase text-zinc-600 dark:bg-zinc-700 dark:text-zinc-400">
                   <tr>

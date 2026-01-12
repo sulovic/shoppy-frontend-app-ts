@@ -4,13 +4,21 @@ import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import Modal from "../../components/Modal";
 import { toast } from "react-toastify";
 import Spinner from "../../components/Spinner";
+import { handleCustomErrors } from "../../services/errorHandler";
+import dataServiceBuilder from "../../services/dataService";
+import { useAuth } from "../../hooks/useAuth";
 
 const NewVrstaOtpada: React.FC = () => {
-  const [vrstaOtpada, setVrstaOtpada] = useState<any | null>(null);
+  const newVrstaOtpada: Omit<VrstaOtpada, "id"> = {
+    vrstaOtpada: "",
+  };
+  const [vrstaOtpada, setVrstaOtpada] = useState<Omit<VrstaOtpada, "id">>(newVrstaOtpada);
   const [showModal, setShowModal] = useState(false);
   const [showSpinner, setShowSpinner] = useState(false);
   const navigate = useNavigate();
   const axiosPrivate = useAxiosPrivate();
+  const { authUser } = useAuth();
+  const vrsteOtpadaService = dataServiceBuilder<Omit<VrstaOtpada, "id">>(axiosPrivate, authUser, "otpad/vrste-otpada");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -21,15 +29,14 @@ const NewVrstaOtpada: React.FC = () => {
     setShowSpinner(true);
 
     try {
-      const response = await axiosPrivate.post(`otpad/vrste-otpada`, vrstaOtpada);
-      toast.success(`Nova vrsta otpada ${response?.data?.vrstaOtpada} je uspešno dodata!`, {
-        position: toast.POSITION.TOP_CENTER,
+      const response = await vrsteOtpadaService.createResource(vrstaOtpada);
+      const newVrstaOtpada = response.data.data;
+      toast.success(`Nova vrsta otpada ${newVrstaOtpada.vrstaOtpada} je uspešno dodata!`, {
+        position: "top-center",
       });
       navigate("/otpad/vrste-otpada");
-    } catch (error: any) {
-      toast.error(`UPS!!! Došlo je do greške: ${error} `, {
-        position: toast.POSITION.TOP_CENTER,
-      });
+    } catch (error) {
+      handleCustomErrors(error as string);
     } finally {
       setShowModal(false);
       setShowSpinner(false);
@@ -38,7 +45,7 @@ const NewVrstaOtpada: React.FC = () => {
 
   const handleClose = (e: React.FormEvent) => {
     e.preventDefault();
-    setVrstaOtpada({});
+    setVrstaOtpada(newVrstaOtpada);
     setShowModal(false);
     setShowSpinner(false);
     navigate("/otpad/vrste-otpada");
@@ -49,7 +56,7 @@ const NewVrstaOtpada: React.FC = () => {
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setVrstaOtpada((prev: any) => ({
+    setVrstaOtpada((prev) => ({
       ...prev,
       [e.target.id]: e.target.value,
     }));
@@ -66,15 +73,7 @@ const NewVrstaOtpada: React.FC = () => {
             <div>
               <div className="mb-3">
                 <label htmlFor="vrstaOtpada">Vrsta otpada</label>
-                <input
-                  type="text"
-                  id="vrstaOtpada"
-                  aria-describedby="Vrsta otpada"
-                  value={vrstaOtpada?.vrstaOtpada}
-                  onChange={handleChange}
-                  maxLength={190}
-                  required
-                />
+                <input type="text" id="vrstaOtpada" aria-describedby="Vrsta otpada" value={vrstaOtpada?.vrstaOtpada} onChange={handleChange} maxLength={190} required />
               </div>
               <div className="my-4 h-0.5 w-full bg-zinc-400"></div>
               <div className="float-end mb-3 mt-3 flex gap-2">
@@ -88,14 +87,7 @@ const NewVrstaOtpada: React.FC = () => {
             </div>
           </form>
         </div>
-        {showModal && (
-          <Modal
-            onOK={handleOK}
-            onCancel={handleCancel}
-            title="Potvrda dodavanja nove vrste otpada"
-            question={`Da li ste sigurni da želite da dodate novu vrstu otpada: ${vrstaOtpada?.vrstaOtpada}?`}
-          />
-        )}
+        {showModal && <Modal onOK={handleOK} onCancel={handleCancel} title="Potvrda dodavanja nove vrste otpada" question={`Da li ste sigurni da želite da dodate novu vrstu otpada: ${vrstaOtpada?.vrstaOtpada}?`} />}
         {showSpinner && <Spinner />}
       </div>
     </>

@@ -26,9 +26,9 @@ const Proizvodi: React.FC = () => {
   const fetchData = async () => {
     setShowSpinner(true);
     try {
-      const [response, reklamacijeCount] = await Promise.all([proizvodiService.getAllResources(queryParams), proizvodiService.getAllResourcesCount(queryParams)]);
+      const [response, proizvodiCount] = await Promise.all([proizvodiService.getAllResources(queryParams), proizvodiService.getAllResourcesCount(queryParams)]);
       setTableData(response.data.data);
-      setQueryParams({ ...queryParams, count: reklamacijeCount.data.count });
+      setQueryParams({ ...queryParams, count: proizvodiCount.data.count });
     } catch (error) {
       handleCustomErrors(error as string);
     } finally {
@@ -80,19 +80,19 @@ const Proizvodi: React.FC = () => {
     <>
       <h3 className="mt-4">Proizvodi - Parametrizacija</h3>
 
-      <div className="flex justify-end px-3">
+      <div className="flex justify-end ">
         <button type="button" className="button button-sky " aria-label="Nov proizvod" onClick={() => navigate("/otpad/nov-proizvod")}>
           Dodaj novu vrstu proizvoda
         </button>
       </div>
-      <div className="mt-4 px-3 flex justify-end">
+      <div className="mt-4 flex justify-end">
         <Search queryParams={queryParams} setQueryParams={setQueryParams} />
       </div>
       {tableData?.length ? (
         <>
           <div>
             <div className="relative my-4 overflow-x-auto shadow-lg sm:rounded-lg">
-              <div className="table-responsive p-3">
+              <div className="table-responsive ">
                 <table className="w-full text-left text-sm text-zinc-500 rtl:text-right dark:text-zinc-400 ">
                   <thead className="text-s bg-zinc-200 uppercase text-zinc-600 dark:bg-zinc-700 dark:text-zinc-400">
                     <tr>
@@ -103,9 +103,9 @@ const Proizvodi: React.FC = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {tableData.map((row, index) => (
+                    {tableData.map((row) => (
                       <tr key={row.id} className="border-b bg-white hover:bg-zinc-100! dark:border-zinc-700 dark:bg-zinc-800">
-                        <td>{index + 1}</td>
+                        <td>{row.id}</td>
                         <td>{row?.proizvod}</td>
                         <td className="text-center">
                           <button type="button" className="button button-sky float-left" aria-label="Edit" onClick={() => handleEdit(row)}>
@@ -122,7 +122,7 @@ const Proizvodi: React.FC = () => {
                   </tbody>
                 </table>
               </div>
-              <div className="flex justify-end gap-4 my-4">
+              <div className="flex justify-end gap-4 my-4 ">
                 <Pagination queryParams={queryParams} setQueryParams={setQueryParams} />
               </div>
             </div>

@@ -3,30 +3,35 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import Spinner from "../../components/Spinner";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
-import ModalEditVrstaOtpada from "./ModalEditVrstaOtpada";
+import ModalEditVrstaOtpada from "../../components/Otpad/ModalEditVrstaOtpada";
 import Modal from "../../components/Modal";
 import { useAuth } from "../../hooks/useAuth";
+import { handleCustomErrors } from "../../services/errorHandler";
+import dataServiceBuilder from "../../services/dataService";
+import Search from "../../components/Search";
+import Pagination from "../../components/Pagination";
 
 const VrsteOtpada: React.FC = () => {
-  const [tableData, setTableData] = useState<any[] | null>(null);
+  const [tableData, setTableData] = useState<VrstaOtpada[] | null>(null);
   const [showSpinner, setShowSpinner] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [showModalEdit, setShowModalEdit] = useState(false);
-  const [selectedVrstaOtpada, setSelectedVrstaOtpada] = useState<any>({});
-  const [updateData, setUpdateData] = useState<any | null>(null);
+  const [updateData, setUpdateData] = useState<VrstaOtpada | null>(null);
   const navigate = useNavigate();
   const axiosPrivate = useAxiosPrivate();
   const { authUser } = useAuth();
+  const [queryParams, setQueryParams] = useState<QueryParams>({ page: 1, limit: 20, sortOrder: "desc", sortBy: "id" });
+  const vrsteOtpadaService = dataServiceBuilder<VrstaOtpada>(axiosPrivate, authUser, "otpad/vrste-otpada");
 
   const fetchData = async () => {
     setShowSpinner(true);
     try {
-      const response = await axiosPrivate.get(`otpad/vrste-otpada`);
-      setTableData(response?.data);
-    } catch (error: any) {
-      toast.error(`UPS!!! Došlo je do greške pri preuzimanju podataka: ${error} `, {
-        position: toast.POSITION.TOP_CENTER,
-      });
+      const [response, vrsteOtpdaCount] = await Promise.all([vrsteOtpadaService.getAllResources(queryParams), vrsteOtpadaService.getAllResourcesCount(queryParams)]);
+      console.log(vrsteOtpdaCount);
+      setQueryParams({ ...queryParams, count: vrsteOtpdaCount.data.count });
+      setTableData(response.data.data);
+    } catch (error) {
+      handleCustomErrors(error as string);
     } finally {
       setShowSpinner(false);
     }
@@ -35,30 +40,33 @@ const VrsteOtpada: React.FC = () => {
   useEffect(() => {
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [queryParams.filters, queryParams.search, queryParams.page, queryParams.limit, queryParams.sortOrder, queryParams.sortBy]);
 
-  const handleEdit = (row: any) => {
+  const handleEdit = (row: VrstaOtpada) => {
     setUpdateData(row);
     setShowModalEdit(true);
   };
 
-  const handleDelete = (row: any) => {
-    setSelectedVrstaOtpada(row);
+  const handleDelete = (row: VrstaOtpada) => {
+    setUpdateData(row);
     setShowModal(true);
   };
 
   const handleDeleteOK = async () => {
     setShowSpinner(true);
     try {
-      await axiosPrivate.delete(`otpad/vrste-otpada/${selectedVrstaOtpada?.id}`);
-      toast.success(`Vrsta otpada ${selectedVrstaOtpada?.vrstaOtpada} je uspešno obrisana!`, {
-        position: toast.POSITION.TOP_CENTER,
+      if (!updateData) return;
+      const response = await vrsteOtpadaService.deleteResource(updateData.id);
+      const deletedVrstaOtpada = response.data.data;
+
+      toast.success(`Vrsta otpada ${deletedVrstaOtpada.vrstaOtpada} je uspešno obrisana!`, {
+        position: "top-center",
       });
-    } catch (error: any) {
-      toast.error(`UPS!!! Došlo je do greške: ${error} `, {
-        position: toast.POSITION.TOP_CENTER,
-      });
+    } catch (error) {
+      handleCustomErrors(error as string);
     } finally {
+      setUpdateData(null);
+
       setShowModal(false);
       setShowSpinner(false);
       fetchData();
@@ -66,7 +74,7 @@ const VrsteOtpada: React.FC = () => {
   };
 
   const handleCancel = () => {
-    setSelectedVrstaOtpada({});
+    setUpdateData(null);
     setShowModal(false);
     setShowSpinner(false);
   };
@@ -79,11 +87,14 @@ const VrsteOtpada: React.FC = () => {
           Dodaj novu vrstu otpada
         </button>
       </div>
+      <div className="mt-4 flex justify-end">
+        <Search queryParams={queryParams} setQueryParams={setQueryParams} />
+      </div>
       {tableData?.length ? (
         <>
           <div>
             <div className="relative my-4 overflow-x-auto shadow-lg sm:rounded-lg">
-              <div className="table-responsive p-3">
+              <div className="table-responsive ">
                 <table className="w-full text-left text-sm text-zinc-500 rtl:text-right dark:text-zinc-400 ">
                   <thead className="text-s bg-zinc-200 uppercase text-zinc-600 dark:bg-zinc-700 dark:text-zinc-400">
                     <tr>
@@ -94,16 +105,16 @@ const VrsteOtpada: React.FC = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {tableData.map((row, index) => (
-                      <tr key={index} className="border-b bg-white hover:!bg-zinc-100 dark:border-zinc-700 dark:bg-zinc-800">
-                        <td key={`id${index}`}>{index + 1}</td>
-                        <td key={`vrstaOtpada_${index}`}>{row?.vrstaOtpada}</td>
-                        <td key={`edit_${index}`} className="text-center">
+                    {tableData.map((row) => (
+                      <tr key={row.id} className="border-b bg-white hover:bg-zinc-100! dark:border-zinc-700 dark:bg-zinc-800">
+                        <td>{row?.id}</td>
+                        <td>{row?.vrstaOtpada}</td>
+                        <td className="text-center">
                           <button type="button" className="button button-sky float-left" aria-label="EditUser" onClick={() => handleEdit(row)}>
                             Izmeni
                           </button>
                         </td>
-                        <td key={`delete_${index}`} className="text-center">
+                        <td className="text-center">
                           <button type="button" className="button button-red float-left" aria-label="Delete" disabled={!authUser?.superAdmin} onClick={() => handleDelete(row)}>
                             Obriši
                           </button>
@@ -112,13 +123,15 @@ const VrsteOtpada: React.FC = () => {
                     ))}
                   </tbody>
                 </table>
-
-                {showModal && <Modal onOK={handleDeleteOK} onCancel={handleCancel} title="Potvrda brisanja vrste otpada" question={`Da li ste sigurni da želite da obrišete vrstu otpada: ${selectedVrstaOtpada?.vrstaOtpada}?`} />}
-
-                {updateData && showModalEdit && <ModalEditVrstaOtpada setShowModalEdit={setShowModalEdit} updateData={updateData} setUpdateData={setUpdateData} fetchData={fetchData} />}
+              </div>
+              <div className="flex justify-end gap-4 my-4">
+                <Pagination queryParams={queryParams} setQueryParams={setQueryParams} />
               </div>
             </div>
           </div>
+          {showModal && <Modal onOK={handleDeleteOK} onCancel={handleCancel} title="Potvrda brisanja vrste otpada" question={`Da li ste sigurni da želite da obrišete vrstu otpada: ${updateData?.vrstaOtpada}?`} />}
+
+          {updateData && showModalEdit && <ModalEditVrstaOtpada row={updateData} setShowModalEdit={setShowModalEdit} fetchData={fetchData} />}
         </>
       ) : (
         !showSpinner && <div className="p-3">Nemate podataka o vrstama otpada...</div>

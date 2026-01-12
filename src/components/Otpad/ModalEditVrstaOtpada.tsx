@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Modal from "../Modal";
 import Spinner from "../Spinner";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
@@ -7,32 +7,13 @@ import { useAuth } from "../../hooks/useAuth";
 import { handleCustomErrors } from "../../services/errorHandler";
 import dataServiceBuilder from "../../services/dataService";
 
-const ModalEditProizvod = ({ row, setShowModalEdit, fetchData }: { row: JciProizvodi; setShowModalEdit: React.Dispatch<React.SetStateAction<boolean>>; fetchData: () => void }) => {
-  const [updateData, setUpdateData] = useState<JciProizvodi>(row);
+const ModalEditVrstaOtpdada = ({ row, setShowModalEdit, fetchData }: { row: VrstaOtpada; setShowModalEdit: React.Dispatch<React.SetStateAction<boolean>>; fetchData: () => void }) => {
   const [showSpinner, setShowSpinner] = useState(false);
   const [showSaveModal, setShowSaveModal] = useState(false);
-  const [vrsteOtpada, setVrsteOtpada] = useState<VrstaOtpada[] | null>(null);
+  const [updateData, setUpdateData] = useState<VrstaOtpada>(row);
   const axiosPrivate = useAxiosPrivate();
   const { authUser } = useAuth();
-  const proizvodiService = dataServiceBuilder<JciProizvodi>(axiosPrivate, authUser, "otpad/proizvodi");
   const vrsteOtpadaService = dataServiceBuilder<VrstaOtpada>(axiosPrivate, authUser, "otpad/vrste-otpada");
-
-  const fetchVrsteOtpada = async () => {
-    setShowSpinner(true);
-    try {
-      const response = await vrsteOtpadaService.getAllResources(null);
-      setVrsteOtpada(response.data.data);
-    } catch (error) {
-      handleCustomErrors(error as string);
-    } finally {
-      setShowSpinner(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchVrsteOtpada();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   const handleCancelModal = () => {
     setShowSaveModal(false);
@@ -52,9 +33,9 @@ const ModalEditProizvod = ({ row, setShowModalEdit, fetchData }: { row: JciProiz
   const handleSaveOk = async () => {
     setShowSpinner(true);
     try {
-      const response = await proizvodiService.updateResource(updateData.id, updateData);
-      const updatedProizvod = response.data.data;
-      toast.success(`Proizvod ${updatedProizvod.proizvod} je uspešno sačuvan!`, {
+      const response = await vrsteOtpadaService.updateResource(updateData.id, updateData);
+      const updatedVrstaOtpada = response.data.data;
+      toast.success(`Vrsta otpada ${updatedVrstaOtpada.vrstaOtpada} je uspešno sačuvana!`, {
         position: "top-center",
       });
     } catch (error) {
@@ -67,19 +48,10 @@ const ModalEditProizvod = ({ row, setShowModalEdit, fetchData }: { row: JciProiz
     }
   };
 
-  const handleChangeName = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setUpdateData((prev) => ({
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setUpdateData((prev: VrstaOtpada) => ({
       ...prev,
       [e.target.id]: e.target.value,
-    }));
-  };
-
-  const handleChangeVrstaMasaOtpada = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const id = parseInt(e.target.id);
-    const masa = parseFloat(e.target.value);
-    setUpdateData((prev) => ({
-      ...prev,
-      ProizvodMasaOtpada: prev.ProizvodMasaOtpada.map((item) => (item.VrstaOtpada.id === id ? { ...item, masa: Math.max(0, masa) } : item)),
     }));
   };
 
@@ -93,34 +65,16 @@ const ModalEditProizvod = ({ row, setShowModalEdit, fetchData }: { row: JciProiz
                 <div className="flex min-h-full items-center justify-center p-4 text-center">
                   <div className="relative w-full max-w-2xl transform overflow-hidden rounded-lg bg-white p-4 text-left shadow-xl transition-all sm:p-8 dark:bg-gray-800">
                     <div className="w-full sm:mt-0">
-                      <h4>Izmena proizvoda</h4>
+                      <h4>Izmena vrste otpada</h4>
                       <div className="my-4 h-0.5 bg-zinc-400"></div>
                       <div className="grid grid-cols-1">
-                        <h4>Podaci o proizvodu</h4>
+                        <h4>Podaci o vrsti otpada</h4>
                         <div>
                           <div className="col-lg-12 mb-3">
-                            <label htmlFor="proizvod">Proizvod</label>
-                            <input value={updateData?.proizvod} type="text" id="proizvod" aria-describedby="Proizvod" required onChange={handleChangeName} />
+                            <label htmlFor="vrstaOtpada">Vrsta otpada</label>
+                            <input value={updateData?.vrstaOtpada} type="text" id="vrstaOtpada" aria-describedby="Vrsta otpada" required onChange={handleChange} />
                           </div>
                         </div>
-                        <h4 className="my-3">Parametrizacija otpada</h4>
-
-                        {vrsteOtpada &&
-                          vrsteOtpada.map((row) => (
-                            <div key={row.id}>
-                              <label>{row?.vrstaOtpada}</label>
-                              <input
-                                type="number"
-                                step="0.001"
-                                id={row.id.toString()}
-                                aria-describedby="Kolicina"
-                                value={updateData.ProizvodMasaOtpada.find((item) => item.VrstaOtpada.id === row.id)?.masa ?? ""}
-                                onChange={handleChangeVrstaMasaOtpada}
-                                maxLength={190}
-                                required
-                              />
-                            </div>
-                          ))}
                       </div>
                       <div className="my-4 h-0.5 bg-zinc-400"></div>
                     </div>
@@ -145,4 +99,4 @@ const ModalEditProizvod = ({ row, setShowModalEdit, fetchData }: { row: JciProiz
   );
 };
 
-export default ModalEditProizvod;
+export default ModalEditVrstaOtpdada;
