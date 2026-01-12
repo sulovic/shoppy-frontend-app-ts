@@ -18,7 +18,7 @@ const resolvePrivileges = (service: string) => {
   return current as Record<string, number>;
 };
 
-const createDataService = <T>(axiosPrivate: AxiosInstance, authUser: AuthUser | null, service: "reklamacije" | "users" | "otpad/proizvodi" | "otpad/vrste-otpada" | "otpad/jci") => {
+const createDataService = <T>(axiosPrivate: AxiosInstance, authUser: AuthUser | null, service: "reklamacije" | "users" | "otpad/proizvodi" | "otpad/vrste-otpada" | "otpad/jci" | "otpad/delovodnik") => {
   const servicePriv = resolvePrivileges(service);
 
   const getAllResources = (apiParams: QueryParams | null): Promise<{ data: { data: T[] } }> => {

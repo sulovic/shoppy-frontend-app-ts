@@ -15,7 +15,7 @@ const Filters = ({ filtersOptions, queryParams, setQueryParams }: { filtersOptio
               });
             }}
           >
-            <option value="*">Obriši filter</option>
+            <option value="*">{filterKey.toUpperCase()}</option>
             {filtersOptions[filterKey].map((filterValue) => (
               <option key={filterValue} value={filterValue} aria-label={filterValue}>
                 {filterValue}

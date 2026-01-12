@@ -19,10 +19,11 @@ const EvidencijaJCI: React.FC = () => {
   const [updateData, setUpdateData] = useState<JciPodaci | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [showModalEdit, setShowModalEdit] = useState(false);
-  const [queryParams, setQueryParams] = useState<QueryParams>({ filters: { zemlja: "*", operacija: "*" }, page: 1, limit: 20, sortOrder: "desc", sortBy: "id" });
+  const [queryParams, setQueryParams] = useState<QueryParams>({ filters: { zemlja: "*", operacija: "*", godina: "*" }, page: 1, limit: 20, sortOrder: "desc", sortBy: "id" });
   const filtersOptions: FiltersOptions = {
     zemlja: ["SRBIJA", "CRNA_GORA"],
     operacija: ["UVOZ", "IZVOZ"],
+    godina: Array.from({ length: 11 }, (_, i) => (new Date().getFullYear() - 7 + i).toString()),
   };
   const { authUser } = useAuth();
   const navigate = useNavigate();
