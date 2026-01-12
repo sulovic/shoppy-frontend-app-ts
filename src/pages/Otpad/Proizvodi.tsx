@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import Spinner from "../../components/Spinner";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
-import ModalEditProizvod from "./ModalEditProizvod";
+import ModalEditProizvod from "../../components/Otpad/ModalEditProizvod";
 import Modal from "../../components/Modal";
 import { useAuth } from "../../hooks/useAuth";
 import { handleCustomErrors } from "../../services/errorHandler";
@@ -129,7 +129,7 @@ const Proizvodi: React.FC = () => {
           </div>
           {showModal && <Modal onOK={handleDeleteOK} onCancel={handleCancel} title="Potvrda brisanja vrste proizvoda" question={`Da li ste sigurni da želite da obrišete vrstu proizvoda: ${updateData?.proizvod}?`} />}
 
-          {updateData && showModalEdit && <ModalEditProizvod setShowModalEdit={setShowModalEdit} updateData={updateData} setUpdateData={setUpdateData} fetchData={fetchData} />}
+          {updateData && showModalEdit && <ModalEditProizvod row={updateData} setShowModalEdit={setShowModalEdit} fetchData={fetchData} />}
         </>
       ) : (
         !showSpinner && <div className="p-3">Nema podataka o proizvodima...</div>

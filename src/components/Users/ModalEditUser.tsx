@@ -82,7 +82,7 @@ const ModalEditUser = ({
   return (
     <div className="relative z-10">
       <form onSubmit={handleSave}>
-        <div className="fixed inset-0 bg-gray-900/90 ">
+        <div className="fixed inset-0 bg-gray-900/80 ">
           <div className="fixed inset-0 z-10 overflow-y-auto">
             <div className="flex min-h-full items-center justify-center p-4 text-center">
               <div className="relative w-full max-w-2xl transform overflow-hidden rounded-lg bg-white p-4 text-left shadow-xl transition-all sm:p-8 dark:bg-gray-800">

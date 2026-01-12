@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Modal from "../Modal";
-import ModalEdit from "./ModalEdit";
+import ModalEdit from "./ModalEditReklamacija";
 import Spinner from "../Spinner";
 import { toast } from "react-toastify";
 import reklamacijeServiceBuilder from "../../services/dataService";
