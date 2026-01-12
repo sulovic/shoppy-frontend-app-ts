@@ -6,6 +6,7 @@ import { toast } from "react-toastify";
 import { useAuth } from "../../hooks/useAuth";
 import { handleCustomErrors } from "../../services/errorHandler";
 import dataServiceBuilder from "../../services/dataService";
+import { JciProizvodiSchema } from "../../schemas/schemas";
 
 const ModalEditProizvod = ({ row, setShowModalEdit, fetchData }: { row: JciProizvodi; setShowModalEdit: React.Dispatch<React.SetStateAction<boolean>>; fetchData: () => void }) => {
   const [updateData, setUpdateData] = useState<JciProizvodi>(row);
@@ -52,13 +53,14 @@ const ModalEditProizvod = ({ row, setShowModalEdit, fetchData }: { row: JciProiz
   const handleSaveOk = async () => {
     setShowSpinner(true);
     try {
-      const response = await proizvodiService.updateResource(updateData.id, updateData);
+      const parsedProizvod = JciProizvodiSchema.parse(updateData);
+      const response = await proizvodiService.updateResource(parsedProizvod.id, parsedProizvod);
       const updatedProizvod = response.data.data;
       toast.success(`Proizvod ${updatedProizvod.proizvod} je uspešno sačuvan!`, {
         position: "top-center",
       });
     } catch (error) {
-      handleCustomErrors(error as string);
+      handleCustomErrors(error);
     } finally {
       setShowSaveModal(true);
       setShowModalEdit(false);

@@ -4,37 +4,39 @@ import { toast } from "react-toastify";
 import Spinner from "../../components/Spinner";
 import { useNavigate } from "react-router-dom";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
-import ModalEditJCI from "./ModalEditJCI";
+import ModalEditJCI from "../../components/Otpad/ModalEditJCI";
 import Modal from "../../components/Modal";
 import { useAuth } from "../../hooks/useAuth";
+import Filters from "../../components/Filters";
+import Search from "../../components/Search";
 import Pagination from "../../components/Pagination";
+import { handleCustomErrors } from "../../services/errorHandler";
+import dataServiceBuilder from "../../services/dataService";
 
 const EvidencijaJCI: React.FC = () => {
   const [showSpinner, setShowSpinner] = useState(false);
-  const [tableData, setTableData] = useState<any[] | null>(null);
-  const [filter, setFilter] = useState<any>({ zemlja: "" });
-  const [updateData, setUpdateData] = useState<any | null>(null);
+  const [tableData, setTableData] = useState<JciPodaci[] | null>(null);
+  const [updateData, setUpdateData] = useState<JciPodaci | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [showModalEdit, setShowModalEdit] = useState(false);
-  const [pagination, setPagination] = useState<any>({ limit: 20, page: 1, count: 0 });
+  const [queryParams, setQueryParams] = useState<QueryParams>({ filters: { zemlja: "*", operacija: "*" }, page: 1, limit: 20, sortOrder: "desc", sortBy: "id" });
+  const filtersOptions: FiltersOptions = {
+    zemlja: ["SRBIJA", "CRNA_GORA"],
+    operacija: ["UVOZ", "IZVOZ"],
+  };
   const { authUser } = useAuth();
   const navigate = useNavigate();
   const axiosPrivate = useAxiosPrivate();
+  const jciService = dataServiceBuilder<JciPodaci>(axiosPrivate, authUser, "otpad/jci");
 
   const fetchData = async () => {
     setShowSpinner(true);
     try {
-      const response = await axiosPrivate.get(`otpad/evidencija?sortBy=datum&sortOrder=desc${filter?.zemlja !== "" ? `&zemlja=${filter?.zemlja}` : ""}&page=${pagination.page}&limit=${pagination.limit}`);
-      setTableData(response?.data?.data);
-      setPagination({ ...pagination, count: response?.data?.count });
-      window.scrollTo({
-        top: 0,
-        behavior: "smooth",
-      });
-    } catch (error: any) {
-      toast.error(`UPS!!! Došlo je do greške pri preuzimanju podataka: ${error} `, {
-        position: toast.POSITION.TOP_CENTER,
-      });
+      const [response, jciCount] = await Promise.all([jciService.getAllResources(queryParams), jciService.getAllResourcesCount(queryParams)]);
+      setTableData(response.data.data);
+      setQueryParams({ ...queryParams, count: jciCount.data.count });
+    } catch (error) {
+      handleCustomErrors(error as string);
     } finally {
       setShowSpinner(false);
     }
@@ -43,26 +45,14 @@ const EvidencijaJCI: React.FC = () => {
   useEffect(() => {
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [queryParams.filters, queryParams.search, queryParams.page, queryParams.limit, queryParams.sortOrder, queryParams.sortBy]);
 
-  useEffect(() => {
-    fetchData();
-  }, [filter, pagination.page, pagination.limit]);
-
-  const handleChangeFilter = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setFilter((prev: any) => ({
-      ...prev,
-      [e.target.id]: e.target.value,
-    }));
-    setPagination({ ...pagination, page: 1 });
-  };
-
-  const handleEdit = (row: any) => {
+  const handleEdit = (row: JciPodaci) => {
     setUpdateData(row);
     setShowModalEdit(true);
   };
 
-  const handleDelete = (row: any) => {
+  const handleDelete = (row: JciPodaci) => {
     setUpdateData(row);
     setShowModal(true);
   };
@@ -70,14 +60,14 @@ const EvidencijaJCI: React.FC = () => {
   const handleDeleteOK = async () => {
     setShowSpinner(true);
     try {
-      await axiosPrivate.delete(`otpad/evidencija/${updateData?.id}`);
-      toast.success(`JCI broj ${updateData?.brojJci} je uspešno obrisana!`, {
-        position: toast.POSITION.TOP_CENTER,
+      if (!updateData) return;
+      const response = await jciService.deleteResource(updateData?.id);
+      const deletedJci = response.data.data;
+      toast.success(`JCI broj ${deletedJci.brojJci} je uspešno obrisana!`, {
+        position: "top-center",
       });
-    } catch (error: any) {
-      toast.error(`UPS!!! Došlo je do greške: ${error} `, {
-        position: toast.POSITION.TOP_CENTER,
-      });
+    } catch (error) {
+      handleCustomErrors(error as string);
     } finally {
       setUpdateData(null);
       setShowModal(false);
@@ -97,26 +87,20 @@ const EvidencijaJCI: React.FC = () => {
       <h3 className="my-4">Evidencija unetih JCI</h3>
       <div className="grid grid-cols-1 justify-end gap-4 md:flex">
         <div className="flex justify-end gap-4">
-          <label htmlFor="zemlja">Zemlja: </label>
-          <form>
-            <select id="zemlja" aria-label="Odaberi zemlju" required value={filter?.zemlja} onChange={handleChangeFilter}>
-              <option value="">Sve zemlje</option>
-              <option value="SRBIJA">Srbija</option>
-              <option value="CRNAGORA">Crna Gora</option>
-            </select>
-          </form>
-        </div>
-        <div className="flex justify-end gap-4">
           <button type="button" className="button button-sky" aria-label="Nova JCI" onClick={() => navigate("/otpad/nova-jci")}>
             Dodaj novu JCI
           </button>
         </div>
       </div>
+      <div className="my-4 flex gap-4 justify-end">
+        <Filters filtersOptions={filtersOptions} queryParams={queryParams} setQueryParams={setQueryParams} />
+        <Search queryParams={queryParams} setQueryParams={setQueryParams} />
+      </div>
 
       {tableData?.length
-        ? tableData.map((row: any, index: number) => {
+        ? tableData.map((row: JciPodaci) => {
             return (
-              <div key={index}>
+              <div key={row.id}>
                 <div className="my-3 grid grid-cols-1 rounded-xl bg-gray-100 p-2 shadow-sm dark:bg-gray-800 ">
                   <div className="grid grid-cols-2 gap-2 md:grid-cols-4">
                     <div>
@@ -136,9 +120,9 @@ const EvidencijaJCI: React.FC = () => {
                   </div>
                   <div className="grid grid-cols-2 gap-2 md:grid-cols-4">
                     {row &&
-                      row?.jciProizvodi.map((proizvod: any, indexrs: number) => {
+                      row?.jciProizvodi.map((proizvod, index) => {
                         return (
-                          <div key={`proizvod_${index}_${indexrs}`} className="flex flex-col items-center align-middle">
+                          <div key={`proizvod_${index}`} className="flex flex-col items-center align-middle">
                             <p>{proizvod?.proizvod?.proizvod}</p>
                             <p>{proizvod?.kolicina}</p>
                           </div>
@@ -159,11 +143,14 @@ const EvidencijaJCI: React.FC = () => {
             );
           })
         : !showSpinner && <h4 className="my-4 text-zinc-600 ">Nema evidentiranih JCI...</h4>}
-      {!showSpinner && <Pagination pagination={pagination} setPagination={setPagination} />}
+
+      <div className="flex justify-end gap-4 mb-4">
+        <Pagination queryParams={queryParams} setQueryParams={setQueryParams} />
+      </div>
 
       {showSpinner && <Spinner />}
       {showModal && <Modal onOK={handleDeleteOK} onCancel={handleCancel} title="Potvrda brisanja JCI" question={`Da li ste sigurni da želite da obrišete JCI: ${updateData?.brojJci}?`} />}
-      {updateData && showModalEdit && <ModalEditJCI setShowModalEdit={setShowModalEdit} updateData={updateData} setUpdateData={setUpdateData} fetchData={fetchData} />}
+      {updateData && showModalEdit && <ModalEditJCI row={updateData} setShowModalEdit={setShowModalEdit} fetchData={fetchData} />}
     </div>
   );
 };

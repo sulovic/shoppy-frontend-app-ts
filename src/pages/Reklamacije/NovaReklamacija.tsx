@@ -12,7 +12,7 @@ import { ReklamacijaSchema } from "../../schemas/schemas";
 
 const NovaReklamacija: React.FC = () => {
   const brojReklamacije = Math.floor(Math.random() * 8999999 + 100000).toString() + "-" + (new Date().getMonth() + 1).toString() + "-" + new Date().getFullYear().toString();
-  const praznaReklamacija: Reklamacija = {
+  const praznaReklamacija: Omit<Reklamacija, "idReklamacije"> = {
     imePrezime: "",
     brojReklamacije: brojReklamacije,
     odgovornaOsoba: "Ivan Mitić, Direktor",
@@ -32,10 +32,10 @@ const NovaReklamacija: React.FC = () => {
   const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
   const [showSpinner, setShowSpinner] = useState(false);
-  const [novaReklamacija, setNovaReklamacija] = useState<Reklamacija>(praznaReklamacija);
+  const [novaReklamacija, setNovaReklamacija] = useState<Omit<Reklamacija, "idReklamacije">>(praznaReklamacija);
   const { authUser } = useAuth();
   const axiosPrivate = useAxiosPrivate();
-  const reklamacijeService = dataServiceBuilder(axiosPrivate, authUser, "reklamacije");
+  const reklamacijeService = dataServiceBuilder<Omit<Reklamacija, "idReklamacije">>(axiosPrivate, authUser, "reklamacije");
 
   const handleClose = (e: React.FormEvent) => {
     e.preventDefault();
@@ -62,7 +62,7 @@ const NovaReklamacija: React.FC = () => {
       setNovaReklamacija(praznaReklamacija);
       navigate("/reklamacije/prijem-reklamacija");
     } catch (error) {
-      handleCustomErrors(JSON.stringify(error));
+      handleCustomErrors(error);
     } finally {
       setShowModal(false);
       setShowSpinner(false);

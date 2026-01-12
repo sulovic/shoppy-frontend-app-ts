@@ -8,6 +8,7 @@ import uploadServiceBuilder from "../../services/uploadService";
 import { useAuth } from "../../hooks/useAuth";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import { handleCustomErrors } from "../../services/errorHandler";
+import { ReklamacijaSchema } from "../../schemas/schemas";
 
 type ReklamacijaStatus = "PRIJEM" | "OBRADA" | "OPRAVDANA" | "NEOPRAVDANA" | "DODATNI_ROK";
 
@@ -35,7 +36,7 @@ const ReklamacijeActions = ({ row, fetchData }: { row: Reklamacija; fetchData: (
   const [showSpinner, setShowSpinner] = useState(false);
   const axiosPrivate = useAxiosPrivate();
   const { authUser } = useAuth();
-  const reklamacijeService = reklamacijeServiceBuilder(axiosPrivate, authUser, "reklamacije");
+  const reklamacijeService = reklamacijeServiceBuilder<Reklamacija>(axiosPrivate, authUser, "reklamacije");
   const reklamacijeFilesService = uploadServiceBuilder(axiosPrivate, authUser, "reklamacije");
 
   const reklamacijeActionMatrix: ReklamacijeActionMatrix = {
@@ -136,14 +137,16 @@ const ReklamacijeActions = ({ row, fetchData }: { row: Reklamacija; fetchData: (
       if (deleteData && deleteData.files && deleteData.files.length > 0) {
         reklamacijeFilesService.deleteFiles({ path: "reklamacije", files: deleteData.files });
       }
+      const parsedReklamacija = ReklamacijaSchema.parse(deleteData);
 
-      await reklamacijeService.deleteResource(deleteData.idReklamacije);
+      const response = await reklamacijeService.deleteResource(parsedReklamacija.idReklamacije);
+      const deletedReklamacija = response.data.data;
 
-      toast.success("Reklamacija je uspešno obrisana!", {
+      toast.success(`Reklamacija ${deletedReklamacija.imePrezime} - ${deletedReklamacija?.brojReklamacije} je uspešno obrisana!`, {
         position: "top-center",
       });
     } catch (error) {
-      handleCustomErrors(`Greška, ${error}`);
+      handleCustomErrors(error);
     } finally {
       setDeleteData(null);
       setShowDeleteModal(false);
@@ -177,9 +180,12 @@ const ReklamacijeActions = ({ row, fetchData }: { row: Reklamacija; fetchData: (
 
       const forwardReklamacija: Reklamacija = { ...forwardData, statusReklamacije: selectedAction?.newStatus };
 
-      await reklamacijeService.updateResource(forwardData.idReklamacije, forwardReklamacija);
+      const parsedReklamacija = ReklamacijaSchema.parse(forwardReklamacija);
+      const response = await reklamacijeService.updateResource(parsedReklamacija.idReklamacije, parsedReklamacija);
 
-      toast.success("Reklamacija je uspešno zavedena i poslata na obradu!", {
+      const updatedReklamacija = response.data.data;
+
+      toast.success(`Reklamaciji ${updatedReklamacija.imePrezime} - ${updatedReklamacija?.brojReklamacije} je promenjen status u ${selectedAction?.newStatus} !`, {
         position: "top-center",
       });
     } catch (error) {

@@ -11,6 +11,7 @@ import Modal from "../../components/Modal";
 import { useRef } from "react";
 import { toast } from "react-toastify";
 import { format } from "date-fns";
+import { ReklamacijaSchema } from "../../schemas/schemas";
 
 const SlanjeSMS: React.FC = () => {
   const [tableData, setTableData] = useState<Reklamacija[]>([]);
@@ -72,17 +73,19 @@ const SlanjeSMS: React.FC = () => {
   };
 
   const handleSendSmsOK = async () => {
-    const updatedReklamacija = { ...reklamacija!, brojReklamacije: reklamacija!.brojReklamacije!, sms_sent: true };
+    setShowSpinner(true);
+
+    const smsSentReklamacija = { ...reklamacija!, brojReklamacije: reklamacija!.brojReklamacije!, sms_sent: true };
 
     try {
-      setShowSpinner(true);
-
-      await reklamacijeService.updateResource(Number(updatedReklamacija.brojReklamacije), updatedReklamacija);
-      toast.success(`SMS za reklamaciju ${reklamacija?.imePrezime} - ${reklamacija?.brojReklamacije} je uspešno poslat!`, {
+      const parsedReklamacija = ReklamacijaSchema.parse(smsSentReklamacija);
+      const response = await reklamacijeService.updateResource(Number(parsedReklamacija.brojReklamacije), parsedReklamacija);
+      const updatedReklamacija = response.data.data;
+      toast.success(`SMS za reklamaciju ${updatedReklamacija?.imePrezime} - ${updatedReklamacija?.brojReklamacije} je uspešno poslat!`, {
         position: "top-center",
       });
     } catch (error) {
-      handleCustomErrors(error as string);
+      handleCustomErrors(error);
     } finally {
       setShowSpinner(false);
     }

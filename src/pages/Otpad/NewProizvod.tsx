@@ -7,6 +7,7 @@ import Spinner from "../../components/Spinner";
 import { handleCustomErrors } from "../../services/errorHandler";
 import dataServiceBuilder from "../../services/dataService";
 import { useAuth } from "../../hooks/useAuth";
+import { JciProizvodiSchema } from "../../schemas/schemas";
 
 const NewProizvod: React.FC = () => {
   const newProizvod: Omit<JciProizvodi, "id"> = {
@@ -65,14 +66,15 @@ const NewProizvod: React.FC = () => {
     setShowSpinner(true);
     try {
       if (!proizvod) return;
-      const response = await proizvodiService.createResource(proizvod);
+      const paresedProizvod = JciProizvodiSchema.parse(proizvod);
+      const response = await proizvodiService.createResource(paresedProizvod);
       const newProizvod = response.data.data;
       toast.success(`Nova vrsta proizvoda ${newProizvod.proizvod} je uspešno dodata!`, {
         position: "top-center",
       });
       navigate("/otpad/proizvodi");
     } catch (error) {
-      handleCustomErrors(error as string);
+      handleCustomErrors(error);
     } finally {
       setShowModal(false);
       setShowSpinner(false);

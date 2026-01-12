@@ -7,6 +7,7 @@ import Spinner from "../../components/Spinner";
 import { handleCustomErrors } from "../../services/errorHandler";
 import dataServiceBuilder from "../../services/dataService";
 import { useAuth } from "../../hooks/useAuth";
+import { VrstaOtpadaSchema } from "../../schemas/schemas";
 
 const NewVrstaOtpada: React.FC = () => {
   const newVrstaOtpada: Omit<VrstaOtpada, "id"> = {
@@ -29,14 +30,15 @@ const NewVrstaOtpada: React.FC = () => {
     setShowSpinner(true);
 
     try {
-      const response = await vrsteOtpadaService.createResource(vrstaOtpada);
+      const parsedVrstaOtpada = VrstaOtpadaSchema.parse(vrstaOtpada);
+      const response = await vrsteOtpadaService.createResource(parsedVrstaOtpada);
       const newVrstaOtpada = response.data.data;
       toast.success(`Nova vrsta otpada ${newVrstaOtpada.vrstaOtpada} je uspešno dodata!`, {
         position: "top-center",
       });
       navigate("/otpad/vrste-otpada");
     } catch (error) {
-      handleCustomErrors(error as string);
+      handleCustomErrors(error);
     } finally {
       setShowModal(false);
       setShowSpinner(false);

@@ -39,7 +39,7 @@ const Pagination = ({ queryParams, setQueryParams }: { queryParams: QueryParams;
         </button>
       </div>
       <div>
-        <select value={limit} aria-label="Limit per page" onChange={(e) => setQueryParams((prev) => ({ ...prev, limit: Number(e.target.value) }))}>
+        <select value={limit} aria-label="Limit per page" onChange={(e) => setQueryParams((prev) => ({ ...prev, page: 1, limit: Number(e.target.value) }))}>
           {limitOptions.map((limitOption) => (
             <option key={limitOption} value={limitOption} aria-label={limitOption.toString()}>
               {limitOption}

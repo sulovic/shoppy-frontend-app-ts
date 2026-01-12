@@ -6,6 +6,7 @@ import { toast } from "react-toastify";
 import { useAuth } from "../../hooks/useAuth";
 import { handleCustomErrors } from "../../services/errorHandler";
 import dataServiceBuilder from "../../services/dataService";
+import { VrstaOtpadaSchema } from "../../schemas/schemas";
 
 const ModalEditVrstaOtpdada = ({ row, setShowModalEdit, fetchData }: { row: VrstaOtpada; setShowModalEdit: React.Dispatch<React.SetStateAction<boolean>>; fetchData: () => void }) => {
   const [showSpinner, setShowSpinner] = useState(false);
@@ -33,7 +34,8 @@ const ModalEditVrstaOtpdada = ({ row, setShowModalEdit, fetchData }: { row: Vrst
   const handleSaveOk = async () => {
     setShowSpinner(true);
     try {
-      const response = await vrsteOtpadaService.updateResource(updateData.id, updateData);
+      const parsedVrstaOtpada = VrstaOtpadaSchema.parse(updateData);
+      const response = await vrsteOtpadaService.updateResource(parsedVrstaOtpada.id, parsedVrstaOtpada);
       const updatedVrstaOtpada = response.data.data;
       toast.success(`Vrsta otpada ${updatedVrstaOtpada.vrstaOtpada} je uspešno sačuvana!`, {
         position: "top-center",

@@ -8,6 +8,7 @@ import { useAuth } from "../../hooks/useAuth";
 import dataServiceBuilder from "../../services/dataService";
 import { handleCustomErrors } from "../../services/errorHandler";
 import { USERROLES } from "../../config/appConfig";
+import { UserDataSchema } from "../../schemas/schemas";
 
 const NewUser = () => {
   const blankUser: Omit<UserData, "userId"> = {
@@ -35,13 +36,14 @@ const NewUser = () => {
     setShowSpinner(true);
 
     try {
-      const response = await userService.createResource(newUser);
+      const parsedNewUser = UserDataSchema.parse(newUser);
+      const response = await userService.createResource(parsedNewUser);
       const createdUser = response.data.data;
 
       toast.success(`Korisnik ${createdUser?.email} je uspešno dodat!`, { position: "top-center" });
       navigate("/users/dashboard");
     } catch (error) {
-      handleCustomErrors(error as string);
+      handleCustomErrors(error);
     } finally {
       setShowModal(false);
       setShowSpinner(false);

@@ -6,6 +6,8 @@ import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import Modal from "../Modal";
 import { useAuth } from "../../hooks/useAuth";
 import { handleCustomErrors } from "../../services/errorHandler";
+import reklamacijeServiceBuilder from "../../services/dataService";
+import { ReklamacijaSchema } from "../../schemas/schemas";
 
 const ModalEdit = ({ row, setShowEditModal, fetchData }: { row: Reklamacija; setShowEditModal: React.Dispatch<React.SetStateAction<boolean>>; fetchData: () => void }) => {
   const [updateData, setUpdateData] = useState<Reklamacija>(row);
@@ -13,6 +15,7 @@ const ModalEdit = ({ row, setShowEditModal, fetchData }: { row: Reklamacija; set
   const [showSaveModal, setShowSaveModal] = useState(false);
   const axiosPrivate = useAxiosPrivate();
   const { authUser } = useAuth();
+  const reklamacijeService = reklamacijeServiceBuilder<Reklamacija>(axiosPrivate, authUser, "reklamacije");
 
   const handleCancel = () => {
     setShowEditModal(false);
@@ -32,13 +35,14 @@ const ModalEdit = ({ row, setShowEditModal, fetchData }: { row: Reklamacija; set
   const handleConfirmedSaveModal = async () => {
     setShowSpinner(true);
     try {
-      await axiosPrivate.put(`reklamacije/${updateData.brojReklamacije}`, updateData);
-
-      toast.success(`Reklamacija ${updateData?.brojReklamacije} je uspešno sačuvana!`, {
+      const parsedReklamacija = ReklamacijaSchema.parse(updateData);
+      const response = await reklamacijeService.updateResource(parsedReklamacija.idReklamacije, parsedReklamacija);
+      const updatedReklamacija = response.data.data;
+      toast.success(`Reklamacija  ${updatedReklamacija?.imePrezime} - ${updatedReklamacija?.brojReklamacije} je uspešno sačuvana!`, {
         position: "top-center",
       });
     } catch (error) {
-      handleCustomErrors(error as string);
+      handleCustomErrors(error);
     } finally {
       setShowSaveModal(true);
       setShowEditModal(false);

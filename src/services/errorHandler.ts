@@ -1,8 +1,15 @@
 import { toast } from "react-toastify";
 import type { AxiosError } from "axios";
+import { ZodError } from "zod";
 
-export const handleCustomErrors = (error: string) => {
+export const handleCustomErrors = (error: ZodError | unknown) => {
   console.log("Custom error received:", error);
+  if (error instanceof ZodError) {
+    toast.error(error.issues[0].message, {
+      position: "top-center",
+    });
+    return;
+  }
   if (error === "Unauthorized") {
     toast.error("Nemate ovlašćenja za ovu akciju.", {
       position: "top-center",
