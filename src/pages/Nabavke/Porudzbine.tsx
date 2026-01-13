@@ -29,9 +29,10 @@ const AktivnePorudzbine = () => {
   const navigate = useNavigate();
   const { authUser } = useAuth();
   const porudzbineService = dataServiceBuilder<Porudzbina>(axiosPrivate, authUser, "nabavke/porudzbine");
-  const [queryParams, setQueryParams] = useState<QueryParams>({ filters: { status: "AKTIVNA", zemlja: "*" }, page: 1, limit: 20, sortOrder: "desc", sortBy: "id" });
+  const [queryParams, setQueryParams] = useState<QueryParams>({ filters: { status: "*", zemlja: "*" }, page: 1, limit: 20, sortOrder: "desc", sortBy: "id" });
   const filtersOptions: FiltersOptions = {
     zemlja: ["SRBIJA", "CRNA_GORA"],
+    status: ["NACRT", "PROIZVODNJA", "TRANZIT", "PRIMLJENA"],
   };
 
   const fetchData = async () => {
@@ -171,14 +172,11 @@ const AktivnePorudzbine = () => {
                     <button type="button" className="button button-sky" aria-label="Izmeni" onClick={() => handleEdit(row)}>
                       Izmeni
                     </button>
-                    <button type="button" className="button button-red" aria-label="Obriši" onClick={() => handleDelete(row)}>
+                    <button type="button" className="button button-red" aria-label="Obriši" disabled={!authUser?.superAdmin} onClick={() => handleDelete(row)}>
                       Obriši
                     </button>
                   </div>
                 </div>
-              </div>
-              <div className="flex justify-end gap-4 mb-4">
-                <Pagination queryParams={queryParams} setQueryParams={setQueryParams} />
               </div>
             </div>
           ))}
@@ -186,6 +184,9 @@ const AktivnePorudzbine = () => {
       ) : (
         !showSpinner && <h4 className="my-4 text-zinc-600 ">Nemate aktivne porudžbine...</h4>
       )}
+      <div className="flex justify-end gap-4 mb-4">
+        <Pagination queryParams={queryParams} setQueryParams={setQueryParams} />
+      </div>
       {selectedRowFiles && showHandleFiles && <HandleFiles url="nabavke/porudzbine" id={selectedRowFiles.id} dataWithFiles={selectedRowFiles} fetchData={fetchData} setShowHandleFiles={setShowHandleFiles} />}
       {showSadrzaj && <SadrzajPorudzbine id={selectedRowSadrzaj?.id} setShowSadrzaj={setShowSadrzaj} />}
       {showSpinner && <Spinner />}

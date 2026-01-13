@@ -1,12 +1,16 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import { toast } from "react-toastify";
 import Spinner from "../../components/Spinner";
+import { useAuth } from "../../hooks/useAuth";
+import { handleCustomErrors } from "../../services/errorHandler";
+import dataServiceBuilder from "../../services/dataService";
 
 function Pregled() {
   const [tableData, setTableData] = useState(null);
   const [showSpinner, setShowSpinner] = useState(false);
   const axiosPrivate = useAxiosPrivate();
+  const authUser = useAuth();
 
   const fetchData = async () => {
     setShowSpinner(true);
@@ -31,7 +35,7 @@ function Pregled() {
       setTableData(groupedData);
     } catch (error) {
       toast.error(`UPS!!! Došlo je do greške pri preuzimanju podataka: ${error} `, {
-        position: toast.POSITION.TOP_CENTER,
+        position: "",
       });
     } finally {
       setShowSpinner(false);

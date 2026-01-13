@@ -34,8 +34,7 @@ import Racuni from "../pages/Racuni/Racuni";
 import NabavkeProizvodi from "../pages/Nabavke/Proizvodi";
 import NewNabavkaProizvod from "../pages/Nabavke/NewProizvod";
 import NewPorudzbina from "../pages/Nabavke/NewPorudzbina";
-import AktivnePorudzbine from "../pages/Nabavke/AktivnePorudzbine";
-import SvePorudzbine from "../pages/Nabavke/SvePorudzbine";
+import AktivnePorudzbine from "../pages/Nabavke/Porudzbine.js";
 import StampaResenja from "../pages/Odsustva/StampaResenja";
 import SuperAdmin from "../pages/User/SuperAdmin";
 import Pregled from "../pages/Nabavke/Pregled";
@@ -67,14 +66,11 @@ const SiteRoutes = () => {
         {/* Nabavke Routes */}
         <Route element={<ProtectRoute minRole={Priviledges["/nabavke"]} />}>
           <Route path="nabavke" element={<Nabavke />}>
-            <Route element={<ProtectRoute minRole={Priviledges["/nabavke/aktivne-porudzbine"]} />}>
-              <Route path="aktivne-porudzbine" element={<AktivnePorudzbine />} />
+            <Route element={<ProtectRoute minRole={Priviledges["/nabavke/porudzbine"]} />}>
+              <Route path="porudzbine" element={<AktivnePorudzbine />} />
             </Route>
             <Route element={<ProtectRoute minRole={Priviledges["/nabavke/nova-porudzbina"]} />}>
               <Route path="nova-porudzbina" element={<NewPorudzbina />} />
-            </Route>
-            <Route element={<ProtectRoute minRole={Priviledges["/nabavke/sve-porudzbine"]} />}>
-              <Route path="sve-porudzbine" element={<SvePorudzbine />} />
             </Route>
             <Route element={<ProtectRoute minRole={Priviledges["/nabavke/pregled"]} />}>
               <Route path="pregled" element={<Pregled />} />

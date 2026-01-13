@@ -32,8 +32,7 @@ export const Priviledges = {
   "/nabavke": 3000,
   "/nabavke/proizvodi": 3000,
   "/nabavke/nov-proizvod": 3000,
-  "/nabavke/aktivne-porudzbine": 3000,
-  "/nabavke/sve-porudzbine": 3000,
+  "/nabavke/porudzbine": 3000,
   "/nabavke/nova-porudzbina": 3000,
   "/nabavke/pregled": 3000,
 
@@ -261,19 +260,13 @@ export const OdsustvaLinks = [
 
 export const NabavkeLinks = [
   {
-    label: "Aktivne porudžbine",
+    label: "Porudžbine",
     image: businessImg,
-    desc: "Pregled, dodavanje i izmena aktivnih porudžbina",
-    href: "/nabavke/aktivne-porudzbine",
-    minRole: Priviledges["/nabavke/aktivne-porudzbine"],
+    desc: "Pregled, dodavanje i izmena porudžbina",
+    href: "/nabavke/porudzbine",
+    minRole: Priviledges["/nabavke/porudzbine"],
   },
-  {
-    label: "Sve porudžbine",
-    image: businessImg,
-    desc: "Pregled i izmena svih porudžbina",
-    href: "/nabavke/sve-porudzbine",
-    minRole: Priviledges["/nabavke/sve-porudzbine"],
-  },
+
   {
     label: "Pregled po proizvodima",
     image: businessImg,
