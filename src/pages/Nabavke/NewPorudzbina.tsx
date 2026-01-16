@@ -1,24 +1,32 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import Modal from "../../components/Modal";
 import { toast } from "react-toastify";
 import Spinner from "../../components/Spinner";
 import DatePicker from "react-datepicker";
+import { handleCustomErrors } from "../../services/errorHandler";
+import dataServiceBuilder from "../../services/dataService";
+import { useAuth } from "../../hooks/useAuth";
 
 const NewPorudzbina = () => {
-  const [novaPorudzbina, setNovaPorudzbina] = useState({
+  const [novaPorudzbina, setNovaPorudzbina] = useState<Omit<Porudzbina, "id">>({
     proFaktura: "",
     status: "NACRT",
     dobavljac: "",
-    zemlja: "",
+    zemlja: "SRBIJA",
+    datumPorudzbine: new Date(),
+    sadrzaj: [],
+    komentar: "",
   });
   const [showModal, setShowModal] = useState(false);
   const [showSpinner, setShowSpinner] = useState(false);
   const navigate = useNavigate();
   const axiosPrivate = useAxiosPrivate();
+  const { authUser } = useAuth();
+  const porudzbineService = dataServiceBuilder<Omit<Porudzbina, "id">>(axiosPrivate, authUser, "nabavke/porudzbine");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setShowModal(true);
   };
@@ -27,34 +35,33 @@ const NewPorudzbina = () => {
     setShowSpinner(true);
 
     try {
-      const response = await axiosPrivate.post("nabavke/porudzbine", novaPorudzbina);
-      toast.success(`Nova porudžebina broj ${response?.data?.broj} je uspešno dodata!`, {
-        position: toast.POSITION.TOP_CENTER,
+      const response = await porudzbineService.createResource(novaPorudzbina);
+      const createdPorudzbina = response.data.data;
+      toast.success(`Nova porudžebina broj ${createdPorudzbina.datumPorudzbine} je uspešno dodata!`, {
+        position: "top-center",
       });
-      navigate("/nabavke/aktivne-porudzbine");
+      setNovaPorudzbina(novaPorudzbina);
+      navigate("/nabavke/porudzbine");
     } catch (error) {
-      toast.error(`UPS!!! Došlo je do greške: ${error} `, {
-        position: toast.POSITION.TOP_CENTER,
-      });
+      handleCustomErrors(error);
     } finally {
       setShowModal(false);
       setShowSpinner(false);
     }
   };
 
-  const handleClose = (e) => {
-    e.preventDefault();
-    setNovaPorudzbina(null);
+  const handleClose = () => {
+    setNovaPorudzbina(novaPorudzbina);
     setShowModal(false);
     setShowSpinner(false);
-    navigate("/nabavke/aktivne-porudzbine");
+    navigate("/nabavke/porudzbine");
   };
 
   const handleCancel = () => {
     setShowModal(false);
   };
 
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     setNovaPorudzbina((prev) => ({
       ...prev,
       [e.target.id]: e.target.value,
@@ -75,28 +82,12 @@ const NewPorudzbina = () => {
             <div className="my-3 grid gap-4 md:grid-cols-2 ">
               <div>
                 <label htmlFor="proFaktura">Broj Profakture/Fakture</label>
-                <input
-                  type="text"
-                  id="proFaktura"
-                  aria-describedby="Broj Profakture/Fakture"
-                  value={novaPorudzbina?.proFaktura}
-                  onChange={handleChange}
-                  maxLength={64}
-                  required
-                />
+                <input type="text" id="proFaktura" aria-describedby="Broj Profakture/Fakture" value={novaPorudzbina?.proFaktura} onChange={handleChange} maxLength={64} required />
               </div>
 
               <div>
                 <label htmlFor="dobavljac">Dobavljač</label>
-                <input
-                  type="text"
-                  id="dobavljac"
-                  aria-describedby="Dobavljač"
-                  value={novaPorudzbina?.dobavljac}
-                  onChange={handleChange}
-                  maxLength={64}
-                  required
-                />
+                <input type="text" id="dobavljac" aria-describedby="Dobavljač" value={novaPorudzbina?.dobavljac} onChange={handleChange} maxLength={64} required />
               </div>
 
               <div>
@@ -109,6 +100,7 @@ const NewPorudzbina = () => {
                     autoComplete="off"
                     selected={novaPorudzbina?.datumPorudzbine}
                     onChange={(date) =>
+                      date &&
                       setNovaPorudzbina((prev) => ({
                         ...prev,
                         datumPorudzbine: date,
@@ -122,12 +114,7 @@ const NewPorudzbina = () => {
 
               <div>
                 <label htmlFor="zemlja">Zemlja</label>
-                <select
-                  id="zemlja"
-                  aria-label="Odaberi zemlju"
-                  required
-                  value={novaPorudzbina?.zemlja}
-                  onChange={handleChange}>
+                <select id="zemlja" aria-label="Odaberi zemlju" required value={novaPorudzbina?.zemlja} onChange={handleChange}>
                   <option value="">Odaberite zemlju</option>
                   <option value="SRBIJA">Srbija</option>
                   <option value="CRNAGORA">Crna Gora</option>
@@ -135,22 +122,14 @@ const NewPorudzbina = () => {
               </div>
               <div className="md:col-span-2">
                 <label htmlFor="komentar">Komentar</label>
-                <textarea
-                  type="text"
-                  id="komentar"
-                  aria-describedby="Komentar"
-                  value={novaPorudzbina?.komentar}
-                  onChange={handleChange}
-                  maxLength={512}
-                  required
-                />
+                <textarea id="komentar" aria-describedby="Komentar" value={novaPorudzbina?.komentar || ""} onChange={handleChange} maxLength={512} required />
               </div>
             </div>
 
             <div className="my-4 h-0.5 w-full bg-zinc-400"></div>
 
             <div className="float-end mb-3 mt-3 flex gap-2">
-              <button type="submit" className="button button-gray" onClick={handleClose}>
+              <button type="button" className="button button-gray" onClick={handleClose}>
                 Odustani
               </button>
               <button type="submit" className="button button-sky">
@@ -160,14 +139,7 @@ const NewPorudzbina = () => {
           </form>
         </div>
 
-        {showModal && (
-          <Modal
-            onOK={handleOK}
-            onCancel={handleCancel}
-            title="Potvrda kreiranja nove porudžebine"
-            question={`Da li ste sigurni da želite da kreirate novu porudžebinu broj: ${novaPorudzbina?.proFaktura}?`}
-          />
-        )}
+        {showModal && <Modal onOK={handleOK} onCancel={handleCancel} title="Potvrda kreiranja nove porudžebine" question={`Da li ste sigurni da želite da kreirate novu porudžebinu broj: ${novaPorudzbina?.proFaktura}?`} />}
         {showSpinner && <Spinner />}
       </div>
     </>

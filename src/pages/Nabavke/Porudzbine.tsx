@@ -106,7 +106,7 @@ const AktivnePorudzbine = () => {
       <h3 className="my-4 ">Pregled aktivnih porudžebina</h3>
       <div className="mb-4 flex justify-end">
         <button type="button" className="button button-sky " aria-label="Nova porudžebina" onClick={() => navigate("/nabavke/nova-porudzbina")}>
-          Nova porudžebina
+          Nova porudžbina
         </button>
       </div>
       <div className="mb-4 flex gap-4 justify-end">
@@ -118,7 +118,7 @@ const AktivnePorudzbine = () => {
           {tableData.map((row, index) => (
             <div key={index} className="my-3 grid grid-cols-1 rounded-xl bg-gray-100 p-2 shadow-sm dark:bg-gray-800 ">
               <div>
-                <h5>Podaci o porudžebini:</h5>
+                <h5>Podaci o porudžbini:</h5>
                 <div className="mt-3 grid grid-cols-2 gap-2 md:grid-cols-4 xl:grid-cols-8">
                   <h5>Pro/Faktura:</h5>
                   <p key={`proFaktura_${index}`}>{row?.proFaktura}</p>
@@ -162,7 +162,7 @@ const AktivnePorudzbine = () => {
                 </div>
                 <div className="content-center sm:col-span-2">
                   <button key={`sadrzaj_${index}`} className="button button-sky" onClick={() => handleShowSadrzaj(row)}>
-                    Sadržaj kontejnera
+                    Sadržaj kontejnera - {row.sadrzaj ? row.sadrzaj.reduce((a, b) => a + b.kolicina, 0) : 0} kom
                   </button>
                 </div>
 
@@ -188,7 +188,7 @@ const AktivnePorudzbine = () => {
         <Pagination queryParams={queryParams} setQueryParams={setQueryParams} />
       </div>
       {selectedRowFiles && showHandleFiles && <HandleFiles url="nabavke/porudzbine" id={selectedRowFiles.id} dataWithFiles={selectedRowFiles} fetchData={fetchData} setShowHandleFiles={setShowHandleFiles} />}
-      {showSadrzaj && <SadrzajPorudzbine id={selectedRowSadrzaj?.id} setShowSadrzaj={setShowSadrzaj} />}
+      {selectedRowSadrzaj && showSadrzaj && <SadrzajPorudzbine porudzbina={selectedRowSadrzaj} setShowSadrzaj={setShowSadrzaj} />}
       {showSpinner && <Spinner />}
       {showDeleteModal && <Modal onOK={handleDeleteOK} onCancel={handleDeleteCancel} title="Potvrda brisanja porudžebine" question={`Da li ste sigurni da želite da obrišete porudžebinu: ${updateData?.id}?`} />}
 

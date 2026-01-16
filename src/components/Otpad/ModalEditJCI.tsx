@@ -60,6 +60,7 @@ const ModalEditJCI = ({ row, setShowModalEdit, fetchData }: { row: JciPodaci; se
 
   const handleChangeProizvod = (e: React.ChangeEvent<HTMLInputElement>) => {
     const id = parseInt(e.target.id);
+
     const kolicina = Math.max(0, parseFloat(e.target.value));
 
     setUpdateData((prev) => ({
