@@ -1,13 +1,14 @@
 import { useState, useEffect } from "react";
-import Modal from "../../components/Modal";
-import Spinner from "../../components/Spinner";
+import Modal from "../Modal";
+import Spinner from "../Spinner";
 import { toast } from "react-toastify";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import { handleCustomErrors } from "../../services/errorHandler";
 import { useAuth } from "../../hooks/useAuth";
 import dataServiceBuilder from "../../services/dataService";
+import { PorudzbinaSchema } from "../../schemas/schemas";
 
-const SadrzajPorudzbine = ({ porudzbina, setShowSadrzaj }: { porudzbina: Porudzbina; setShowSadrzaj: React.Dispatch<React.SetStateAction<boolean>> }) => {
+const SadrzajPorudzbine = ({ porudzbina, setShowSadrzaj, fetchData }: { porudzbina: Porudzbina; setShowSadrzaj: React.Dispatch<React.SetStateAction<boolean>>; fetchData: () => void }) => {
   const prazanSadrzaj = {
     proizvod: {
       id: 0,
@@ -21,6 +22,7 @@ const SadrzajPorudzbine = ({ porudzbina, setShowSadrzaj }: { porudzbina: Porudzb
   const [proizvodi, setProizvodi] = useState<NabavkeProizvod[]>([]);
   const [newSadrzaj, setNewSadrzaj] = useState(prazanSadrzaj);
   const [showSpinner, setShowSpinner] = useState(false);
+  const [showSaveModal, setShowSaveModal] = useState(false);
   const axiosPrivate = useAxiosPrivate();
   const { authUser } = useAuth();
   const porudzbineService = dataServiceBuilder<Porudzbina>(axiosPrivate, authUser, "nabavke/porudzbine");
@@ -95,16 +97,27 @@ const SadrzajPorudzbine = ({ porudzbina, setShowSadrzaj }: { porudzbina: Porudzb
     }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    setShowSaveModal(true);
+  };
+
+  const handleSubmitCancel = () => {
+    setShowSaveModal(false);
+  };
+
+  const handleSubmitOk = async () => {
     console.log("Sending ", editedPorudzbina);
     setShowSpinner(true);
     try {
-      const response = await porudzbineService.updateResource(editedPorudzbina.id, editedPorudzbina);
+      const parsedEditedPorudzbina = PorudzbinaSchema.parse(editedPorudzbina);
+      const response = await porudzbineService.updateResource(parsedEditedPorudzbina.id, parsedEditedPorudzbina);
       const savedEditedPorudzbina = response.data.data;
       toast.success(`Porudžbina ${savedEditedPorudzbina?.proFaktura} je uspešno sačuvana! `, {
         position: "top-center",
       });
+      setShowSadrzaj(false);
+      fetchData();
     } catch (error) {
       handleCustomErrors(error);
     } finally {
@@ -114,7 +127,7 @@ const SadrzajPorudzbine = ({ porudzbina, setShowSadrzaj }: { porudzbina: Porudzb
 
   return (
     <div className="relative z-10">
-      <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity">
+      <div className="fixed inset-0 bg-gray-900/80 ">
         <div className="fixed inset-0 z-10 overflow-y-auto">
           <div className="flex min-h-full items-center justify-center p-4 text-center">
             <div className="relative w-full transform overflow-hidden rounded-lg bg-white p-4 text-left shadow-xl transition-all sm:p-8 dark:bg-gray-800">
@@ -203,12 +216,12 @@ const SadrzajPorudzbine = ({ porudzbina, setShowSadrzaj }: { porudzbina: Porudzb
                   {/* Modal Buttons */}
                   <div className="my-4 h-0.5 bg-zinc-400"></div>
 
-                  <div className="flex flex-row-reverse gap-2">
+                  <div className="flex justify-end  gap-2">
                     <button type="button" className="button button-gray" onClick={handleCancel}>
                       Zatvori
                     </button>
-                    <button type="submit" className="button button-sky">
-                      Sacuvaj
+                    <button type="submit" className="button button-sky" aria-describedby="Submit" disabled={showSpinner}>
+                      {showSpinner ? "Čuvanje..." : "Sačuvaj"}
                     </button>
                   </div>
                 </div>
@@ -220,7 +233,7 @@ const SadrzajPorudzbine = ({ porudzbina, setShowSadrzaj }: { porudzbina: Porudzb
 
       {showSpinner && <Spinner />}
 
-      {/* {showDeleteModal && <Modal onOK={handleDeleteOK} onCancel={handleDeleteCancel} title="Potvrda brisanja proizvoda" question={`Da li ste sigurni da želite da obrišete proizvod?`} />} */}
+      {showSaveModal && <Modal onOK={handleSubmitOk} onCancel={handleSubmitCancel} title="Potvrda izmene sadržaja" question={`Da li ste sigurni da želite da sačuvate izmene sadržaja porudžbine ${porudzbina?.proFaktura}?`} />}
     </div>
   );
 };

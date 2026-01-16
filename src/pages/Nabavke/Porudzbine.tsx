@@ -7,7 +7,7 @@ import ModalEditPorudzbina from "./ModalEditPorudzbina";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import HandleFiles from "../../components/HandleFiles";
 import { useNavigate } from "react-router-dom";
-import SadrzajPorudzbine from "./SadrzajPorudzbine";
+import SadrzajPorudzbine from "../../components/Nabavke/SadrzajPorudzbine";
 import { useAuth } from "../../hooks/useAuth";
 import Filters from "../../components/Filters";
 import Search from "../../components/Search";
@@ -188,7 +188,7 @@ const AktivnePorudzbine = () => {
         <Pagination queryParams={queryParams} setQueryParams={setQueryParams} />
       </div>
       {selectedRowFiles && showHandleFiles && <HandleFiles url="nabavke/porudzbine" id={selectedRowFiles.id} dataWithFiles={selectedRowFiles} fetchData={fetchData} setShowHandleFiles={setShowHandleFiles} />}
-      {selectedRowSadrzaj && showSadrzaj && <SadrzajPorudzbine porudzbina={selectedRowSadrzaj} setShowSadrzaj={setShowSadrzaj} />}
+      {selectedRowSadrzaj && showSadrzaj && <SadrzajPorudzbine porudzbina={selectedRowSadrzaj} setShowSadrzaj={setShowSadrzaj} fetchData={fetchData} />}
       {showSpinner && <Spinner />}
       {showDeleteModal && <Modal onOK={handleDeleteOK} onCancel={handleDeleteCancel} title="Potvrda brisanja porudžebine" question={`Da li ste sigurni da želite da obrišete porudžebinu: ${updateData?.id}?`} />}
 

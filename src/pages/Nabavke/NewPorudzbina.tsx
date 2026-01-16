@@ -8,6 +8,7 @@ import DatePicker from "react-datepicker";
 import { handleCustomErrors } from "../../services/errorHandler";
 import dataServiceBuilder from "../../services/dataService";
 import { useAuth } from "../../hooks/useAuth";
+import { PorudzbinaSchema } from "../../schemas/schemas";
 
 const NewPorudzbina = () => {
   const [novaPorudzbina, setNovaPorudzbina] = useState<Omit<Porudzbina, "id">>({
@@ -35,7 +36,8 @@ const NewPorudzbina = () => {
     setShowSpinner(true);
 
     try {
-      const response = await porudzbineService.createResource(novaPorudzbina);
+      const parsedNewPorudzbina = PorudzbinaSchema.omit({ id: true }).parse(novaPorudzbina);
+      const response = await porudzbineService.createResource(parsedNewPorudzbina);
       const createdPorudzbina = response.data.data;
       toast.success(`Nova porudžebina broj ${createdPorudzbina.datumPorudzbine} je uspešno dodata!`, {
         position: "top-center",

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import DatePicker from "react-datepicker";
 import { toast } from "react-toastify";
 import Spinner from "../../components/Spinner";
@@ -76,36 +76,15 @@ const ModalEditPorudzbina = ({ updateData, setUpdateData, setShowEditModal, fetc
                     <div className=" grid gap-4 md:grid-cols-2 ">
                       <div>
                         <label htmlFor="proFaktura">Broj Profakture/Fakture</label>
-                        <input
-                          type="text"
-                          id="proFaktura"
-                          aria-describedby="Broj Profakture/Fakture"
-                          value={updateData?.proFaktura}
-                          onChange={handleChange}
-                          maxLength={64}
-                          required
-                        />
+                        <input type="text" id="proFaktura" aria-describedby="Broj Profakture/Fakture" value={updateData?.proFaktura} onChange={handleChange} maxLength={64} required />
                       </div>
                       <div>
                         <label htmlFor="dobavljac">Dobavljač</label>
-                        <input
-                          type="text"
-                          id="dobavljac"
-                          aria-describedby="Dobavljač"
-                          value={updateData?.dobavljac}
-                          onChange={handleChange}
-                          maxLength={64}
-                          required
-                        />
+                        <input type="text" id="dobavljac" aria-describedby="Dobavljač" value={updateData?.dobavljac} onChange={handleChange} maxLength={64} required />
                       </div>
                       <div>
                         <label htmlFor="zemlja">Zemlja</label>
-                        <select
-                          id="zemlja"
-                          aria-label="Odaberi zemlju"
-                          required
-                          value={updateData?.zemlja}
-                          onChange={handleChange}>
+                        <select id="zemlja" aria-label="Odaberi zemlju" required value={updateData?.zemlja} onChange={handleChange}>
                           <option value="">Odaberite zemlju</option>
                           <option value="SRBIJA">Srbija</option>
                           <option value="CRNAGORA">Crna Gora</option>
@@ -113,12 +92,7 @@ const ModalEditPorudzbina = ({ updateData, setUpdateData, setShowEditModal, fetc
                       </div>
                       <div>
                         <label htmlFor="status">Status</label>
-                        <select
-                          id="status"
-                          aria-label="Odaberi status"
-                          required
-                          value={updateData?.status}
-                          onChange={handleChange}>
+                        <select id="status" aria-label="Odaberi status" required value={updateData?.status} onChange={handleChange}>
                           <option value="">Odaberite status</option>
                           <option value="NACRT">NACRT</option>
                           <option value="PROIZVODNJA">PROIZVODNJA</option>
@@ -134,25 +108,11 @@ const ModalEditPorudzbina = ({ updateData, setUpdateData, setShowEditModal, fetc
                     <div className=" grid gap-4 md:grid-cols-2 ">
                       <div>
                         <label htmlFor="brojKontejnera">Broj kontejnera</label>
-                        <input
-                          type="text"
-                          id="brojKontejnera"
-                          aria-describedby="Broj kontejnera"
-                          value={updateData?.brojKontejnera}
-                          onChange={handleChange}
-                          maxLength={64}
-                        />
+                        <input type="text" id="brojKontejnera" aria-describedby="Broj kontejnera" value={updateData?.brojKontejnera} onChange={handleChange} maxLength={64} />
                       </div>
                       <div>
                         <label htmlFor="spediter">Špediter</label>
-                        <input
-                          type="text"
-                          id="spediter"
-                          aria-describedby="Špediter"
-                          value={updateData?.spediter}
-                          onChange={handleChange}
-                          maxLength={64}
-                        />
+                        <input type="text" id="spediter" aria-describedby="Špediter" value={updateData?.spediter} onChange={handleChange} maxLength={64} />
                       </div>
                       <div>
                         <label htmlFor="datumPorudzbine">Datum porudžbine</label>
@@ -190,7 +150,7 @@ const ModalEditPorudzbina = ({ updateData, setUpdateData, setShowEditModal, fetc
                               }))
                             }
                             dateFormat="dd.MM.yyyy"
-                            required={(updateData.status === "TRANZIT" || "PRIMLJENA")}
+                            required={updateData.status === "TRANZIT" || "PRIMLJENA"}
                           />
                         </div>
                       </div>
@@ -210,7 +170,7 @@ const ModalEditPorudzbina = ({ updateData, setUpdateData, setShowEditModal, fetc
                               }))
                             }
                             dateFormat="dd.MM.yyyy"
-                            required={(updateData.status === "PRIMLJENA")}
+                            required={updateData.status === "PRIMLJENA"}
                           />
                         </div>
                       </div>
@@ -222,14 +182,7 @@ const ModalEditPorudzbina = ({ updateData, setUpdateData, setShowEditModal, fetc
 
                     <div>
                       <label htmlFor="komentar">Komentar</label>
-                      <textarea
-                        id="komentar"
-                        aria-describedby="Komentar"
-                        value={updateData?.komentar}
-                        onChange={handleChange}
-                        maxLength={512}
-                        required
-                      />
+                      <textarea id="komentar" aria-describedby="Komentar" value={updateData?.komentar} onChange={handleChange} maxLength={512} required />
                     </div>
                   </div>
                 </div>
@@ -252,14 +205,7 @@ const ModalEditPorudzbina = ({ updateData, setUpdateData, setShowEditModal, fetc
 
       {showSpinner && <Spinner />}
 
-      {showSaveModal && (
-        <Modal
-          onOK={handleConfirmedSaveModal}
-          onCancel={handleCancelSaveModal}
-          title="Sačuvati izmene"
-          question="Da li ste sigurni da želite da sačuvate izmene koje ste uneli?"
-        />
-      )}
+      {showSaveModal && <Modal onOK={handleConfirmedSaveModal} onCancel={handleCancelSaveModal} title="Sačuvati izmene" question="Da li ste sigurni da želite da sačuvate izmene koje ste uneli?" />}
     </div>
   );
 };
