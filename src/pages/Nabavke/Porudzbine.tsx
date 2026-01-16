@@ -3,7 +3,7 @@ import { format } from "date-fns";
 import Modal from "../../components/Modal";
 import { toast } from "react-toastify";
 import Spinner from "../../components/Spinner";
-import ModalEditPorudzbina from "./ModalEditPorudzbina";
+import ModalEditPorudzbina from "../../components/Nabavke/ModalEditPorudzbina";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import HandleFiles from "../../components/HandleFiles";
 import { useNavigate } from "react-router-dom";
@@ -192,7 +192,7 @@ const AktivnePorudzbine = () => {
       {showSpinner && <Spinner />}
       {showDeleteModal && <Modal onOK={handleDeleteOK} onCancel={handleDeleteCancel} title="Potvrda brisanja porudžebine" question={`Da li ste sigurni da želite da obrišete porudžebinu: ${updateData?.id}?`} />}
 
-      {updateData && showEditModal && <ModalEditPorudzbina setShowEditModal={setShowEditModal} updateData={updateData} setUpdateData={setUpdateData} fetchData={fetchData} />}
+      {updateData && showEditModal && <ModalEditPorudzbina setShowEditModal={setShowEditModal} row={updateData} fetchData={fetchData} />}
     </>
   );
 };

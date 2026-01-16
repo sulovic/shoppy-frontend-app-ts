@@ -76,9 +76,8 @@ const SadrzajPorudzbine = ({ porudzbina, setShowSadrzaj, fetchData }: { porudzbi
   };
 
   const handleAddNewSadrzaj = () => {
-    console.log(newSadrzaj);
     if (!newSadrzaj.proizvod || !newSadrzaj.kolicina || !newSadrzaj.cena) {
-      toast.warn("Popunite sva polja!", {
+      toast.warn("Popunite sva polja: proizvod, količina i cena!", {
         position: "top-center",
       });
       return;
@@ -107,7 +106,6 @@ const SadrzajPorudzbine = ({ porudzbina, setShowSadrzaj, fetchData }: { porudzbi
   };
 
   const handleSubmitOk = async () => {
-    console.log("Sending ", editedPorudzbina);
     setShowSpinner(true);
     try {
       const parsedEditedPorudzbina = PorudzbinaSchema.parse(editedPorudzbina);
@@ -122,6 +120,7 @@ const SadrzajPorudzbine = ({ porudzbina, setShowSadrzaj, fetchData }: { porudzbi
       handleCustomErrors(error);
     } finally {
       setShowSpinner(false);
+      setShowSaveModal(false);
     }
   };
 

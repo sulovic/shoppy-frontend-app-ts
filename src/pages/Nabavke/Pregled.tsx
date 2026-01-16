@@ -1,42 +1,62 @@
 import { useEffect, useState } from "react";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
-import { toast } from "react-toastify";
 import Spinner from "../../components/Spinner";
 import { useAuth } from "../../hooks/useAuth";
 import { handleCustomErrors } from "../../services/errorHandler";
 import dataServiceBuilder from "../../services/dataService";
+import Filters from "../../components/Filters";
 
-function Pregled() {
-  const [tableData, setTableData] = useState(null);
+export type PregledData = {
+  [key: string]: { NACRT: number; PROIZVODNJA: number; TRANZIT: number; PRIMLJENA: number };
+};
+
+const Pregled = () => {
+  const [tableData, setTableData] = useState<PregledData | null>(null);
   const [showSpinner, setShowSpinner] = useState(false);
   const axiosPrivate = useAxiosPrivate();
-  const authUser = useAuth();
+  const { authUser } = useAuth();
+  const porudzbineService = dataServiceBuilder<Porudzbina>(axiosPrivate, authUser, "nabavke/porudzbine");
+  const proizvodiService = dataServiceBuilder<NabavkeProizvod>(axiosPrivate, authUser, "nabavke/proizvodi");
+  const [queryParams, setQueryParams] = useState<QueryParams>({ filters: { status: "*", zemlja: "*" }, page: 1, limit: 20, sortOrder: "desc", sortBy: "id" });
+
+  const filtersOptions: FiltersOptions = {
+    zemlja: ["SRBIJA", "CRNA_GORA"],
+    status: ["NACRT", "PROIZVODNJA", "TRANZIT", "PRIMLJENA"],
+  };
 
   const fetchData = async () => {
     setShowSpinner(true);
 
     try {
-      const response = await axiosPrivate.get(`nabavke/sadrzaj`);
-      const groupedData = response.data.reduce((acc, item) => {
-        const naziv = item.proizvod.naziv;
-        const status = item.porudzbina.status;
+      const [
+        {
+          data: { data: porudzbine },
+        },
+        {
+          data: { data: proizvodi },
+        },
+      ] = await Promise.all([porudzbineService.getAllResources(queryParams), proizvodiService.getAllResources(null)]);
 
-        if (!acc[naziv]) {
-          acc[naziv] = {};
-        }
-
-        if (!acc[naziv][status]) {
-          acc[naziv][status] = 0;
-        }
-
-        acc[naziv][status] += item.kolicina;
-        return acc;
-      }, {} as Record<string, Record<string, number>>);
-      setTableData(groupedData);
-    } catch (error) {
-      toast.error(`UPS!!! Došlo je do greške pri preuzimanju podataka: ${error} `, {
-        position: "",
+      const allPorudzbineData: PregledData = {};
+      proizvodi.forEach((proizvod) => {
+        allPorudzbineData[proizvod.naziv] = {
+          NACRT: 0,
+          PROIZVODNJA: 0,
+          TRANZIT: 0,
+          PRIMLJENA: 0,
+        };
+        porudzbine.forEach((porudzbina) => {
+          porudzbina.sadrzaj.forEach((sadrzaj) => {
+            if (sadrzaj.proizvod.naziv == proizvod.naziv) {
+              allPorudzbineData[proizvod.naziv][porudzbina.status] += sadrzaj.kolicina;
+            }
+          });
+        });
       });
+
+      setTableData(allPorudzbineData);
+    } catch (error) {
+      handleCustomErrors(error);
     } finally {
       setShowSpinner(false);
     }
@@ -44,11 +64,16 @@ function Pregled() {
 
   useEffect(() => {
     fetchData();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [queryParams.filters, queryParams.search, queryParams.page, queryParams.limit, queryParams.sortOrder, queryParams.sortBy]);
 
   return (
     <>
       <h3 className="my-4 ">Pregled porudžbina po proizvodima</h3>
+      <div className="my-4 flex gap-4 justify-end">
+        <Filters filtersOptions={filtersOptions} queryParams={queryParams} setQueryParams={setQueryParams} />
+      </div>
+
       {tableData ? (
         <table className="w-full text-left text-sm text-zinc-500 rtl:text-right dark:text-zinc-400 ">
           <thead className="text-s bg-zinc-200 uppercase text-zinc-600 dark:bg-zinc-700 dark:text-zinc-400">
@@ -70,14 +95,16 @@ function Pregled() {
               const sum = nacrt + proizvodnja + tranzit + primljena;
 
               return (
-                <tr className="text-center" key={key}>
-                  <td className="text-start">{key}</td>
-                  <td>{nacrt}</td>
-                  <td>{proizvodnja}</td>
-                  <td>{tranzit}</td>
-                  <td>{primljena}</td>
-                  <td>{sum}</td>
-                </tr>
+                sum > 0 && (
+                  <tr className="text-center" key={key}>
+                    <td className="text-start">{key}</td>
+                    <td>{nacrt}</td>
+                    <td>{proizvodnja}</td>
+                    <td>{tranzit}</td>
+                    <td>{primljena}</td>
+                    <td>{sum}</td>
+                  </tr>
+                )
               );
             })}
           </tbody>
@@ -88,6 +115,6 @@ function Pregled() {
       {showSpinner && <Spinner />}
     </>
   );
-}
+};
 
 export default Pregled;

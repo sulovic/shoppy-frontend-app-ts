@@ -1,14 +1,21 @@
 import { useState } from "react";
 import DatePicker from "react-datepicker";
 import { toast } from "react-toastify";
-import Spinner from "../../components/Spinner";
+import Spinner from "../Spinner";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
-import Modal from "../../components/Modal";
+import Modal from "../Modal";
+import { handleCustomErrors } from "../../services/errorHandler";
+import dataServiceBuilder from "../../services/dataService";
+import { useAuth } from "../../hooks/useAuth";
+import { PorudzbinaSchema } from "../../schemas/schemas";
 
-const ModalEditPorudzbina = ({ updateData, setUpdateData, setShowEditModal, fetchData }: any) => {
+const ModalEditPorudzbina = ({ row, setShowEditModal, fetchData }: { row: Porudzbina; setShowEditModal: (value: boolean) => void; fetchData: () => void }) => {
+  const [updateData, setUpdateData] = useState(row);
   const [showSpinner, setShowSpinner] = useState(false);
   const [showSaveModal, setShowSaveModal] = useState(false);
   const axiosPrivate = useAxiosPrivate();
+  const { authUser } = useAuth();
+  const porudzbineService = dataServiceBuilder<Porudzbina>(axiosPrivate, authUser, "nabavke/porudzbine");
 
   console.log(updateData);
 
@@ -17,7 +24,7 @@ const ModalEditPorudzbina = ({ updateData, setUpdateData, setShowEditModal, fetc
     setShowSpinner(false);
   };
 
-  const handleSave = (e: any) => {
+  const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
     setShowSaveModal(true);
   };
@@ -30,25 +37,24 @@ const ModalEditPorudzbina = ({ updateData, setUpdateData, setShowEditModal, fetc
   const handleConfirmedSaveModal = async () => {
     setShowSpinner(true);
     try {
-      await axiosPrivate.put(`nabavke/porudzbine/${updateData?.id}`, updateData);
-
-      toast.success(`Porudžebina ${updateData?.proFaktura} je uspešno sačuvana!`, {
-        position: toast.POSITION.TOP_CENTER,
+      const parsedEditPorudzbina = PorudzbinaSchema.parse(updateData);
+      const response = await porudzbineService.updateResource(parsedEditPorudzbina.id, parsedEditPorudzbina);
+      const savedEditedPorudzbina = response.data.data;
+      toast.success(`Porudžebina ${savedEditedPorudzbina.proFaktura} je uspešno sačuvana!`, {
+        position: "top-center",
       });
-    } catch (error) {
-      toast.error(`UPS!!! Došlo je do greške: ${error} `, {
-        position: toast.POSITION.TOP_CENTER,
-      });
-    } finally {
-      setShowSaveModal(true);
       setShowEditModal(false);
-      setShowSpinner(false);
       fetchData();
+    } catch (error) {
+      handleCustomErrors(error);
+    } finally {
+      setShowSaveModal(false);
+      setShowSpinner(false);
     }
   };
 
-  const handleChange = (e: any) => {
-    setUpdateData((prev: any) => ({
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+    setUpdateData((prev) => ({
       ...prev,
       [e.target.id]: e.target.value,
     }));
@@ -87,7 +93,7 @@ const ModalEditPorudzbina = ({ updateData, setUpdateData, setShowEditModal, fetc
                         <select id="zemlja" aria-label="Odaberi zemlju" required value={updateData?.zemlja} onChange={handleChange}>
                           <option value="">Odaberite zemlju</option>
                           <option value="SRBIJA">Srbija</option>
-                          <option value="CRNAGORA">Crna Gora</option>
+                          <option value="CRNA_GORA">Crna Gora</option>
                         </select>
                       </div>
                       <div>
@@ -108,11 +114,19 @@ const ModalEditPorudzbina = ({ updateData, setUpdateData, setShowEditModal, fetc
                     <div className=" grid gap-4 md:grid-cols-2 ">
                       <div>
                         <label htmlFor="brojKontejnera">Broj kontejnera</label>
-                        <input type="text" id="brojKontejnera" aria-describedby="Broj kontejnera" value={updateData?.brojKontejnera} onChange={handleChange} maxLength={64} />
+                        <input type="text" id="brojKontejnera" aria-describedby="Broj kontejnera" value={updateData?.brojKontejnera || ""} onChange={handleChange} maxLength={64} />
                       </div>
                       <div>
                         <label htmlFor="spediter">Špediter</label>
-                        <input type="text" id="spediter" aria-describedby="Špediter" value={updateData?.spediter} onChange={handleChange} maxLength={64} />
+                        <input
+                          type="text"
+                          id="spediter"
+                          aria-describedby="Špediter"
+                          value={updateData?.spediter || ""}
+                          onChange={handleChange}
+                          maxLength={64}
+                          required={updateData.status === "TRANZIT" || updateData.status === "PRIMLJENA"}
+                        />
                       </div>
                       <div>
                         <label htmlFor="datumPorudzbine">Datum porudžbine</label>
@@ -123,8 +137,9 @@ const ModalEditPorudzbina = ({ updateData, setUpdateData, setShowEditModal, fetc
                             aria-describedby="Datum porudžbine"
                             autoComplete="off"
                             selected={updateData?.datumPorudzbine && new Date(updateData?.datumPorudzbine)}
-                            onChange={(date: any) =>
-                              setUpdateData((prev: any) => ({
+                            onChange={(date) =>
+                              date &&
+                              setUpdateData((prev) => ({
                                 ...prev,
                                 datumPorudzbine: date,
                               }))
@@ -143,14 +158,15 @@ const ModalEditPorudzbina = ({ updateData, setUpdateData, setShowEditModal, fetc
                             aria-describedby="Datum polaska"
                             autoComplete="off"
                             selected={updateData?.datumPolaska && new Date(updateData?.datumPolaska)}
-                            onChange={(date: any) =>
-                              setUpdateData((prev: any) => ({
+                            onChange={(date) =>
+                              date &&
+                              setUpdateData((prev) => ({
                                 ...prev,
                                 datumPolaska: date,
                               }))
                             }
                             dateFormat="dd.MM.yyyy"
-                            required={updateData.status === "TRANZIT" || "PRIMLJENA"}
+                            required={updateData.status === "TRANZIT" || updateData.status === "PRIMLJENA"}
                           />
                         </div>
                       </div>
@@ -163,8 +179,9 @@ const ModalEditPorudzbina = ({ updateData, setUpdateData, setShowEditModal, fetc
                             aria-describedby="Datum prijema"
                             autoComplete="off"
                             selected={updateData?.datumPrijema && new Date(updateData?.datumPrijema)}
-                            onChange={(date: any) =>
-                              setUpdateData((prev: any) => ({
+                            onChange={(date) =>
+                              date &&
+                              setUpdateData((prev) => ({
                                 ...prev,
                                 datumPrijema: date,
                               }))
@@ -182,7 +199,7 @@ const ModalEditPorudzbina = ({ updateData, setUpdateData, setShowEditModal, fetc
 
                     <div>
                       <label htmlFor="komentar">Komentar</label>
-                      <textarea id="komentar" aria-describedby="Komentar" value={updateData?.komentar} onChange={handleChange} maxLength={512} required />
+                      <textarea id="komentar" aria-describedby="Komentar" value={updateData?.komentar || ""} onChange={handleChange} maxLength={512} required />
                     </div>
                   </div>
                 </div>

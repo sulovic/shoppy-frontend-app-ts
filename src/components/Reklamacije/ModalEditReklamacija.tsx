@@ -41,13 +41,13 @@ const ModalEdit = ({ row, setShowEditModal, fetchData }: { row: Reklamacija; set
       toast.success(`Reklamacija  ${updatedReklamacija?.imePrezime} - ${updatedReklamacija?.brojReklamacije} je uspešno sačuvana!`, {
         position: "top-center",
       });
+      setShowEditModal(false);
+      fetchData();
     } catch (error) {
       handleCustomErrors(error);
     } finally {
       setShowSaveModal(true);
-      setShowEditModal(false);
       setShowSpinner(false);
-      fetchData();
     }
   };
 

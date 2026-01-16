@@ -41,13 +41,13 @@ const ModalEditJCI = ({ row, setShowModalEdit, fetchData }: { row: JciPodaci; se
       toast.success(`JCI broj ${updatedJci.brojJci} je uspešno sačuvana!`, {
         position: "top-center",
       });
+      setShowModalEdit(false);
+      fetchData();
     } catch (error) {
       handleCustomErrors(error);
     } finally {
       setShowSaveModal(true);
-      setShowModalEdit(false);
       setShowSpinner(false);
-      fetchData();
     }
   };
 

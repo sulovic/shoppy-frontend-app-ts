@@ -46,13 +46,13 @@ const ModalEditUser = ({
       const response = await userService.updateResource(selectedUser.userId, selectedUser);
       const updatedUser = response.data.data;
       toast.success(`Korisnik ${updatedUser?.firstName} ${updatedUser?.lastName} - ${updatedUser?.email} je uspešno sačuvan!`, { position: "top-center" });
+      setShowModalEditUser(false);
+      fetchData();
     } catch (error) {
       handleCustomErrors(error as string);
     } finally {
       setShowSaveModal(false);
-      setShowModalEditUser(false);
       setShowSpinner(false);
-      fetchData();
     }
   };
 

@@ -40,13 +40,13 @@ const ModalEditVrstaOtpdada = ({ row, setShowModalEdit, fetchData }: { row: Vrst
       toast.success(`Vrsta otpada ${updatedVrstaOtpada.vrstaOtpada} je uspešno sačuvana!`, {
         position: "top-center",
       });
+      setShowModalEdit(false);
+      fetchData();
     } catch (error) {
       handleCustomErrors(error as string);
     } finally {
       setShowSaveModal(true);
-      setShowModalEdit(false);
       setShowSpinner(false);
-      fetchData();
     }
   };
 

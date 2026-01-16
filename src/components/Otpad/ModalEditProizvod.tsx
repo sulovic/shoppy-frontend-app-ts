@@ -59,13 +59,13 @@ const ModalEditProizvod = ({ row, setShowModalEdit, fetchData }: { row: JciProiz
       toast.success(`Proizvod ${updatedProizvod.proizvod} je uspešno sačuvan!`, {
         position: "top-center",
       });
+      setShowModalEdit(false);
+      fetchData();
     } catch (error) {
       handleCustomErrors(error);
     } finally {
       setShowSaveModal(true);
-      setShowModalEdit(false);
       setShowSpinner(false);
-      fetchData();
     }
   };
 

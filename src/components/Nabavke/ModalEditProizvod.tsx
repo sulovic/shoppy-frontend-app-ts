@@ -3,7 +3,6 @@ import Modal from "../Modal";
 import Spinner from "../Spinner";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 import { handleCustomErrors } from "../../services/errorHandler";
 import dataServiceBuilder from "../../services/dataService";
@@ -13,7 +12,6 @@ const ModalEditProizvod = ({ row, setShowModalEdit, fetchData }: { row: NabavkeP
   const [updateData, setUpdateData] = useState<NabavkeProizvod>(row);
   const [showSpinner, setShowSpinner] = useState(false);
   const [showSaveModal, setShowSaveModal] = useState(false);
-  const navigate = useNavigate();
   const axiosPrivate = useAxiosPrivate();
   const { authUser } = useAuth();
   const proizvodiService = dataServiceBuilder<NabavkeProizvod>(axiosPrivate, authUser, "nabavke/proizvodi");
@@ -42,14 +40,13 @@ const ModalEditProizvod = ({ row, setShowModalEdit, fetchData }: { row: NabavkeP
       toast.success(`Proizvod ${updatedProizvod?.naziv} je uspešno sačuvan!`, {
         position: "top-center",
       });
-      navigate("/nabavke/proizvodi");
+      setShowModalEdit(false);
+      fetchData();
     } catch (error) {
       handleCustomErrors(error);
     } finally {
       setShowSaveModal(true);
-      setShowModalEdit(false);
       setShowSpinner(false);
-      fetchData();
     }
   };
 
