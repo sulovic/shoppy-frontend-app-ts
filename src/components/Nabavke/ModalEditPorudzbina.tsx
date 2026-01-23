@@ -17,8 +17,6 @@ const ModalEditPorudzbina = ({ row, setShowEditModal, fetchData }: { row: Porudz
   const { authUser } = useAuth();
   const porudzbineService = dataServiceBuilder<Porudzbina>(axiosPrivate, authUser, "nabavke/porudzbine");
 
-  console.log(updateData);
-
   const handleCancel = () => {
     setShowEditModal(false);
     setShowSpinner(false);

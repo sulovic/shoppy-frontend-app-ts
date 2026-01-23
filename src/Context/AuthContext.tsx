@@ -77,9 +77,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       const newAccessToken = await ApiRefreshConnector();
       processAccessToken(newAccessToken);
-    } catch (error) {
-      handleCustomErrors(error);
-      setTimeout(() => navigate("/login"), 2000);
+    } catch {
+      navigate("/login");
     }
   };
 

@@ -10,7 +10,6 @@ const ProtectRoute = ({ minRole = 5000 }: { minRole: number }) => {
 
   useEffect(() => {
     if (!authUser || authUser.roleId <= minRole) {
-      console.log("Here");
       toast.warning("PROTCTED ROUTE: UPS!!! Izgleda da niste autorizovani da posetite ovu lokaciju!", { position: "top-center", autoClose: 3000 });
 
       navigate("/login", { replace: true });

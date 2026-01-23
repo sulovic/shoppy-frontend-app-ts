@@ -53,7 +53,6 @@ const DelovodnikReklamacija: React.FC = () => {
     try {
       const [response, reklamacijeCount] = await Promise.all([reklamacijeService.getAllResources(queryParams), reklamacijeService.getAllResourcesCount(queryParams)]);
       setTableData(response.data.data);
-      console.log(response.data.data);
       setQueryParams({ ...queryParams, count: reklamacijeCount.data.count });
     } catch (error) {
       handleCustomErrors(error as string);

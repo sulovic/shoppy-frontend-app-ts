@@ -1,33 +1,39 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useGoogleLogin } from "@react-oauth/google";
 import { useAuth } from "../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
+import { handleCustomErrors } from "../services/errorHandler";
 
-const Login: React.FC = () => {
+const Login = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const { authUser, handleGoogleLogin, handlePasswordLogin } = useAuth();
   const navigate = useNavigate();
 
+  //redirect to home if user is logged
   useEffect(() => {
     if (authUser) {
       navigate("/");
     }
-    // eslint-disable-next-line
-  }, [authUser]);
+  }, [authUser, navigate]);
 
   const handleLoginWithGoogle = useGoogleLogin({
     flow: "auth-code",
     redirect_uri: import.meta.env.VITE_APP_BASE_URL,
     onSuccess: (googleCode) => handleGoogleLogin(googleCode),
-    onError: () => console.log("Google Auth failed"),
+    onError: (error) => handleCustomErrors(error),
   });
 
-  const handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    await handlePasswordLogin(email, password);
-    setEmail("");
-    setPassword("");
+
+    try {
+      await handlePasswordLogin(email, password);
+      setEmail("");
+      setPassword("");
+    } catch (error) {
+      handleCustomErrors(error);
+    }
   };
 
   return (
@@ -63,7 +69,7 @@ const Login: React.FC = () => {
               Prijavi se
             </button>
           </form>
-          <a className="cursor-pointer hover:text-zinc-600 dark:hover:text-zinc-400" onClick={() => console.log("Reset lozinke", email)}>
+          <a className="cursor-pointer hover:text-zinc-600 dark:hover:text-zinc-400" onClick={() => navigate("/forgot-password")}>
             <h6>Zaboravili ste lozinku?</h6>
           </a>
         </div>

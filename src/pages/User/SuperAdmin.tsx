@@ -7,6 +7,7 @@ const SuperAdmin = () => {
   const handleToggle = () => {
     setAuthUser((prev) => {
       if (!prev) return null;
+      if (!authUser || authUser?.roleId < 5000) return prev;
       return { ...prev, superAdmin: !prev.superAdmin };
     });
   };

@@ -27,7 +27,6 @@ const VrsteOtpada: React.FC = () => {
     setShowSpinner(true);
     try {
       const [response, vrsteOtpdaCount] = await Promise.all([vrsteOtpadaService.getAllResources(queryParams), vrsteOtpadaService.getAllResourcesCount(queryParams)]);
-      console.log(vrsteOtpdaCount);
       setQueryParams({ ...queryParams, count: vrsteOtpdaCount.data.count });
       setTableData(response.data.data);
     } catch (error) {
