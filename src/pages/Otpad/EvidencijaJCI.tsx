@@ -98,58 +98,61 @@ const EvidencijaJCI: React.FC = () => {
         <Search queryParams={queryParams} setQueryParams={setQueryParams} />
       </div>
 
-      {tableData?.length
-        ? tableData.map((row: JciPodaci) => {
-            return (
-              <div key={row.id}>
-                <div className="my-3 grid grid-cols-1 rounded-xl bg-gray-100 p-2 shadow-sm dark:bg-gray-800 ">
-                  <div className="grid grid-cols-2 gap-2 md:grid-cols-4">
-                    <div>
-                      <h5>Podaci o JCI:</h5>
-                    </div>
+      {showSpinner ? (
+        <Spinner />
+      ) : tableData?.length ? (
+        tableData.map((row: JciPodaci) => {
+          return (
+            <div key={row.id}>
+              <div className="my-3 grid grid-cols-1 rounded-xl bg-gray-100 p-2 shadow-sm dark:bg-gray-800 ">
+                <div className="grid grid-cols-2 gap-2 md:grid-cols-4">
+                  <div>
+                    <h5>Podaci o JCI:</h5>
+                  </div>
 
-                    <p className="font-semibold text-sky-500 hover:text-sky-400">{row?.brojJci}</p>
-                    <p>{row?.datum && format(row?.datum, "dd.MM.yyyy")}</p>
-                    <p>
-                      {row?.zemlja} - {row?.operacija}
-                    </p>
-                  </div>
-                  <div className="my-2 h-0.5 bg-zinc-400"></div>
+                  <p className="font-semibold text-sky-500 hover:text-sky-400">{row?.brojJci}</p>
+                  <p>{row?.datum && format(row?.datum, "dd.MM.yyyy")}</p>
+                  <p>
+                    {row?.zemlja} - {row?.operacija}
+                  </p>
+                </div>
+                <div className="my-2 h-0.5 bg-zinc-400"></div>
 
-                  <div className="grid grid-cols-1">
-                    <h5 className="pb-2">Artikli na JCI:</h5>
-                  </div>
-                  <div className="grid grid-cols-2 gap-2 md:grid-cols-4">
-                    {row &&
-                      row?.jciProizvodi.map((proizvod, index) => {
-                        return (
-                          <div key={`proizvod_${index}`} className="flex flex-col items-center align-middle">
-                            <p>{proizvod?.proizvod?.proizvod}</p>
-                            <p>{proizvod?.kolicina}</p>
-                          </div>
-                        );
-                      })}
-                  </div>
-                  <div className="my-2 h-0.5 bg-zinc-400"></div>
-                  <div className="flex justify-end gap-2 p-2">
-                    <button className="button button-green" onClick={() => handleEdit(row)}>
-                      Izmeni
-                    </button>
-                    <button className="button button-red" disabled={!authUser?.superAdmin} onClick={() => handleDelete(row)}>
-                      Obriši
-                    </button>
-                  </div>
+                <div className="grid grid-cols-1">
+                  <h5 className="pb-2">Artikli na JCI:</h5>
+                </div>
+                <div className="grid grid-cols-2 gap-2 md:grid-cols-4">
+                  {row &&
+                    row?.jciProizvodi.map((proizvod, index) => {
+                      return (
+                        <div key={`proizvod_${index}`} className="flex flex-col items-center align-middle">
+                          <p>{proizvod?.proizvod?.proizvod}</p>
+                          <p>{proizvod?.kolicina}</p>
+                        </div>
+                      );
+                    })}
+                </div>
+                <div className="my-2 h-0.5 bg-zinc-400"></div>
+                <div className="flex justify-end gap-2 p-2">
+                  <button className="button button-green" onClick={() => handleEdit(row)}>
+                    Izmeni
+                  </button>
+                  <button className="button button-red" disabled={!authUser?.superAdmin} onClick={() => handleDelete(row)}>
+                    Obriši
+                  </button>
                 </div>
               </div>
-            );
-          })
-        : !showSpinner && <h4 className="my-4 text-zinc-600 ">Nema evidentiranih JCI...</h4>}
+            </div>
+          );
+        })
+      ) : (
+        <h4 className="my-4 text-zinc-600 ">Nema evidentiranih JCI...</h4>
+      )}
 
       <div className="flex justify-end gap-4 mb-4">
         <Pagination queryParams={queryParams} setQueryParams={setQueryParams} />
       </div>
 
-      {showSpinner && <Spinner />}
       {showModal && <Modal onOK={handleDeleteOK} onCancel={handleCancel} title="Potvrda brisanja JCI" question={`Da li ste sigurni da želite da obrišete JCI: ${updateData?.brojJci}?`} />}
       {updateData && showModalEdit && <ModalEditJCI row={updateData} setShowModalEdit={setShowModalEdit} fetchData={fetchData} />}
     </div>

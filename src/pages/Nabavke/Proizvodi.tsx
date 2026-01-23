@@ -87,7 +87,9 @@ const NabavkeProizvodi = () => {
       <div className="mt-4 flex justify-end">
         <Search queryParams={queryParams} setQueryParams={setQueryParams} />
       </div>
-      {tableData ? (
+      {showSpinner ? (
+        <Spinner />
+      ) : tableData ? (
         <>
           <div>
             <div className="relative my-4 overflow-x-auto shadow-lg sm:rounded-lg">
@@ -131,9 +133,8 @@ const NabavkeProizvodi = () => {
           {updateData && showModalEdit && <ModalEditProizvod row={updateData} setShowModalEdit={setShowModalEdit} fetchData={fetchData} />}
         </>
       ) : (
-        !showSpinner && <div className="p-3">Nema podataka o proizvodima...</div>
+        <div className="p-3">Nema podataka o proizvodima...</div>
       )}
-      {showSpinner && <Spinner />}
     </>
   );
 };

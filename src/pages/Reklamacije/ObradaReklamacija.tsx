@@ -51,12 +51,10 @@ const ObradaReklamacija: React.FC = () => {
         <Filters filtersOptions={filtersOptions} queryParams={queryParams} setQueryParams={setQueryParams} />
         <Search queryParams={queryParams} setQueryParams={setQueryParams} />
       </div>
-      {tableData && tableData.length ? <ReklamacijeTable tableData={tableData} fetchData={fetchData} /> : !showSpinner && <h4 className="my-4 text-zinc-600 ">Nema reklamacija koje su u obradi...</h4>}
+      {showSpinner ? <Spinner /> : tableData.length ? <ReklamacijeTable tableData={tableData} fetchData={fetchData} /> : <h4 className="my-4 text-zinc-600 ">Nema reklamacija koje su u obradi...</h4>}
       <div className="flex justify-end gap-4 mb-4">
         <Pagination queryParams={queryParams} setQueryParams={setQueryParams} />
       </div>
-
-      {showSpinner && <Spinner />}
     </>
   );
 };

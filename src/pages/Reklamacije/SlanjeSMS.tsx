@@ -58,12 +58,12 @@ const SlanjeSMS: React.FC = () => {
         break;
       case "OPRAVDANA":
         setSmsText(
-          `Reklamacija ${row?.brojReklamacije} za kupca ${row?.imePrezime} je OPRAVDANA. Odgovor na reklamaciju možete pogledati na linku ${import.meta.env.REACT_APP_BASE_URL}/reklamacije/pregled-reklamacije/${row?.brojReklamacije}`
+          `Reklamacija ${row?.brojReklamacije} za kupca ${row?.imePrezime} je OPRAVDANA. Odgovor na reklamaciju možete pogledati na linku ${import.meta.env.REACT_APP_BASE_URL}/reklamacije/pregled-reklamacije/${row?.brojReklamacije}`,
         );
         break;
       case "NEOPRAVDANA":
         setSmsText(
-          `Reklamacija ${row?.brojReklamacije} za kupca ${row?.imePrezime} je NEOPRAVDANA. Odgovor na reklamaciju možete pogledati na linku ${import.meta.env.REACT_APP_BASE_URL}/reklamacije/pregled-reklamacije/${row?.brojReklamacije}`
+          `Reklamacija ${row?.brojReklamacije} za kupca ${row?.imePrezime} je NEOPRAVDANA. Odgovor na reklamaciju možete pogledati na linku ${import.meta.env.REACT_APP_BASE_URL}/reklamacije/pregled-reklamacije/${row?.brojReklamacije}`,
         );
         break;
       default:
@@ -111,7 +111,9 @@ const SlanjeSMS: React.FC = () => {
           <Search queryParams={queryParams} setQueryParams={setQueryParams} />
         </div>
 
-        {tableData.length ? (
+        {showSpinner ? (
+          <Spinner />
+        ) : tableData.length ? (
           <div className="relative my-4 overflow-x-auto border-2 p-3 shadow-lg shadow-slate-700 sm:rounded-lg">
             <table ref={tableRef} className="w-full text-left text-sm text-zinc-500 rtl:text-right dark:text-zinc-400 ">
               <thead className="text-s bg-zinc-200 uppercase text-zinc-600 dark:bg-zinc-700 dark:text-zinc-400">
@@ -155,7 +157,7 @@ const SlanjeSMS: React.FC = () => {
             </table>
           </div>
         ) : (
-          !showSpinner && <h4 className="my-4 text-zinc-600 ">Nema evidentiranih reklamacija...</h4>
+          <h4 className="my-4 text-zinc-600 ">Nema evidentiranih reklamacija...</h4>
         )}
         <div className="flex justify-end gap-4 mb-4">
           <Pagination queryParams={queryParams} setQueryParams={setQueryParams} />
@@ -176,7 +178,6 @@ const SlanjeSMS: React.FC = () => {
           }
         />
       )}
-      {showSpinner && <Spinner />}
     </>
   );
 };

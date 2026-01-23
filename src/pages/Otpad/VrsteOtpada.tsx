@@ -89,7 +89,9 @@ const VrsteOtpada: React.FC = () => {
       <div className="mt-4 flex justify-end">
         <Search queryParams={queryParams} setQueryParams={setQueryParams} />
       </div>
-      {tableData?.length ? (
+      {showSpinner ? (
+        <Spinner />
+      ) : tableData?.length ? (
         <>
           <div>
             <div className="relative my-4 overflow-x-auto shadow-lg sm:rounded-lg">
@@ -133,9 +135,8 @@ const VrsteOtpada: React.FC = () => {
           {updateData && showModalEdit && <ModalEditVrstaOtpada row={updateData} setShowModalEdit={setShowModalEdit} fetchData={fetchData} />}
         </>
       ) : (
-        !showSpinner && <div className="p-3">Nemate podataka o vrstama otpada...</div>
+        <div className="p-3">Nemate podataka o vrstama otpada...</div>
       )}
-      {showSpinner && <Spinner />}
     </>
   );
 };

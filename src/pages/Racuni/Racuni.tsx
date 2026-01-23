@@ -54,29 +54,31 @@ const Racuni = () => {
             Osveži podatke
           </button>
         </div>
-        {tableData?.length
-          ? tableData.map((row, index: number) => (
-              <div key={index} className="my-3 grid grid-cols-1 rounded-xl bg-gray-100 p-2 shadow-sm dark:bg-gray-800 ">
-                <h5 key={`racun_${index}`}>Podaci o računu:</h5>
-                <div className="mt-2 grid grid-cols-1 gap-2 md:grid-cols-4">
-                  <p key={`telefon_${index}`} className="font-medium text-sky-500 ">
-                    Tel: {row?.telefon}
-                  </p>
-                  <p className="md:col-span-3" key={`SMStekst_${index}`}>
-                    {row?.SMStekst}
-                  </p>
-                </div>
-                <div key={`akcije_button_${index}`} className=" flex items-end justify-end gap-2">
-                  <button type="button" className="button button-sky" aria-label="Pošalji SMS" disabled={row?.sent} onClick={() => handleSentSMS(row)}>
-                    {row?.sent ? "SMS Poslat" : <a href={`sms:${row?.telefon}?body=${row?.SMStekst}`}>Pošalji SMS</a>}
-                  </button>
-                </div>
+        {showSpinner ? (
+          <Spinner />
+        ) : tableData?.length ? (
+          tableData.map((row, index: number) => (
+            <div key={index} className="my-3 grid grid-cols-1 rounded-xl bg-gray-100 p-2 shadow-sm dark:bg-gray-800 ">
+              <h5 key={`racun_${index}`}>Podaci o računu:</h5>
+              <div className="mt-2 grid grid-cols-1 gap-2 md:grid-cols-4">
+                <p key={`telefon_${index}`} className="font-medium text-sky-500 ">
+                  Tel: {row?.telefon}
+                </p>
+                <p className="md:col-span-3" key={`SMStekst_${index}`}>
+                  {row?.SMStekst}
+                </p>
               </div>
-            ))
-          : !showSpinner && <h4 className="my-4 text-zinc-600 ">Nema reklamacija koje su u prijemu...</h4>}
+              <div key={`akcije_button_${index}`} className=" flex items-end justify-end gap-2">
+                <button type="button" className="button button-sky" aria-label="Pošalji SMS" disabled={row?.sent} onClick={() => handleSentSMS(row)}>
+                  {row?.sent ? "SMS Poslat" : <a href={`sms:${row?.telefon}?body=${row?.SMStekst}`}>Pošalji SMS</a>}
+                </button>
+              </div>
+            </div>
+          ))
+        ) : (
+          <h4 className="my-4 text-zinc-600 ">Nema reklamacija koje su u prijemu...</h4>
+        )}
       </div>
-
-      {showSpinner && <Spinner />}
     </>
   );
 };

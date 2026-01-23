@@ -74,7 +74,9 @@ const Pregled = () => {
         <Filters filtersOptions={filtersOptions} queryParams={queryParams} setQueryParams={setQueryParams} />
       </div>
 
-      {tableData ? (
+      {showSpinner ? (
+        <Spinner />
+      ) : tableData ? (
         <table className="w-full text-left text-sm text-zinc-500 rtl:text-right dark:text-zinc-400 ">
           <thead className="text-s bg-zinc-200 uppercase text-zinc-600 dark:bg-zinc-700 dark:text-zinc-400">
             <tr>
@@ -110,9 +112,8 @@ const Pregled = () => {
           </tbody>
         </table>
       ) : (
-        !showSpinner && <h4 className="my-4 text-zinc-600 ">Nema podataka o porudžbinama...</h4>
+        <h4 className="my-4 text-zinc-600 ">Nema podataka o porudžbinama...</h4>
       )}
-      {showSpinner && <Spinner />}
     </>
   );
 };

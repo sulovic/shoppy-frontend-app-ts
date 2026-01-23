@@ -88,7 +88,9 @@ const DelovodnikReklamacija: React.FC = () => {
         </div>
       </div>
 
-      {tableData.length ? (
+      {showSpinner ? (
+        <Spinner />
+      ) : tableData.length ? (
         <div className="relative my-4 overflow-x-auto border-2 p-3 shadow-lg shadow-slate-700 sm:rounded-lg">
           <table ref={tableRef} className="w-full text-left text-sm text-zinc-500 rtl:text-right dark:text-zinc-400 ">
             <thead className="text-s bg-zinc-200 uppercase text-zinc-600 dark:bg-zinc-700 dark:text-zinc-400">
@@ -167,11 +169,8 @@ const DelovodnikReklamacija: React.FC = () => {
           </div>
         </div>
       ) : (
-        !showSpinner && <h4 className="my-4 text-zinc-600 ">Nema reklamacija koje su u prijemu...</h4>
+        <h4 className="my-4 text-zinc-600 ">Nema reklamacija koje su u prijemu...</h4>
       )}
-
-      {showSpinner && <Spinner />}
-
       {showHandleFiles && <HandleFiles url="reklamacije" id={selectedRowFiles!.idReklamacije!} dataWithFiles={selectedRowFiles!} fetchData={fetchData} setShowHandleFiles={setShowHandleFiles} />}
     </>
   );

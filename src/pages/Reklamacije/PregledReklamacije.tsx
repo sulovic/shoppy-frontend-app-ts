@@ -64,7 +64,9 @@ const PregledReklamacije: React.FC = () => {
   return (
     <>
       <div className=" min-h-full  bg-white p-4 text-center dark:bg-gray-900">
-        {reklamacija ? (
+        {showSpinner ? (
+          <Spinner />
+        ) : reklamacija ? (
           <>
             <h3 className="my-4">Shoppy Online evidencija reklamacija</h3>
             <div className="relative transform overflow-hidden rounded-2xl bg-gray-50 text-left shadow-xl transition-all dark:bg-gray-800">
@@ -184,10 +186,9 @@ const PregledReklamacije: React.FC = () => {
             </div>
           </>
         ) : (
-          !showSpinner && <h4 className="my-4 text-zinc-600 ">{`Ne postoji reklamacija sa brojem ${id}`}</h4>
+          <h4 className="my-4 text-zinc-600 ">{`Ne postoji reklamacija sa brojem ${id}`}</h4>
         )}
       </div>
-      {showSpinner && <Spinner />}
     </>
   );
 };

@@ -100,7 +100,9 @@ const DelovodnaKnjiga: React.FC = () => {
         <Filters filtersOptions={filtersOptions} queryParams={queryParams} setQueryParams={setQueryParams} />
         <Search queryParams={queryParams} setQueryParams={setQueryParams} />
       </div>
-      {tableData?.length ? (
+      {showSpinner ? (
+        <Spinner />
+      ) : tableData?.length ? (
         <div className="relative my-4 overflow-x-auto shadow-lg sm:rounded-lg">
           <div className="table-responsive">
             <table ref={tableRef} className="w-full text-left text-sm text-zinc-500 rtl:text-right dark:text-zinc-400 ">
@@ -140,7 +142,7 @@ const DelovodnaKnjiga: React.FC = () => {
                           {row?.operacija === "IZVOZ" && -row?.ukupno.toFixed(2)}
                         </td>
                       </tr>
-                    )
+                    ),
                 )}
                 <tr className=" bg-zinc-200 font-bold uppercase text-zinc-600 dark:bg-zinc-700 dark:text-zinc-400">
                   <td>UKUPNO:</td>
@@ -160,9 +162,8 @@ const DelovodnaKnjiga: React.FC = () => {
           </div>
         </div>
       ) : (
-        !showSpinner && <h4 className="my-4 text-zinc-600 ">Nema evidentiranih JCI...</h4>
+        <h4 className="my-4 text-zinc-600 ">Nema evidentiranih JCI...</h4>
       )}
-      {showSpinner && <Spinner />}
     </>
   );
 };

@@ -113,7 +113,9 @@ const AktivnePorudzbine = () => {
         <Filters filtersOptions={filtersOptions} queryParams={queryParams} setQueryParams={setQueryParams} />
         <Search queryParams={queryParams} setQueryParams={setQueryParams} />
       </div>
-      {tableData ? (
+      {showSpinner ? (
+        <Spinner />
+      ) : tableData ? (
         <div>
           {tableData.map((row, index) => (
             <div key={index} className="my-3 grid grid-cols-1 rounded-xl bg-gray-100 p-2 shadow-sm dark:bg-gray-800 ">
@@ -182,14 +184,14 @@ const AktivnePorudzbine = () => {
           ))}
         </div>
       ) : (
-        !showSpinner && <h4 className="my-4 text-zinc-600 ">Nemate aktivne porudžbine...</h4>
+        <h4 className="my-4 text-zinc-600 ">Nemate aktivne porudžbine...</h4>
       )}
       <div className="flex justify-end gap-4 mb-4">
         <Pagination queryParams={queryParams} setQueryParams={setQueryParams} />
       </div>
       {selectedRowFiles && showHandleFiles && <HandleFiles url="nabavke/porudzbine" id={selectedRowFiles.id} dataWithFiles={selectedRowFiles} fetchData={fetchData} setShowHandleFiles={setShowHandleFiles} />}
       {selectedRowSadrzaj && showSadrzaj && <SadrzajPorudzbine porudzbina={selectedRowSadrzaj} setShowSadrzaj={setShowSadrzaj} fetchData={fetchData} />}
-      {showSpinner && <Spinner />}
+
       {showDeleteModal && <Modal onOK={handleDeleteOK} onCancel={handleDeleteCancel} title="Potvrda brisanja porudžebine" question={`Da li ste sigurni da želite da obrišete porudžebinu: ${updateData?.id}?`} />}
 
       {updateData && showEditModal && <ModalEditPorudzbina setShowEditModal={setShowEditModal} row={updateData} fetchData={fetchData} />}

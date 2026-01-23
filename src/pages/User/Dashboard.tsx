@@ -95,7 +95,9 @@ const Dashboard: React.FC = () => {
         <Search queryParams={queryParams} setQueryParams={setQueryParams} />
       </div>
 
-      {tableData?.length ? (
+      {showSpinner ? (
+        <Spinner />
+      ) : tableData?.length ? (
         <div>
           <div className="relative my-4 overflow-x-auto shadow-lg sm:rounded-lg">
             <div className="table-responsive ">
@@ -156,9 +158,8 @@ const Dashboard: React.FC = () => {
           </div>
         </div>
       ) : (
-        !showSpinner && <p className="p-3">Nema korisnika u bazi...</p>
+        <p className="p-3">Nema korisnika u bazi...</p>
       )}
-      {showSpinner && <Spinner />}
     </>
   );
 };
