@@ -32,6 +32,11 @@ jobs:
           VITE_APP_BASE_URL: ${{ secrets.VITE_APP_BASE_URL }}
         run: npm run build
 
+      - name: Add server to known_hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -H ${{ vars.SERVER_HOST }} >> ~/.ssh/known_hosts
+
       - name: Setup SSH key
         uses: webfactory/ssh-agent@v0.9.1
         with:
