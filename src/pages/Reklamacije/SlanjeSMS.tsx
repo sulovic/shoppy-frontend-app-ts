@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Spinner from "../../components/Spinner";
 import dataServiceBuilder from "../../services/dataService";
 import { handleCustomErrors } from "../../services/errorHandler";
@@ -13,7 +13,7 @@ import { toast } from "react-toastify";
 import { format } from "date-fns";
 import { ReklamacijaSchema } from "../../schemas/schemas";
 
-const SlanjeSMS: React.FC = () => {
+const SlanjeSMS = () => {
   const [tableData, setTableData] = useState<Reklamacija[]>([]);
   const [showSpinner, setShowSpinner] = useState(false);
   const { authUser } = useAuth();

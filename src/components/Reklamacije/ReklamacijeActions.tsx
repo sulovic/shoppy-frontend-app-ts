@@ -25,6 +25,80 @@ type ReklamacijeActionMatrix = {
   };
 };
 
+const reklamacijeActionMatrix: ReklamacijeActionMatrix = {
+  PRIJEM: {
+    Obrada: {
+      buttonText: "Pošalji u obradu",
+      newStatus: "OBRADA",
+      modalTitle: "Pošalji reklamaciju na obradu",
+      modalMessage: "Da li želite da prebacite reklamaciju na obradu?",
+    },
+  },
+
+  OBRADA: {
+    Prijem: {
+      buttonText: "Vrati na prijem",
+      newStatus: "PRIJEM",
+      modalTitle: "Vrati reklamaciju na prijem",
+      modalMessage: "Da li želite da vratite reklamaciju na prijem?",
+    },
+    Opravdana: {
+      buttonText: "Opravdana",
+      newStatus: "OPRAVDANA",
+      modalTitle: "Zaključite reklamaciju kao opravdanu",
+      modalMessage: "Da li želite da zaključite reklamaciju kao opravdanu?",
+    },
+    Neopravdana: {
+      buttonText: "Neopravdana",
+      newStatus: "NEOPRAVDANA",
+      modalTitle: "Zaključite reklamaciju kao neopravdanu",
+      modalMessage: "Da li želite da zaključite reklamaciju kao neopravdanu?",
+    },
+    DodatniRok: {
+      buttonText: "Dodatni rok",
+      newStatus: "DODATNI_ROK",
+      modalTitle: "Dodatni rok za reklamaciju",
+      modalMessage: "Da li želite da aktivirate dodatni rok za reklamaciju?",
+    },
+  },
+  OPRAVDANA: {
+    Obrada: {
+      buttonText: "Vrati u obradu",
+      newStatus: "OBRADA",
+      modalTitle: "Vrati reklamaciju na obradu",
+      modalMessage: "Da li želite da vratite reklamaciju u obradu?",
+    },
+  },
+  NEOPRAVDANA: {
+    Obrada: {
+      buttonText: "Vrati u obradu",
+      newStatus: "OBRADA",
+      modalTitle: "Vrati reklamaciju na obradu",
+      modalMessage: "Da li želite da vratite reklamaciju u obradu?",
+    },
+  },
+  DODATNI_ROK: {
+    Obrada: {
+      buttonText: "Vrati u obradu",
+      newStatus: "OBRADA",
+      modalTitle: "Vrati reklamaciju na obradu",
+      modalMessage: "Da li želite da vratite reklamaciju u obradu?",
+    },
+    Opravdana: {
+      buttonText: "Opravdana",
+      newStatus: "OPRAVDANA",
+      modalTitle: "Zaključite reklamaciju kao opravdanu",
+      modalMessage: "Da li želite da zaključite reklamaciju kao opravdanu?",
+    },
+    Neopravdana: {
+      buttonText: "Neopravdana",
+      newStatus: "NEOPRAVDANA",
+      modalTitle: "Zaključite reklamaciju kao neopravdanu",
+      modalMessage: "Da li želite da zaključite reklamaciju kao neopravdanu?",
+    },
+  },
+};
+
 const ReklamacijeActions = ({ row, fetchData }: { row: Reklamacija; fetchData: () => void }) => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -39,81 +113,16 @@ const ReklamacijeActions = ({ row, fetchData }: { row: Reklamacija; fetchData: (
   const reklamacijeService = reklamacijeServiceBuilder<Reklamacija>(axiosPrivate, authUser, "reklamacije");
   const reklamacijeFilesService = uploadServiceBuilder(axiosPrivate, authUser, "reklamacije");
 
-  const reklamacijeActionMatrix: ReklamacijeActionMatrix = {
-    PRIJEM: {
-      Obrada: {
-        buttonText: "Pošalji u obradu",
-        newStatus: "OBRADA",
-        modalTitle: "Pošalji reklamaciju na obradu",
-        modalMessage: "Da li želite da prebacite reklamaciju na obradu?",
-      },
-    },
-
-    OBRADA: {
-      Prijem: {
-        buttonText: "Vrati na prijem",
-        newStatus: "PRIJEM",
-        modalTitle: "Vrati reklamaciju na prijem",
-        modalMessage: "Da li želite da vratite reklamaciju na prijem?",
-      },
-      Opravdana: {
-        buttonText: "Opravdana",
-        newStatus: "OPRAVDANA",
-        modalTitle: "Zaključite reklamaciju kao opravdanu",
-        modalMessage: "Da li želite da zaključite reklamaciju kao opravdanu?",
-      },
-      Neopravdana: {
-        buttonText: "Neopravdana",
-        newStatus: "NEOPRAVDANA",
-        modalTitle: "Zaključite reklamaciju kao neopravdanu",
-        modalMessage: "Da li želite da zaključite reklamaciju kao neopravdanu?",
-      },
-      DodatniRok: {
-        buttonText: "Dodatni rok",
-        newStatus: "DODATNI_ROK",
-        modalTitle: "Dodatni rok za reklamaciju",
-        modalMessage: "Da li želite da aktivirate dodatni rok za reklamaciju?",
-      },
-    },
-    OPRAVDANA: {
-      Obrada: {
-        buttonText: "Vrati u obradu",
-        newStatus: "OBRADA",
-        modalTitle: "Vrati reklamaciju na obradu",
-        modalMessage: "Da li želite da vratite reklamaciju u obradu?",
-      },
-    },
-    NEOPRAVDANA: {
-      Obrada: {
-        buttonText: "Vrati u obradu",
-        newStatus: "OBRADA",
-        modalTitle: "Vrati reklamaciju na obradu",
-        modalMessage: "Da li želite da vratite reklamaciju u obradu?",
-      },
-    },
-    DODATNI_ROK: {
-      Obrada: {
-        buttonText: "Vrati u obradu",
-        newStatus: "OBRADA",
-        modalTitle: "Vrati reklamaciju na obradu",
-        modalMessage: "Da li želite da vratite reklamaciju u obradu?",
-      },
-      Opravdana: {
-        buttonText: "Opravdana",
-        newStatus: "OPRAVDANA",
-        modalTitle: "Zaključite reklamaciju kao opravdanu",
-        modalMessage: "Da li želite da zaključite reklamaciju kao opravdanu?",
-      },
-      Neopravdana: {
-        buttonText: "Neopravdana",
-        newStatus: "NEOPRAVDANA",
-        modalTitle: "Zaključite reklamaciju kao neopravdanu",
-        modalMessage: "Da li želite da zaključite reklamaciju kao neopravdanu?",
-      },
-    },
-  };
-
   const availableActions: { [key: string]: Action } = reklamacijeActionMatrix[row.statusReklamacije];
+  const disableActionButton: boolean =
+    // Reklamacija u prijemu nema obavezne podatke
+    (row.statusReklamacije === "PRIJEM" && (!row.opisReklamacije || !row.datumPrijema || !row.zemljaReklamacije || !row.datumKupovine || !row.nazivProizvoda || !row.brojRacuna || !row.imePrezime || (!row.telefon && !row.brojRacuna))) ||
+    // Reklamacija u obradi/dodatnom roku nema opis odluke / datum odgovora
+    (row.statusReklamacije === "OBRADA" && (!row.opisOdluke || !row.datumOdgovora)) ||
+    (row.statusReklamacije === "DODATNI_ROK" && (!row.opisOdluke || !row.datumOdgovora)) ||
+    // Samo superadmin može vratiti zaključenu reklamaciju
+    (row.statusReklamacije === "OPRAVDANA" && !authUser!.superAdmin) ||
+    (row.statusReklamacije === "NEOPRAVDANA" && !authUser!.superAdmin);
 
   const handleEdit = (row: Reklamacija) => {
     setUpdateData(row);
@@ -220,7 +229,7 @@ const ReklamacijeActions = ({ row, fetchData }: { row: Reklamacija; fetchData: (
         </div>
         <div className="grid grid-cols-2 gap-2">
           {Object.entries(availableActions).map(([key, action]) => (
-            <button key={key} type="button" className="button button-sky" aria-label="Forward" onClick={() => handleForward({ row, action })}>
+            <button key={key} type="button" className="button button-sky" disabled={disableActionButton} aria-label="Forward" onClick={() => handleForward({ row, action })}>
               {action.buttonText}
             </button>
           ))}

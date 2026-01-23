@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import DatePicker from "react-datepicker";
 import Modal from "../../components/Modal";
@@ -10,7 +10,7 @@ import { useAuth } from "../../hooks/useAuth";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import { ReklamacijaSchema } from "../../schemas/schemas";
 
-const NovaReklamacija: React.FC = () => {
+const NovaReklamacija = () => {
   const brojReklamacije = Math.floor(Math.random() * 8999999 + 100000).toString() + "-" + (new Date().getMonth() + 1).toString() + "-" + new Date().getFullYear().toString();
   const praznaReklamacija: Omit<Reklamacija, "idReklamacije"> = {
     imePrezime: "",

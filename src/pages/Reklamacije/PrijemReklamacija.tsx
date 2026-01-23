@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Spinner from "../../components/Spinner";
 import { useNavigate } from "react-router-dom";
 import dataServiceBuilder from "../../services/dataService";
@@ -10,14 +10,14 @@ import Filters from "../../components/Filters";
 import Search from "../../components/Search";
 import Pagination from "../../components/Pagination";
 
-const PrijemReklamacija: React.FC = () => {
+const PrijemReklamacija = () => {
   const [tableData, setTableData] = useState<Reklamacija[]>([]);
   const [showSpinner, setShowSpinner] = useState(false);
   const { authUser } = useAuth();
   const axiosPrivate = useAxiosPrivate();
   const reklamacijeService = dataServiceBuilder<Reklamacija>(axiosPrivate, authUser, "reklamacije");
   const navigate = useNavigate();
-  const [queryParams, setQueryParams] = useState<QueryParams>({ filters: { statusReklamacije: "PRIJEM" }, page: 1, limit: 20, sortOrder: "desc", sortBy: "datumPrijema" });
+  const [queryParams, setQueryParams] = useState<QueryParams>({ filters: { statusReklamacije: "PRIJEM" }, search: "", page: 1, limit: 20, sortOrder: "desc", sortBy: "datumPrijema" });
   const filtersOptions: FiltersOptions = {
     zemljaReklamacije: ["SRBIJA", "CRNA_GORA"],
     // statusReklamacije: ["PRIJEM", "OBRADA", "OPRAVDANA", "NEOPRAVDANA", "DODATNI_ROK"],

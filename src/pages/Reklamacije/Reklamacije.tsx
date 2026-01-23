@@ -1,10 +1,9 @@
-import React from "react";
 import Navbar from "../../components/Navbar";
 import { Outlet, useLocation } from "react-router-dom";
 import AppCards from "../../components/AppCards";
 import { ReklamacijeLinks } from "../../config/appConfig";
 
-const Reklamacije: React.FC = () => {
+const Reklamacije = () => {
   const AppName = "Reklamacije";
 
   const location = useLocation();

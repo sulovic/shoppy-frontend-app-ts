@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Spinner from "../../components/Spinner";
 import { useNavigate } from "react-router-dom";
 import dataServiceBuilder from "../../services/dataService";
@@ -10,7 +10,7 @@ import Filters from "../../components/Filters";
 import Search from "../../components/Search";
 import Pagination from "../../components/Pagination";
 
-const ObradaReklamacija: React.FC = () => {
+const ObradaReklamacija = () => {
   const [tableData, setTableData] = useState<Reklamacija[]>([]);
   const [showSpinner, setShowSpinner] = useState(false);
   const { authUser } = useAuth();

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import ReklamacijeTable from "../../components/Reklamacije/ReklamacijeTable";
 import Filters from "../../components/Filters";
 import Search from "../../components/Search";
@@ -10,7 +10,7 @@ import { handleCustomErrors } from "../../services/errorHandler";
 import dataServiceBuilder from "../../services/dataService";
 import { useNavigate } from "react-router-dom";
 
-const Administrator: React.FC = () => {
+const Administrator = () => {
   const [tableData, setTableData] = useState<Reklamacija[]>([]);
   const [showSpinner, setShowSpinner] = useState(false);
   const navigate = useNavigate();

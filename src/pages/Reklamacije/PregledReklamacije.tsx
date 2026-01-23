@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import Spinner from "../../components/Spinner";
 import DatePicker from "react-datepicker";
 import { toast } from "react-toastify";
 import { useLocation } from "react-router-dom";
 
-const PregledReklamacije: React.FC = () => {
+const PregledReklamacije = () => {
   const [showSpinner, setShowSpinner] = useState(false);
   const [reklamacija, setReklamacija] = useState<Reklamacija | null>(null);
   const location = useLocation();

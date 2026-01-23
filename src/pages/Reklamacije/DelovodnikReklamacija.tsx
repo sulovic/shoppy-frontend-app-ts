@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import { format } from "date-fns";
 import { handleCustomErrors } from "../../services/errorHandler";
 import Spinner from "../../components/Spinner";
@@ -11,7 +11,7 @@ import Filters from "../../components/Filters";
 import Search from "../../components/Search";
 import Pagination from "../../components/Pagination";
 
-const DelovodnikReklamacija: React.FC = () => {
+const DelovodnikReklamacija = () => {
   const [tableData, setTableData] = useState<Reklamacija[]>([]);
   const [showSpinner, setShowSpinner] = useState(false);
   const [selectedRowFiles, setSelectedRowFiles] = useState<Reklamacija | null>(null);
