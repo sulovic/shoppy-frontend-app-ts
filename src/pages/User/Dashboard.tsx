@@ -23,7 +23,7 @@ const Dashboard: React.FC = () => {
   const { authUser } = useAuth();
   const tableHeaders = ["Ime i prezime", "Email", "Nivo ovlašćenja"];
   const userService = dataServiceBuilder<UserData>(axiosPrivate, authUser, "users");
-  const [queryParams, setQueryParams] = useState<QueryParams>({ filters: {}, page: 1, limit: 20, sortOrder: "desc", sortBy: "userId" });
+  const [queryParams, setQueryParams] = useState<QueryParams>({ filters: { roleId: "*" }, page: 1, limit: 20, sortOrder: "desc", sortBy: "userId" });
 
   const filtersOptions: FiltersOptions = {
     roleId: ["1001", "3001", "5001"],
@@ -33,8 +33,9 @@ const Dashboard: React.FC = () => {
     setShowSpinner(true);
 
     try {
-      const response = await userService.getAllResources(queryParams);
+      const [response, usersCount] = await Promise.all([userService.getAllResources(queryParams), userService.getAllResourcesCount(queryParams)]);
       setTableData(response.data.data || []);
+      setQueryParams({ ...queryParams, count: usersCount.data.count });
     } catch (error) {
       handleCustomErrors(error as string);
     } finally {
@@ -44,6 +45,7 @@ const Dashboard: React.FC = () => {
 
   useEffect(() => {
     fetchData();
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [queryParams.filters, queryParams.search, queryParams.page, queryParams.limit, queryParams.sortOrder, queryParams.sortBy]);
 

@@ -9,9 +9,15 @@ const Filters = ({ filtersOptions, queryParams, setQueryParams }: { filtersOptio
             area-label={filterKey}
             value={queryParams.filters![filterKey]}
             onChange={(e) => {
-              setQueryParams({
-                ...queryParams,
-                filters: { ...queryParams.filters, [filterKey]: e.target.value },
+              const value = e.target.value;
+              setQueryParams((prev) => {
+                const filters = prev.filters ?? {};
+                if (filters[filterKey] === value) return prev;
+
+                return {
+                  ...prev,
+                  filters: { ...filters, [filterKey]: value },
+                };
               });
             }}
           >
