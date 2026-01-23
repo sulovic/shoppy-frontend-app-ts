@@ -22,20 +22,12 @@ import NewJCI from "../pages/Otpad/NewJCI";
 import EvidencijaJCI from "../pages/Otpad/EvidencijaJCI";
 import DelovodnaKnjiga from "../pages/Otpad/DelovodnaKnjiga";
 import PersistLogin from "./PersistLogin";
-import Odsustva from "../pages/Odsustva/Odsustva";
-import EvidencijaOdsustva from "../pages/Odsustva/EvidencijaOdsustva";
-import DodeljivanjeOdsustva from "../pages/Odsustva/DodeljivanjeOdsustva";
-import NewDodeljivanjeOdsustva from "../pages/Odsustva/NewDodeljivanjeOdsustva";
-import OdobravanjeOdsustva from "../pages/Odsustva/OdobravanjeOdsustva";
-import ResenjeOdmor from "../pages/Odsustva/ResenjeOdmor";
 import { Priviledges } from "../config/appConfig.js";
-import Administrator from "../pages/Odsustva/Administrator";
 import Racuni from "../pages/Racuni/Racuni";
 import NabavkeProizvodi from "../pages/Nabavke/Proizvodi";
 import NewNabavkaProizvod from "../pages/Nabavke/NewProizvod";
 import NewPorudzbina from "../pages/Nabavke/NewPorudzbina";
 import AktivnePorudzbine from "../pages/Nabavke/Porudzbine.js";
-import StampaResenja from "../pages/Odsustva/StampaResenja";
 import SuperAdmin from "../pages/User/SuperAdmin";
 import Pregled from "../pages/Nabavke/Pregled";
 import SlanjeSMS from "../pages/Reklamacije/SlanjeSMS";
@@ -54,10 +46,6 @@ const SiteRoutes = () => {
 
       <Route element={<PersistLogin />}>
         {/* Odmor template za stampu */}
-
-        <Route element={<ProtectRoute minRole={Priviledges["/odsustva/resenje-odmor/:id"]} />}>
-          <Route path="odsustva/resenje-odmor/:id" element={<ResenjeOdmor />} />
-        </Route>
 
         {/* Home Route */}
 
@@ -80,31 +68,6 @@ const SiteRoutes = () => {
             </Route>
             <Route element={<ProtectRoute minRole={Priviledges["/nabavke/nov-proizvod"]} />}>
               <Route path="nov-proizvod" element={<NewNabavkaProizvod />} />
-            </Route>
-          </Route>
-        </Route>
-
-        {/* Odsustva Routes */}
-
-        <Route element={<ProtectRoute minRole={Priviledges["/odsustva"]} />}>
-          <Route path="odsustva" element={<Odsustva />}>
-            <Route element={<ProtectRoute minRole={Priviledges["/odsustva/evidencija"]} />}>
-              <Route path="evidencija" element={<EvidencijaOdsustva />} />
-            </Route>
-            <Route element={<ProtectRoute minRole={Priviledges["/odsustva/stampa"]} />}>
-              <Route path="stampa" element={<StampaResenja />} />
-            </Route>
-            <Route element={<ProtectRoute minRole={Priviledges["/odsustva/odobravanje"]} />}>
-              <Route path="odobravanje" element={<OdobravanjeOdsustva />} />
-            </Route>
-            <Route element={<ProtectRoute minRole={Priviledges["/odsustva/dodeljivanje"]} />}>
-              <Route path="dodeljivanje" element={<DodeljivanjeOdsustva />} />
-            </Route>
-            <Route element={<ProtectRoute minRole={Priviledges["/odsustva/novo-dodeljivanje"]} />}>
-              <Route path="novo-dodeljivanje" element={<NewDodeljivanjeOdsustva />} />
-            </Route>
-            <Route element={<ProtectRoute minRole={Priviledges["/odsustva/administrator"]} />}>
-              <Route path="administrator" element={<Administrator />} />
             </Route>
           </Route>
         </Route>

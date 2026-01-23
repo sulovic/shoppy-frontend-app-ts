@@ -19,6 +19,7 @@ function PersistLogin() {
     };
 
     verifyToken();
+    // eslint-disable-next-line
   }, [authUser, accessToken]);
 
   return <>{loading ? <Spinner /> : <Outlet />}</>;

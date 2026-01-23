@@ -36,16 +36,6 @@ export const Priviledges = {
   "/nabavke/nova-porudzbina": 3000,
   "/nabavke/pregled": 3000,
 
-  //Odsustva
-  "/odsustva": 1000,
-  "/odsustva/evidencija": 1000,
-  "/odsustva/resenje-odmor/:id": 1000,
-  "/odsustva/stampa": 3000,
-  "/odsustva/odobravanje": 3000,
-  "/odsustva/dodeljivanje": 3000,
-  "/odsustva/novo-dodeljivanje": 3000,
-  "/odsustva/administrator": 5000,
-
   //Otpad
   "/otpad": 1000,
   "/otpad/evidencija": 1000,
@@ -103,13 +93,6 @@ export const AppLinks: AppLink[] = [
     desc: "Aplikacija za praćenje nabavki",
     href: "/nabavke",
     minRole: Priviledges["/nabavke"],
-  },
-  {
-    label: "Odsustva",
-    image: businessImg,
-    desc: "Aplikacija za evidentiranje odsustva",
-    href: "/odsustva",
-    minRole: Priviledges["/odsustva"],
   },
   {
     label: "Tokovi otpada",
@@ -217,44 +200,6 @@ export const OtpadLinks = [
     desc: "Kreiranje novih i izmena postojećih vrsta otpada",
     href: "/otpad/vrste-otpada",
     minRole: Priviledges["/otpad/vrste-otpada"],
-  },
-];
-
-export const OdsustvaLinks = [
-  {
-    label: "Evidencija odsustva",
-    image: businessImg,
-    desc: "Pregled i evidentiranje zahteva za odsustvo",
-    href: "/odsustva/evidencija",
-    minRole: Priviledges["/odsustva/evidencija"],
-  },
-  {
-    label: "Štampanje rešenja",
-    image: businessImg,
-    desc: "Pregled i štampanje zahteva i rešenja za odsustvo",
-    href: "/odsustva/stampa",
-    minRole: Priviledges["/odsustva/stampa"],
-  },
-  {
-    label: "Odobravanje odsustva",
-    image: businessImg,
-    desc: "Odobravanje unetih zahteva za odsustvo",
-    href: "/odsustva/odobravanje",
-    minRole: Priviledges["/odsustva/odobravanje"],
-  },
-  {
-    label: "Dodeljivanje odsustva",
-    image: businessImg,
-    desc: "Dodeljivanje i izmena dodeljenih odsustva",
-    href: "/odsustva/dodeljivanje",
-    minRole: Priviledges["/odsustva/dodeljivanje"],
-  },
-  {
-    label: "Administrator",
-    image: businessImg,
-    desc: "Odsustva - Administratorski pristup",
-    href: "/odsustva/administrator",
-    minRole: Priviledges["/odsustva/administrator"],
   },
 ];
 

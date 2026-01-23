@@ -13,6 +13,7 @@ const Login: React.FC = () => {
     if (authUser) {
       navigate("/");
     }
+    // eslint-disable-next-line
   }, [authUser]);
 
   const handleLoginWithGoogle = useGoogleLogin({

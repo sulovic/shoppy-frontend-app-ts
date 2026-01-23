@@ -4,7 +4,7 @@ import type { CodeResponse } from "@react-oauth/google";
 import { toast } from "react-toastify";
 import { jwtDecode } from "jwt-decode";
 import { AuthUserSchema } from "../schemas/schemas";
-import { handleApiError } from "../services/errorHandler";
+import { handleCustomErrors } from "../services/errorHandler";
 import { useNavigate } from "react-router-dom";
 
 interface AuthContextType {
@@ -35,7 +35,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setAccessToken(accessToken);
       }
     } catch (error) {
-      handleApiError(error);
+      handleCustomErrors(error);
     }
   };
 
@@ -44,7 +44,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const receivedAccessToken = await ApiPasswordLoginConnector(email, password);
       processAccessToken(receivedAccessToken);
       navigate("/");
-    } catch (error) {
+    } catch {
       //error already processed
     }
   };
@@ -54,7 +54,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const receivedAccessToken = await ApiGoogleLoginConnector(googleCode);
       processAccessToken(receivedAccessToken);
       navigate("/");
-    } catch (error) {
+    } catch {
       //error already processed
     }
   };
@@ -78,6 +78,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const newAccessToken = await ApiRefreshConnector();
       processAccessToken(newAccessToken);
     } catch (error) {
+      handleCustomErrors(error);
       setTimeout(() => navigate("/login"), 2000);
     }
   };
