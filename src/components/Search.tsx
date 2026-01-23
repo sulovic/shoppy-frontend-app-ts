@@ -6,11 +6,15 @@ const Search = ({ queryParams, setQueryParams }: { queryParams: QueryParams; set
   // Debounce update
   useEffect(() => {
     const timeout = setTimeout(() => {
-      setQueryParams((prev) => ({
-        ...prev,
-        search: searchValue || null,
-        page: 1,
-      }));
+      setQueryParams((prev) => {
+        const newSearch = searchValue || null;
+        if (prev.search === newSearch && prev.page === 1) return prev;
+        return {
+          ...prev,
+          search: newSearch,
+          page: 1,
+        };
+      });
     }, 500);
 
     return () => clearTimeout(timeout);
