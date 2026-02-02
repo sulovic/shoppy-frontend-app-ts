@@ -79,7 +79,7 @@ const UserMenu = ({ Links = [] }: { Links: AppLink[] }) => {
                     >
                       <Link to={link.href}>{link.label}</Link>
                     </li>
-                  )
+                  ),
               )}
               <div className="my-1 h-0.5 w-full bg-zinc-200"></div>
 

@@ -62,7 +62,14 @@ textarea {
 }
 
 select {
-  @apply block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-base text-gray-600 focus:border-sky-500 focus:ring-sky-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-sky-500 dark:focus:ring-sky-500;
+  @apply block w-full cursor-pointer rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-base text-gray-600
+    focus:border-sky-500 focus:ring-sky-500
+    dark:border-gray-600 dark:bg-gray-700 dark:text-white
+    dark:placeholder-gray-400 dark:focus:border-sky-500 dark:focus:ring-sky-500;
+}
+
+select:disabled {
+  @apply cursor-not-allowed opacity-60;
 }
 
 td {
@@ -70,8 +77,12 @@ td {
 }
 
 .button {
-  @apply min-w-24 rounded-sm px-4 py-2 font-medium text-white shadow-sm;
+  @apply min-w-24 rounded-sm px-4 py-2 font-medium text-white shadow-sm cursor-pointer;
 }
+.button:disabled {
+  @apply opacity-65 cursor-not-allowed;
+}
+
 .button:hover {
   @apply opacity-80;
 }
