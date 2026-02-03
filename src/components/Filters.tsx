@@ -13,10 +13,10 @@ const Filters = ({ filtersOptions, queryParams, setQueryParams }: { filtersOptio
               setQueryParams((prev) => {
                 const filters = prev.filters ?? {};
                 if (filters[filterKey] === value) return prev;
-
                 return {
                   ...prev,
                   filters: { ...filters, [filterKey]: value },
+                  page: 1,
                 };
               });
             }}

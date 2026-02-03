@@ -103,7 +103,7 @@ const NewUser = () => {
               </div>
               <div className="mb-3">
                 <label htmlFor="email">Email</label>
-                <input type="email" id="email" aria-describedby="Email" value={newUser.email} onChange={handleChange} maxLength={64} minLength={5} required />
+                <input type="email" autoComplete="email" id="email" aria-describedby="Email" value={newUser.email} onChange={handleChange} maxLength={64} minLength={5} required />
               </div>
               <div className="mb-3 ">
                 <label htmlFor="roleId">Ovlašćenja korisnika</label>

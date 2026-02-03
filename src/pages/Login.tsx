@@ -40,14 +40,14 @@ const Login = () => {
     !authUser && (
       <div className="flex h-dvh w-full items-center justify-center bg-zinc-200 dark:bg-zinc-900">
         <div className="mx-4 flex flex-col items-center justify-center gap-4 rounded-xl bg-white p-8 text-center shadow-2xl md:min-w-96 dark:bg-zinc-600">
-          <h3>Sales App Admin</h3>
+          <h3>Shoppy Business Apps</h3>
 
           <div className="my-2 h-0.5 w-full bg-zinc-400"></div>
 
           <h5>Prijavite se pomoću Google naloga</h5>
           <div className="flex w-full justify-center">
             <div className="float-end p-2">
-              <button onClick={handleLoginWithGoogle} className="flex items-center gap-3 bg-sky-500 hover:bg-sky-600 text-white px-4 py-2 rounded-lg shadow-md transition">
+              <button onClick={handleLoginWithGoogle} className="flex items-center gap-3 bg-sky-500 hover:bg-sky-600 text-white px-4 py-2 rounded-lg shadow-md transition cursor-pointer">
                 <svg width="18" height="18" viewBox="0 0 48 48">
                   <path fill="#EA4335" d="M24 9.5c3.54 0 6.65 1.22 9.13 3.63l6.82-6.82C35.25 2.42 30.04 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.91 6.14C12.69 13 17.91 9.5 24 9.5z" />
                   <path fill="#4285F4" d="M46.5 24.5c0-1.57-.15-3.08-.43-4.5H24v9h12.65c-.55 2.82-2.19 5.2-4.65 6.82l7.15 5.56C43.91 38.05 46.5 31.7 46.5 24.5z" />
@@ -55,7 +55,7 @@ const Login = () => {
                   <path fill="#34A853" d="M24 48c6.04 0 11.25-2.02 15.15-5.48l-7.15-5.56c-2 1.29-4.57 2.04-8 2.04-6.09 0-11.31-3.49-13.53-8.54l-7.91 6.14C6.51 42.62 14.62 48 24 48z" />
                 </svg>
 
-                <span className="font-medium">Sign in with Google</span>
+                <span className="font-medium">Nastavi sa Google nalogom</span>
               </button>
             </div>
           </div>

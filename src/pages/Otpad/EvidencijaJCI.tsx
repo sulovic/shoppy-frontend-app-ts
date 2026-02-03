@@ -15,6 +15,7 @@ import dataServiceBuilder from "../../services/dataService";
 
 const EvidencijaJCI: React.FC = () => {
   const [showSpinner, setShowSpinner] = useState(false);
+  const [count, setCount] = useState(0);
   const [tableData, setTableData] = useState<JciPodaci[] | null>(null);
   const [updateData, setUpdateData] = useState<JciPodaci | null>(null);
   const [showModal, setShowModal] = useState(false);
@@ -35,7 +36,7 @@ const EvidencijaJCI: React.FC = () => {
     try {
       const [response, jciCount] = await Promise.all([jciService.getAllResources(queryParams), jciService.getAllResourcesCount(queryParams)]);
       setTableData(response.data.data);
-      setQueryParams({ ...queryParams, count: jciCount.data.count });
+      setCount(jciCount.data.count);
     } catch (error) {
       handleCustomErrors(error as string);
     } finally {
@@ -46,7 +47,7 @@ const EvidencijaJCI: React.FC = () => {
   useEffect(() => {
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [queryParams.filters, queryParams.search, queryParams.page, queryParams.limit, queryParams.sortOrder, queryParams.sortBy]);
+  }, [queryParams]);
 
   const handleEdit = (row: JciPodaci) => {
     setUpdateData(row);
@@ -150,7 +151,7 @@ const EvidencijaJCI: React.FC = () => {
       )}
 
       <div className="flex justify-end gap-4 mb-4">
-        <Pagination queryParams={queryParams} setQueryParams={setQueryParams} />
+        <Pagination queryParams={queryParams} setQueryParams={setQueryParams} count={count} />
       </div>
 
       {showModal && <Modal onOK={handleDeleteOK} onCancel={handleCancel} title="Potvrda brisanja JCI" question={`Da li ste sigurni da želite da obrišete JCI: ${updateData?.brojJci}?`} />}

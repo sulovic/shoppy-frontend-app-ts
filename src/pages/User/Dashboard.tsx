@@ -14,6 +14,7 @@ import Filters from "../../components/Filters";
 
 const Dashboard: React.FC = () => {
   const [tableData, setTableData] = useState<UserData[]>([]);
+  const [count, setCount] = useState(0);
   const [showSpinner, setShowSpinner] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [showModalEditUser, setShowModalEditUser] = useState(false);
@@ -35,7 +36,7 @@ const Dashboard: React.FC = () => {
     try {
       const [response, usersCount] = await Promise.all([userService.getAllResources(queryParams), userService.getAllResourcesCount(queryParams)]);
       setTableData(response.data.data || []);
-      setQueryParams({ ...queryParams, count: usersCount.data.count });
+      setCount(usersCount.data.count);
     } catch (error) {
       handleCustomErrors(error as string);
     } finally {
@@ -47,7 +48,7 @@ const Dashboard: React.FC = () => {
     fetchData();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [queryParams.filters, queryParams.search, queryParams.page, queryParams.limit, queryParams.sortOrder, queryParams.sortBy]);
+  }, [queryParams]);
 
   const handleDeleteOK = async () => {
     setShowSpinner(true);
@@ -143,7 +144,7 @@ const Dashboard: React.FC = () => {
               </table>
 
               <div className="flex justify-end gap-4 my-4">
-                <Pagination queryParams={queryParams} setQueryParams={setQueryParams} />
+                <Pagination queryParams={queryParams} setQueryParams={setQueryParams} count={count} />
               </div>
 
               {showModal && (

@@ -7,7 +7,6 @@ export const QueryParamsSchema = z.object({
   sortOrder: z.enum(["asc", "desc"]).nullable().optional(),
   limit: z.number(),
   page: z.number(),
-  count: z.number().nullable().optional(),
   search: z.string().nullable().optional(),
   filters: z.record(z.string(), z.string()).nullable().optional(),
 });
@@ -89,7 +88,7 @@ export const JciProizvodiSchema = z.object({
     z.object({
       masa: z.number("Masa is required"),
       VrstaOtpada: VrstaOtpadaSchema,
-    })
+    }),
   ),
 });
 
@@ -104,7 +103,7 @@ export const JciPodaciSchema = z.object({
     z.object({
       kolicina: z.number("Kolicina is required"),
       proizvod: JciProizvodiSchema.omit({ ProizvodMasaOtpada: true }),
-    })
+    }),
   ),
 });
 

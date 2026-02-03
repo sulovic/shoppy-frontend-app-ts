@@ -13,6 +13,7 @@ import Pagination from "../../components/Pagination";
 
 const DelovodnikReklamacija = () => {
   const [tableData, setTableData] = useState<Reklamacija[]>([]);
+  const [count, setCount] = useState(0);
   const [showSpinner, setShowSpinner] = useState(false);
   const [selectedRowFiles, setSelectedRowFiles] = useState<Reklamacija | null>(null);
   const [showHandleFiles, setShowHandleFiles] = useState(false);
@@ -53,7 +54,7 @@ const DelovodnikReklamacija = () => {
     try {
       const [response, reklamacijeCount] = await Promise.all([reklamacijeService.getAllResources(queryParams), reklamacijeService.getAllResourcesCount(queryParams)]);
       setTableData(response.data.data);
-      setQueryParams({ ...queryParams, count: reklamacijeCount.data.count });
+      setCount(reklamacijeCount.data.count);
     } catch (error) {
       handleCustomErrors(error as string);
     } finally {
@@ -64,7 +65,7 @@ const DelovodnikReklamacija = () => {
   useEffect(() => {
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [queryParams.filters, queryParams.search, queryParams.page, queryParams.limit, queryParams.sortOrder, queryParams.sortBy]);
+  }, [queryParams]);
 
   const handleShowFiles = (row: Reklamacija) => {
     setSelectedRowFiles(row);
@@ -165,7 +166,7 @@ const DelovodnikReklamacija = () => {
             </tbody>
           </table>
           <div className="flex justify-end gap-4 mb-4">
-            <Pagination queryParams={queryParams} setQueryParams={setQueryParams} />
+            <Pagination queryParams={queryParams} setQueryParams={setQueryParams} count={count} />
           </div>
         </div>
       ) : (

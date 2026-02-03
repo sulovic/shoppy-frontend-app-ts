@@ -17,6 +17,7 @@ import dataServiceBuilder from "../../services/dataService";
 
 const AktivnePorudzbine = () => {
   const [tableData, setTableData] = useState<Porudzbina[] | null>(null);
+  const [count, setCount] = useState(0);
   const [selectedRowFiles, setSelectedRowFiles] = useState<Porudzbina | null>(null);
   const [selectedRowSadrzaj, setSelectedRowSadrzaj] = useState<Porudzbina | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -33,14 +34,16 @@ const AktivnePorudzbine = () => {
   const filtersOptions: FiltersOptions = {
     zemlja: ["SRBIJA", "CRNA_GORA"],
     status: ["NACRT", "PROIZVODNJA", "TRANZIT", "PRIMLJENA"],
+    godina: Array.from({ length: 10 }, (_, i) => (new Date().getFullYear() - 8 + i).toString()),
   };
 
   const fetchData = async () => {
     setShowSpinner(true);
 
     try {
-      const response = await porudzbineService.getAllResources(queryParams);
+      const [response, jciCount] = await Promise.all([porudzbineService.getAllResources(queryParams), porudzbineService.getAllResourcesCount(queryParams)]);
       setTableData(response?.data.data);
+      setCount(jciCount.data.count);
     } catch (error) {
       handleCustomErrors(error);
     } finally {
@@ -51,7 +54,7 @@ const AktivnePorudzbine = () => {
   useEffect(() => {
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [queryParams.filters, queryParams.search, queryParams.page, queryParams.limit, queryParams.sortOrder, queryParams.sortBy]);
+  }, [queryParams]);
 
   const handleEdit = (row: Porudzbina) => {
     setUpdateData(row);
@@ -140,7 +143,7 @@ const AktivnePorudzbine = () => {
                   <p key={`brojKontejnera_${index}`}>{row?.brojKontejnera}</p>
                   <h5>Špediter:</h5>
                   <p key={`spediter_${index}`}>{row?.spediter}</p>
-                  <h5>Datum porudžebine:</h5>
+                  <h5>Datum porudžbine:</h5>
                   <p key={`datumPorudzbine_${index}`}>{row?.datumPorudzbine && format(row?.datumPorudzbine, "dd.MM.yyyy")}</p>
                   <h5>Datum polaska:</h5>
                   <p key={`datumPolaska_${index}`}>{row?.datumPolaska && format(row?.datumPolaska, "dd.MM.yyyy")}</p>
@@ -169,7 +172,6 @@ const AktivnePorudzbine = () => {
                 </div>
 
                 <div className="col-span-2 grid grid-cols-1 content-end items-end gap-2 sm:col-span-4 sm:grid-cols-2">
-                  <h5 className="sm:col-span-2">Akcije:</h5>
                   <div className="flex justify-end gap-2 sm:col-span-2">
                     <button type="button" className="button button-sky" aria-label="Izmeni" onClick={() => handleEdit(row)}>
                       Izmeni
@@ -187,7 +189,7 @@ const AktivnePorudzbine = () => {
         <h4 className="my-4 text-zinc-600 ">Nemate aktivne porudžbine...</h4>
       )}
       <div className="flex justify-end gap-4 mb-4">
-        <Pagination queryParams={queryParams} setQueryParams={setQueryParams} />
+        <Pagination queryParams={queryParams} setQueryParams={setQueryParams} count={count} />
       </div>
       {selectedRowFiles && showHandleFiles && <HandleFiles url="nabavke/porudzbine" id={selectedRowFiles.id} dataWithFiles={selectedRowFiles} fetchData={fetchData} setShowHandleFiles={setShowHandleFiles} />}
       {selectedRowSadrzaj && showSadrzaj && <SadrzajPorudzbine porudzbina={selectedRowSadrzaj} setShowSadrzaj={setShowSadrzaj} fetchData={fetchData} />}

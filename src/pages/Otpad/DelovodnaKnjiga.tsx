@@ -21,6 +21,7 @@ type DelovodnikData = {
 const DelovodnaKnjiga: React.FC = () => {
   const [showSpinner, setShowSpinner] = useState(false);
   const [tableData, setTableData] = useState<DelovodnikData[]>([]);
+  const [count, setCount] = useState(0);
   const [vrsteOtpada, setVrsteOtpada] = useState<VrstaOtpada[] | null>(null);
   const axiosPrivate = useAxiosPrivate();
   const tableRef = useRef<HTMLTableElement | null>(null);
@@ -40,7 +41,7 @@ const DelovodnaKnjiga: React.FC = () => {
     try {
       const [response, jciCount] = await Promise.all([vrsteOtpadaService.getAllResources(null), vrsteOtpadaService.getAllResourcesCount(null)]);
       setVrsteOtpada(response?.data.data);
-      setQueryParams({ ...queryParams, count: jciCount.data.count });
+      setCount(jciCount.data.count);
     } catch (error) {
       handleCustomErrors(error);
     } finally {
@@ -68,7 +69,7 @@ const DelovodnaKnjiga: React.FC = () => {
   useEffect(() => {
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [queryParams.filters, queryParams.search, queryParams.page, queryParams.limit, queryParams.sortOrder, queryParams.sortBy]);
+  }, [queryParams]);
 
   let sumUvezenaKolicina = 0;
   let sumIzvezenaKolicina = 0;
@@ -159,7 +160,7 @@ const DelovodnaKnjiga: React.FC = () => {
             </table>
           </div>
           <div className="flex justify-end gap-4 my-4">
-            <Pagination queryParams={queryParams} setQueryParams={setQueryParams} />
+            <Pagination queryParams={queryParams} setQueryParams={setQueryParams} count={count} />
           </div>
         </div>
       ) : (

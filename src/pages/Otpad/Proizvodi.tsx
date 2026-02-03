@@ -13,6 +13,7 @@ import Pagination from "../../components/Pagination";
 
 const Proizvodi: React.FC = () => {
   const [tableData, setTableData] = useState<JciProizvodi[] | null>(null);
+  const [count, setCount] = useState(0);
   const [showSpinner, setShowSpinner] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [showModalEdit, setShowModalEdit] = useState(false);
@@ -28,7 +29,7 @@ const Proizvodi: React.FC = () => {
     try {
       const [response, proizvodiCount] = await Promise.all([proizvodiService.getAllResources(queryParams), proizvodiService.getAllResourcesCount(queryParams)]);
       setTableData(response.data.data);
-      setQueryParams({ ...queryParams, count: proizvodiCount.data.count });
+      setCount(proizvodiCount.data.count);
     } catch (error) {
       handleCustomErrors(error as string);
     } finally {
@@ -39,7 +40,7 @@ const Proizvodi: React.FC = () => {
   useEffect(() => {
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [queryParams.filters, queryParams.search, queryParams.page, queryParams.limit, queryParams.sortOrder, queryParams.sortBy]);
+  }, [queryParams]);
 
   const handleEdit = (row: JciProizvodi) => {
     setUpdateData(row);
@@ -125,7 +126,7 @@ const Proizvodi: React.FC = () => {
                 </table>
               </div>
               <div className="flex justify-end gap-4 my-4 ">
-                <Pagination queryParams={queryParams} setQueryParams={setQueryParams} />
+                <Pagination queryParams={queryParams} setQueryParams={setQueryParams} count={count} />
               </div>
             </div>
           </div>

@@ -12,12 +12,13 @@ import { useNavigate } from "react-router-dom";
 
 const Administrator = () => {
   const [tableData, setTableData] = useState<Reklamacija[]>([]);
+  const [count, setCount] = useState(0);
+
   const [showSpinner, setShowSpinner] = useState(false);
   const navigate = useNavigate();
   const axiosPrivate = useAxiosPrivate();
   const { authUser } = useAuth();
   const reklamacijeService = dataServiceBuilder<Reklamacija>(axiosPrivate, authUser, "reklamacije");
-
   const [queryParams, setQueryParams] = useState<QueryParams>({ filters: { statusReklamacije: "*", zemljaReklamacije: "*", godina: "*" }, page: 1, limit: 20, sortOrder: "desc", sortBy: "datumPrijema" });
   const filtersOptions: FiltersOptions = {
     zemljaReklamacije: ["SRBIJA", "CRNA_GORA"],
@@ -30,7 +31,7 @@ const Administrator = () => {
     try {
       const [response, reklamacijeCount] = await Promise.all([reklamacijeService.getAllResources(queryParams), reklamacijeService.getAllResourcesCount(queryParams)]);
       setTableData(response.data.data);
-      setQueryParams({ ...queryParams, count: reklamacijeCount.data.count });
+      setCount(reklamacijeCount.data.count);
     } catch (error) {
       handleCustomErrors(error as string);
     } finally {
@@ -41,7 +42,7 @@ const Administrator = () => {
   useEffect(() => {
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [queryParams.filters, queryParams.search, queryParams.page, queryParams.limit, queryParams.sortOrder, queryParams.sortBy]);
+  }, [queryParams]);
 
   return (
     <>
@@ -57,7 +58,7 @@ const Administrator = () => {
       </div>
       {showSpinner ? <Spinner /> : tableData.length ? <ReklamacijeTable tableData={tableData} fetchData={fetchData} /> : <h4 className="my-4 text-zinc-600 ">Nema reklamacija koje su u sistemu...</h4>}
       <div className="flex justify-end gap-4 mb-4">
-        <Pagination queryParams={queryParams} setQueryParams={setQueryParams} />
+        <Pagination queryParams={queryParams} setQueryParams={setQueryParams} count={count} />
       </div>
     </>
   );

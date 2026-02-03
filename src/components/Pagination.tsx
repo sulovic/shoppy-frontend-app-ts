@@ -1,5 +1,5 @@
-const Pagination = ({ queryParams, setQueryParams }: { queryParams: QueryParams; setQueryParams: React.Dispatch<React.SetStateAction<QueryParams>> }) => {
-  const { page = 1, limit = 20, count = 0 } = queryParams;
+const Pagination = ({ queryParams, setQueryParams, count }: { queryParams: QueryParams; setQueryParams: React.Dispatch<React.SetStateAction<QueryParams>>; count: number }) => {
+  const { page = 1, limit = 20 } = queryParams;
   const totalPages = Math.max(1, Math.ceil((count ?? 0) / limit));
   const limitOptions = [10, 20, 50, 100];
 
@@ -39,7 +39,7 @@ const Pagination = ({ queryParams, setQueryParams }: { queryParams: QueryParams;
         </button>
       </div>
       <div>
-        <select value={limit} aria-label="Limit per page" onChange={(e) => setQueryParams((prev) => ({ ...prev, page: 1, limit: Number(e.target.value) }))}>
+        <select name="limit" value={limit} aria-label="Limit per page" onChange={(e) => setQueryParams((prev) => ({ ...prev, page: 1, limit: Number(e.target.value) }))}>
           {limitOptions.map((limitOption) => (
             <option key={limitOption} value={limitOption} aria-label={limitOption.toString()}>
               {limitOption}

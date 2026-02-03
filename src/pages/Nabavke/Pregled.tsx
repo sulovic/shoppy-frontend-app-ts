@@ -22,6 +22,7 @@ const Pregled = () => {
   const filtersOptions: FiltersOptions = {
     zemlja: ["SRBIJA", "CRNA_GORA"],
     status: ["NACRT", "PROIZVODNJA", "TRANZIT", "PRIMLJENA"],
+    godina: Array.from({ length: 10 }, (_, i) => (new Date().getFullYear() - 8 + i).toString()),
   };
 
   const fetchData = async () => {
@@ -65,7 +66,7 @@ const Pregled = () => {
   useEffect(() => {
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [queryParams.filters, queryParams.search, queryParams.page, queryParams.limit, queryParams.sortOrder, queryParams.sortBy]);
+  }, [queryParams]);
 
   return (
     <>
