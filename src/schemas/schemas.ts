@@ -19,6 +19,7 @@ export const UserDataSchema = z.object({
   lastName: z.string().min(3, "Last name is required"),
   email: z
     .string()
+    .trim()
     .min(5, "Email is required")
     .max(254, "Email is too long")
     .regex(/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/, "Email contains invalid characters or format"),
@@ -52,6 +53,7 @@ export const ReklamacijaSchema = z.object({
     .regex(/^[\d+\s\-()/]+$/, "Telefon contains invalid characters"),
   email: z
     .string()
+    .trim()
     .min(5, "Email is too short")
     .max(254, "Email is too long")
     .regex(/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/, "Email contains invalid characters or format")
