@@ -31,7 +31,7 @@ const SadrzajPorudzbine = ({ porudzbina, setShowSadrzaj, fetchData }: { porudzbi
   const fetchProizvodi = async () => {
     setShowSpinner(true);
     try {
-      const response = await proizvodiService.getAllResources(null);
+      const response = await proizvodiService.getAllResources({ sortOrder: "asc", sortBy: "SKU", limit: 10000, page: 1 });
       setProizvodi(response?.data.data);
     } catch (error) {
       handleCustomErrors(error);
@@ -155,8 +155,8 @@ const SadrzajPorudzbine = ({ porudzbina, setShowSadrzaj, fetchData }: { porudzbi
                                 <td>{row?.proizvod?.naziv}</td>
                                 <td>{row?.proizvod?.SKU}</td>
                                 <td>{row?.kolicina}</td>
-                                <td>{row?.cena}</td>
-                                <td>{(row?.kolicina * row?.cena).toFixed(2)}</td>
+                                <td>{new Intl.NumberFormat("sr-RS", { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(row.cena)}</td>
+                                <td>{new Intl.NumberFormat("sr-RS", { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(row.kolicina * row.cena)}</td>
                                 <td className="text-center">
                                   <button type="button" className="button button-red" aria-label="Delete" onClick={() => handleDeleteProizvod(row)}>
                                     Obriši
@@ -174,7 +174,12 @@ const SadrzajPorudzbine = ({ porudzbina, setShowSadrzaj, fetchData }: { porudzbi
                             <td></td>
                             <td>{ukupnaKolicina}</td>
                             <td></td>
-                            <td>{ukupnaVrednost.toFixed(2)}</td>
+                            <td>
+                              {new Intl.NumberFormat("sr-RS", {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2,
+                              }).format(ukupnaVrednost)}
+                            </td>
                             <td></td>
                           </tr>
                         </tbody>

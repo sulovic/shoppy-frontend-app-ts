@@ -147,11 +147,13 @@ const ReklamacijeActions = ({ row, fetchData }: { row: Reklamacija; fetchData: (
         return;
       }
 
+      // Delete files if there are any
       if (deleteData && deleteData.files && deleteData.files.length > 0) {
         reklamacijeFilesService.deleteFiles({ path: "reklamacije", files: deleteData.files });
       }
-      const parsedReklamacija = ReklamacijaSchema.parse(deleteData);
 
+      // Delete reklamacija data
+      const parsedReklamacija = ReklamacijaSchema.parse(deleteData);
       const response = await reklamacijeService.deleteResource(parsedReklamacija.idReklamacije);
       const deletedReklamacija = response.data.data;
 

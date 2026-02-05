@@ -80,7 +80,7 @@ const NabavkeProizvodi = () => {
   return (
     <>
       <h3 className="mt-4">Proizvodi</h3>
-      <div className="flex justify-end px-3">
+      <div className="flex justify-end">
         <button type="button" className="button button-sky " aria-label="Nov proizvod" onClick={() => navigate("/nabavke/nov-proizvod")}>
           Dodaj novi proizvod
         </button>
@@ -92,43 +92,42 @@ const NabavkeProizvodi = () => {
         <Spinner />
       ) : tableData ? (
         <>
-          <div>
-            <div className="relative my-4 overflow-x-auto shadow-lg sm:rounded-lg">
-              <div className="table-responsive p-3">
-                <table className="w-full text-left text-sm text-zinc-500 rtl:text-right dark:text-zinc-400 ">
-                  <thead className="text-s bg-zinc-200 uppercase text-zinc-600 dark:bg-zinc-700 dark:text-zinc-400">
-                    <tr>
-                      <th className="px-6 py-3">SKU</th>
-                      <th className="px-6 py-3">Naziv proizvoda</th>
-                      <th className="px-6 py-3">Izmeni</th>
-                      <th className="px-6 py-3">Obriši</th>
+          <div className="relative my-4 overflow-x-auto shadow-lg sm:rounded-lg">
+            <div className="table-responsive">
+              <table className="w-full text-left text-sm text-zinc-500 rtl:text-right dark:text-zinc-400 ">
+                <thead className="text-s bg-zinc-200 uppercase text-zinc-600 dark:bg-zinc-700 dark:text-zinc-400">
+                  <tr>
+                    <th className="px-6 py-3">SKU</th>
+                    <th className="px-6 py-3">Naziv proizvoda</th>
+                    <th className="px-6 py-3">Izmeni</th>
+                    <th className="px-6 py-3">Obriši</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {tableData.map((row, index) => (
+                    <tr key={index} className="border-b bg-white hover:bg-zinc-100! dark:border-zinc-700 dark:bg-zinc-800">
+                      <td key={`SKU_${index}`}>{row?.SKU}</td>
+                      <td key={`naziv_${index}`}>{row?.naziv}</td>
+                      <td key={`edit_${index}`} className="text-center">
+                        <button type="button" className="button button-sky float-left" aria-label="EditUser" onClick={() => handleEdit(row)}>
+                          Izmeni
+                        </button>
+                      </td>
+                      <td key={`delete_${index}`} className="text-center">
+                        <button type="button" className="button button-red float-left" aria-label="Delete" disabled={!authUser?.superAdmin} onClick={() => handleDelete(row)}>
+                          Obriši
+                        </button>
+                      </td>
                     </tr>
-                  </thead>
-                  <tbody>
-                    {tableData.map((row, index) => (
-                      <tr key={index} className="border-b bg-white hover:bg-zinc-100! dark:border-zinc-700 dark:bg-zinc-800">
-                        <td key={`SKU_${index}`}>{row?.SKU}</td>
-                        <td key={`naziv_${index}`}>{row?.naziv}</td>
-                        <td key={`edit_${index}`} className="text-center">
-                          <button type="button" className="button button-sky float-left" aria-label="EditUser" onClick={() => handleEdit(row)}>
-                            Izmeni
-                          </button>
-                        </td>
-                        <td key={`delete_${index}`} className="text-center">
-                          <button type="button" className="button button-red float-left" aria-label="Delete" disabled={!authUser?.superAdmin} onClick={() => handleDelete(row)}>
-                            Obriši
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-              <div className="flex justify-end gap-4 my-4 ">
-                <Pagination queryParams={queryParams} setQueryParams={setQueryParams} count={count} />
-              </div>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <div className="flex justify-end gap-4 my-4 ">
+              <Pagination queryParams={queryParams} setQueryParams={setQueryParams} count={count} />
             </div>
           </div>
+
           {showModal && <Modal onOK={handleDeleteOK} onCancel={handleCancel} title="Potvrda brisanja vrste otpada" question={`Da li ste sigurni da želite da obrišete proizvod: ${updateData?.naziv}?`} />}
 
           {updateData && showModalEdit && <ModalEditProizvod row={updateData} setShowModalEdit={setShowModalEdit} fetchData={fetchData} />}

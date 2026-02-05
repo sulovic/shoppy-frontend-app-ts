@@ -94,7 +94,7 @@ const Proizvodi: React.FC = () => {
       ) : tableData?.length ? (
         <>
           <div>
-            <div className="relative my-4 overflow-x-auto shadow-lg sm:rounded-lg">
+            <div className="relative mb-4 overflow-x-auto shadow-lg sm:rounded-lg">
               <div className="table-responsive ">
                 <table className="w-full text-left text-sm text-zinc-500 rtl:text-right dark:text-zinc-400 ">
                   <thead className="text-s bg-zinc-200 uppercase text-zinc-600 dark:bg-zinc-700 dark:text-zinc-400">
