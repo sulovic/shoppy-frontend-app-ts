@@ -40,8 +40,12 @@ export const handleApiError = (error: AxiosError) => {
       break;
 
     case 401:
-      toast.warning(message.error || "Niste autorizovani da pristupite ovoj akciji.", { position: "top-center" });
-      break;
+      if (message.error === "Unauthorized - Refresh token not presented") {
+        break;
+      } else {
+        toast.warning(message.error || "Niste autorizovani da pristupite ovoj akciji.", { position: "top-center" });
+        break;
+      }
 
     case 403:
       toast.error(message.error || "Nemate ovlašćenja za ovu akciju.", { position: "top-center" });

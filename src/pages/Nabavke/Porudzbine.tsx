@@ -194,7 +194,7 @@ const AktivnePorudzbine = () => {
       {selectedRowFiles && showHandleFiles && <HandleFiles url="nabavke/porudzbine" id={selectedRowFiles.id} dataWithFiles={selectedRowFiles} fetchData={fetchData} setShowHandleFiles={setShowHandleFiles} />}
       {selectedRowSadrzaj && showSadrzaj && <SadrzajPorudzbine porudzbina={selectedRowSadrzaj} setShowSadrzaj={setShowSadrzaj} fetchData={fetchData} />}
 
-      {showDeleteModal && <Modal onOK={handleDeleteOK} onCancel={handleDeleteCancel} title="Potvrda brisanja porudžebine" question={`Da li ste sigurni da želite da obrišete porudžebinu: ${updateData?.id}?`} />}
+      {showDeleteModal && <Modal onOK={handleDeleteOK} onCancel={handleDeleteCancel} title="Potvrda brisanja porudžebine" question={`Da li ste sigurni da želite da obrišete porudžebinu: ${updateData?.proFaktura}?`} />}
 
       {updateData && showEditModal && <ModalEditPorudzbina setShowEditModal={setShowEditModal} row={updateData} fetchData={fetchData} />}
     </>

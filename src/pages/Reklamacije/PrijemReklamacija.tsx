@@ -23,8 +23,6 @@ const PrijemReklamacija = () => {
     zemljaReklamacije: ["SRBIJA", "CRNA_GORA"],
   };
 
-  console.log(queryParams);
-
   const fetchData = async () => {
     setShowSpinner(true);
     try {

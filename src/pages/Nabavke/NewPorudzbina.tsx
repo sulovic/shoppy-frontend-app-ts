@@ -124,7 +124,7 @@ const NewPorudzbina = () => {
               </div>
               <div className="md:col-span-2">
                 <label htmlFor="komentar">Komentar</label>
-                <textarea id="komentar" aria-describedby="Komentar" value={novaPorudzbina?.komentar || ""} onChange={handleChange} maxLength={512} required />
+                <textarea id="komentar" aria-describedby="Komentar" value={novaPorudzbina?.komentar || ""} onChange={handleChange} maxLength={512} />
               </div>
             </div>
 
