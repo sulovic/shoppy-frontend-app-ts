@@ -81,7 +81,7 @@ const SlanjeSMS = () => {
   const handleSendSmsOK = async () => {
     setShowSpinner(true);
 
-    const smsSentReklamacija = { ...reklamacija!, brojReklamacije: reklamacija!.brojReklamacije!, sms_sent: true };
+    const smsSentReklamacija: Reklamacija = { ...reklamacija!, smsSent: true };
 
     try {
       const parsedReklamacija = ReklamacijaSchema.parse(smsSentReklamacija);
