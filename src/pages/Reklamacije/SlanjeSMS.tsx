@@ -55,16 +55,21 @@ const SlanjeSMS = () => {
     setReklamacija(row);
     switch (row?.statusReklamacije) {
       case "OBRADA":
-        setSmsText(`Reklamacija ${row?.brojReklamacije} za kupca ${row?.imePrezime} je PRIMLJENA. Status reklamacije možete pratiti na linku ${import.meta.env.REACT_APP_BASE_URL}/reklamacije/pregled-reklamacije/${row?.brojReklamacije}`);
+        setSmsText(`Reklamacija ${row?.brojReklamacije} za kupca ${row?.imePrezime} je PRIMLJENA. Status reklamacije možete pratiti na linku ${import.meta.env.VITE_APP_BASE_URL}/reklamacije/pregled-reklamacije/${row?.brojReklamacije}`);
         break;
       case "OPRAVDANA":
         setSmsText(
-          `Reklamacija ${row?.brojReklamacije} za kupca ${row?.imePrezime} je OPRAVDANA. Odgovor na reklamaciju možete pogledati na linku ${import.meta.env.REACT_APP_BASE_URL}/reklamacije/pregled-reklamacije/${row?.brojReklamacije}`,
+          `Reklamacija ${row?.brojReklamacije} za kupca ${row?.imePrezime} je OPRAVDANA. Odgovor na reklamaciju možete pogledati na linku ${import.meta.env.VITE_APP_BASE_URL}/reklamacije/pregled-reklamacije/${row?.brojReklamacije}`,
         );
         break;
       case "NEOPRAVDANA":
         setSmsText(
-          `Reklamacija ${row?.brojReklamacije} za kupca ${row?.imePrezime} je NEOPRAVDANA. Odgovor na reklamaciju možete pogledati na linku ${import.meta.env.REACT_APP_BASE_URL}/reklamacije/pregled-reklamacije/${row?.brojReklamacije}`,
+          `Reklamacija ${row?.brojReklamacije} za kupca ${row?.imePrezime} je NEOPRAVDANA. Odgovor na reklamaciju možete pogledati na linku ${import.meta.env.VITE_APP_BASE_URL}/reklamacije/pregled-reklamacije/${row?.brojReklamacije}`,
+        );
+        break;
+      case "DODATNI_ROK":
+        setSmsText(
+          `Za reklamaciju ${row?.brojReklamacije} za kupca ${row?.imePrezime} je potreban dodatni rok za rešavanje. Status reklamacije možete pogledati na linku ${import.meta.env.VITE_APP_BASE_URL}/reklamacije/pregled-reklamacije/${row?.brojReklamacije}`,
         );
         break;
       default:
