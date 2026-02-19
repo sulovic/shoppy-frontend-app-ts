@@ -40,7 +40,7 @@ export const handleApiError = (error: AxiosError) => {
       break;
 
     case 401:
-      if (message.error === "Unauthorized - Refresh token not presented") {
+      if (message.error.toLocaleLowerCase().includes("refresh")) {
         break;
       } else {
         toast.warning(message.error || "Niste autorizovani da pristupite ovoj akciji.", { position: "top-center" });
