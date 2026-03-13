@@ -28,8 +28,7 @@ const HandleFiles = <T extends { files?: string[] | null | undefined }>({
   const [showSpinner, setShowSpinner] = useState<boolean>(false);
   const [editedData, setEditedData] = useState<T>(dataWithFiles);
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
-  const [formFiles, setFormFiles] = useState(new FormData());
-  const [uploadFileNames, setUploadFileNames] = useState<string[]>([]);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const axiosPrivate = useAxiosPrivate();
   const { authUser } = useAuth();
@@ -74,44 +73,24 @@ const HandleFiles = <T extends { files?: string[] | null | undefined }>({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setShowSpinner(true);
+
+    if (selectedFiles.length === 0) return;
+
+    const formData = new FormData();
+    selectedFiles.forEach((file) => formData.append("files", file));
 
     try {
-      if (uploadFileNames.length === 0) {
-        toast.warn("Izaberite bar jednu datoteku", {
-          position: "top-center",
-        });
-        return;
-      }
-      // Check files for duplicates
-
-      const existingFiles = editedData.files ?? [];
-      const newFileNames = [...existingFiles];
-
-      for (const uploadFileName of uploadFileNames) {
-        if (!newFileNames.includes(uploadFileName)) {
-          newFileNames.push(uploadFileName);
-        }
-      }
-
-      const updatedData = {
-        ...editedData,
-        files: newFileNames,
-      };
-      //Upload files
-      await uploadService.uploadFiles({ formData: formFiles });
-      // Update resource data
+      setShowSpinner(true);
+      await uploadService.uploadFiles({ formData }); // now it has real File objects
+      // update your resource after upload
+      const updatedFiles = [...(editedData.files ?? []), ...selectedFiles.map((f) => f.name)];
+      const updatedData = { ...editedData, files: updatedFiles };
       const uploadedData = await dataService.updateResource(id, updatedData);
 
-      toast.success(`Izmena je uspešno sačuvana !`, {
-        position: "top-center",
-      });
       setEditedData(uploadedData.data.data);
-      setFormFiles(new FormData());
-      setUploadFileNames([]);
-      if (fileInputRef.current) {
-        fileInputRef.current.value = "";
-      }
+      setSelectedFiles([]);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+      toast.success("Datoteke su uspešno poslate!");
     } catch (error) {
       handleCustomErrors(error as string);
     } finally {
@@ -122,40 +101,25 @@ const HandleFiles = <T extends { files?: string[] | null | undefined }>({
 
   const handleAddFiles = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
-    const renamedFormFiles = new FormData();
+    if (!files) return;
 
-    if (files && files.length > 0 && files.length <= 5) {
-      const fileNames: string[] = [];
-
-      for (let i = 0; i < files.length; i++) {
-        const file = files[i];
-
-        if (Object.values(allowedFileTypes).includes(file.type)) {
-          // File type is allowed, proceed with appending to form data
-          const fileName = id + "-" + file.name.replace(/[^a-zA-Z0-9-.]/g, "");
-          fileNames.push(fileName);
-          const renamedFile = new File([file], fileName, { type: file.type });
-          renamedFormFiles.append(`files`, renamedFile);
-        } else {
-          // File type is not allowed, handle accordingly (e.g., show an error message)
-          toast.error(`Nije dozvoljena ekstenzija datoteke: ${file?.type} `, {
-            position: "top-center",
-          });
-        }
+    const validFiles: File[] = [];
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      if (Object.values(allowedFileTypes).includes(file.type)) {
+        const fileName = id + "-" + file.name.replace(/[^a-zA-Z0-9-.]/g, "");
+        validFiles.push(new File([file], fileName, { type: file.type }));
+      } else {
+        toast.error(`Nije dozvoljena ekstenzija datoteke: ${file.type}`);
       }
-      setFormFiles((prev) => {
-        const formData = new FormData();
-        prev.forEach((v, k) => formData.append(k, v));
-        renamedFormFiles.forEach((v, k) => formData.append(k, v));
-        return formData;
-      });
-      setUploadFileNames((prev) => [...prev, ...fileNames]);
-    } else {
-      toast.warn(`Možete dodati između 1 i 5 datoteka `, {
-        position: "top-center",
-      });
-      e.target.value = "";
     }
+
+    if (selectedFiles.length + validFiles.length > 5) {
+      toast.warn("Možete dodati maksimum 5 datoteka");
+      return;
+    }
+
+    setSelectedFiles((prev) => [...prev, ...validFiles]);
   };
 
   const handleCancel = () => {
@@ -205,7 +169,7 @@ const HandleFiles = <T extends { files?: string[] | null | undefined }>({
                         <input ref={fileInputRef} type="file" disabled={showSpinner} onChange={handleAddFiles} id="addFilesForm" multiple accept={allowedExtensions} />
                       </div>
                       <div className="mt-2 flex items-center justify-end">
-                        <button type="submit" disabled={uploadFileNames.length === 0 || showSpinner} className="button button-sky ms-2">
+                        <button type="submit" disabled={selectedFiles.length === 0 || showSpinner} className="button button-sky ms-2">
                           Dodaj
                         </button>
                       </div>
