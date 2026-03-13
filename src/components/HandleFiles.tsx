@@ -90,7 +90,9 @@ const HandleFiles = <T extends { files?: string[] | null | undefined }>({
       setEditedData(uploadedData.data.data);
       setSelectedFiles([]);
       if (fileInputRef.current) fileInputRef.current.value = "";
-      toast.success("Datoteke su uspešno poslate!");
+      toast.success("Datoteke su uspešno poslate!", {
+        position: "top-center",
+      });
     } catch (error) {
       handleCustomErrors(error as string);
     } finally {
@@ -110,12 +112,16 @@ const HandleFiles = <T extends { files?: string[] | null | undefined }>({
         const fileName = id + "-" + file.name.replace(/[^a-zA-Z0-9-.]/g, "");
         validFiles.push(new File([file], fileName, { type: file.type }));
       } else {
-        toast.error(`Nije dozvoljena ekstenzija datoteke: ${file.type}`);
+        toast.error(`Nije dozvoljena ekstenzija datoteke: ${file.type}`, {
+          position: "top-center",
+        });
       }
     }
 
     if (selectedFiles.length + validFiles.length > 5) {
-      toast.warn("Možete dodati maksimum 5 datoteka");
+      toast.warn("Možete dodati maksimum 5 datoteka", {
+        position: "top-center",
+      });
       return;
     }
 
