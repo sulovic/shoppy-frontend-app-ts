@@ -14,7 +14,7 @@ interface AuthContextType {
   setAccessToken: React.Dispatch<React.SetStateAction<string | null>>;
   handleGoogleLogin: (googleCode: CodeResponse) => Promise<void>;
   handleLogoutOK: () => Promise<void>;
-  refreshAccessToken: () => Promise<void>;
+  refreshAccessToken: () => Promise<string>;
   handlePasswordLogin: (email: string, password: string) => Promise<void>;
 }
 
@@ -73,12 +73,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const refreshAccessToken: () => Promise<void> = async () => {
+  const refreshAccessToken = async () => {
     try {
       const newAccessToken = await ApiRefreshConnector();
       processAccessToken(newAccessToken);
+      return newAccessToken;
     } catch {
       navigate("/login");
+      return "";
     }
   };
 

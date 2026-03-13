@@ -3,7 +3,6 @@ import Modal from "./Modal";
 import Spinner from "./Spinner";
 import { toast } from "react-toastify";
 import useAxiosPrivate from "../hooks/useAxiosPrivate";
-import useAxiosPrivateFiles from "../hooks/useAxiosPrivateFiles";
 import { allowedFileTypes } from "../config/appConfig";
 import { allowedExtensions } from "../config/appConfig";
 import { useAuth } from "../hooks/useAuth";
@@ -33,9 +32,8 @@ const HandleFiles = <T extends { files?: string[] | null | undefined }>({
   const [uploadFileNames, setUploadFileNames] = useState<string[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const axiosPrivate = useAxiosPrivate();
-  const axiosPrivateFiles = useAxiosPrivateFiles();
   const { authUser } = useAuth();
-  const uploadService = uploadServiceBuilder(axiosPrivateFiles, authUser, url);
+  const uploadService = uploadServiceBuilder(axiosPrivate, authUser, url);
   const deleteService = uploadServiceBuilder(axiosPrivate, authUser, url);
   const dataService = createDataService<T>(axiosPrivate, authUser, url);
 

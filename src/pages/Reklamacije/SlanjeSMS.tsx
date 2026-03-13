@@ -29,7 +29,6 @@ const SlanjeSMS = () => {
   const tableHeaders = ["Pregled reklamacije", "Pošalji SMS", "SMS je poslat", "Datum prijema", "Ime i prezime", "Naziv proizvoda", "Zemlja reklamacije", "Status reklamacije"];
   const filtersOptions: FiltersOptions = {
     zemljaReklamacije: ["SRBIJA", "CRNA_GORA"],
-    // statusReklamacije: ["PRIJEM", "OBRADA", "OPRAVDANA", "NEOPRAVDANA", "DODATNI_ROK"],
   };
   const tableRef = useRef<HTMLTableElement | null>(null);
 
