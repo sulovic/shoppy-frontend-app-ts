@@ -94,7 +94,7 @@ const DelovodnaKnjiga: React.FC = () => {
       <h3 className="mt-4">Delovodna knjiga</h3>
 
       <div className="flex justify-end gap-4">
-        <DownloadTableExcel filename="Delovodna knjiga" sheet="Delovodna knjiga" currentTableRef={tableRef.current}>
+        <DownloadTableExcel filename="Delovodna knjiga" sheet="Delovodna knjiga" currentTableRef={tableRef}>
           <button className="button button-sky"> Izvezi u Excel </button>
         </DownloadTableExcel>
       </div>
