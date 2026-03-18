@@ -8,6 +8,7 @@ import Search from "../../components/Search";
 import Pagination from "../../components/Pagination";
 import { handleCustomErrors } from "../../services/errorHandler";
 import dataServiceBuilder from "../../services/dataService";
+import * as XLSX from "xlsx";
 
 type DelovodnikData = {
   brojJci: string;
@@ -71,6 +72,25 @@ const DelovodnaKnjiga: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [queryParams]);
 
+  const exportToExcel = () => {
+    const formattedData = tableData.map((row) => ({
+      Datum: new Date(row.datum).toLocaleDateString(),
+      "Proizvedena količina (u KG)": "",
+      "Uvezena količina": row.operacija === "UVOZ" ? row.ukupno : "",
+      "Broj uvozne JCI": row.operacija === "UVOZ" ? row.brojJci : "",
+      "Ukupna vrednost PDV* RSD": "",
+      "Izvezena količina (u KG)": row.operacija === "IZVOZ" ? -row.ukupno : "",
+      "Broj izvozne JCI": row.operacija === "IZVOZ" ? row.brojJci : "",
+      "Ukupno plasirano na tržište RS (u KG)": row.operacija === "UVOZ" ? row.ukupno : row.operacija === "IZVOZ" ? -row.ukupno : "",
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(formattedData);
+    const workbook = XLSX.utils.book_new();
+
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Delovodna knjiga");
+    XLSX.writeFile(workbook, "delovodna_knjiga.xlsx");
+  };
+
   let sumUvezenaKolicina = 0;
   let sumIzvezenaKolicina = 0;
   let sumBrojUkupnoPlasirano = 0;
@@ -85,6 +105,8 @@ const DelovodnaKnjiga: React.FC = () => {
     }
   });
 
+  console.log(tableRef.current);
+
   sumUvezenaKolicina = parseFloat(sumUvezenaKolicina.toFixed(2));
   sumIzvezenaKolicina = parseFloat(sumIzvezenaKolicina.toFixed(2));
   sumBrojUkupnoPlasirano = parseFloat(sumBrojUkupnoPlasirano.toFixed(2));
@@ -94,9 +116,9 @@ const DelovodnaKnjiga: React.FC = () => {
       <h3 className="mt-4">Delovodna knjiga</h3>
 
       <div className="flex justify-end gap-4">
-        <DownloadTableExcel filename="Delovodna knjiga" sheet="Delovodna knjiga" currentTableRef={tableRef}>
-          <button className="button button-sky"> Izvezi u Excel </button>
-        </DownloadTableExcel>
+        <button className="button button-sky" onClick={exportToExcel}>
+          Izvezi u Excel
+        </button>
       </div>
       <div className="my-4 flex gap-4 justify-end">
         <Filters filtersOptions={filtersOptions} queryParams={queryParams} setQueryParams={setQueryParams} />
