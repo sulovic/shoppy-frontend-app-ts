@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import Spinner from "../../components/Spinner";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
-import { DownloadTableExcel } from "react-export-table-to-excel";
 import { useAuth } from "../../hooks/useAuth";
 import Filters from "../../components/Filters";
 import Search from "../../components/Search";
