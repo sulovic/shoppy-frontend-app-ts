@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import Spinner from "../../components/Spinner";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
 import { useAuth } from "../../hooks/useAuth";
@@ -24,7 +24,6 @@ const DelovodnaKnjiga: React.FC = () => {
   const [count, setCount] = useState(0);
   const [vrsteOtpada, setVrsteOtpada] = useState<VrstaOtpada[] | null>(null);
   const axiosPrivate = useAxiosPrivate();
-  const tableRef = useRef<HTMLTableElement | null>(null);
   const [queryParams, setQueryParams] = useState<QueryParams>({ filters: { zemlja: "*", operacija: "*", vrstaOtpada: "*", godina: "*" }, page: 1, limit: 20, sortOrder: "desc", sortBy: "id" });
   const filtersOptions: FiltersOptions = {
     zemlja: ["SRBIJA", "CRNA_GORA"],
@@ -83,11 +82,29 @@ const DelovodnaKnjiga: React.FC = () => {
       "Ukupno plasirano na tržište RS (u KG)": row.operacija === "UVOZ" ? row.ukupno : row.operacija === "IZVOZ" ? -row.ukupno : "",
     }));
 
-    const worksheet = XLSX.utils.json_to_sheet(formattedData);
-    const workbook = XLSX.utils.book_new();
+    const ws = XLSX.utils.aoa_to_sheet([]);
 
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Delovodna knjiga");
-    XLSX.writeFile(workbook, "delovodna_knjiga.xlsx");
+    XLSX.utils.sheet_add_aoa(ws, [["DNEVNA EVIDENCIJA O PROIZVODNJI, UVOZU I IZVOZU PROIZVODA"]], { origin: "A1" });
+
+    XLSX.utils.sheet_add_json(ws, formattedData, {
+      origin: "A2",
+    });
+
+    ws["!merges"] = [
+      {
+        s: { r: 0, c: 0 }, // A1
+        e: { r: 0, c: 7 }, // H1
+      },
+    ];
+
+    const totalRowIndex = formattedData.length + 2;
+
+    XLSX.utils.sheet_add_aoa(ws, [["UKUPNO:", "", sumUvezenaKolicina, "", "", sumIzvezenaKolicina, "", sumBrojUkupnoPlasirano]], { origin: `A${totalRowIndex}` });
+
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Delovodna knjiga");
+
+    XLSX.writeFile(wb, `Delovodna knjiga - ${queryParams.filters?.zemlja} - ${queryParams.filters?.vrstaOtpada} - ${queryParams.filters?.godina}.xlsx`);
   };
 
   let sumUvezenaKolicina = 0;
@@ -103,8 +120,6 @@ const DelovodnaKnjiga: React.FC = () => {
       sumBrojUkupnoPlasirano -= row?.ukupno;
     }
   });
-
-  console.log(tableRef.current);
 
   sumUvezenaKolicina = parseFloat(sumUvezenaKolicina.toFixed(2));
   sumIzvezenaKolicina = parseFloat(sumIzvezenaKolicina.toFixed(2));
@@ -128,7 +143,7 @@ const DelovodnaKnjiga: React.FC = () => {
       ) : tableData?.length ? (
         <div className="relative my-4 overflow-x-auto shadow-lg sm:rounded-lg">
           <div className="table-responsive">
-            <table ref={tableRef} className="w-full text-left text-sm text-zinc-500 rtl:text-right dark:text-zinc-400 ">
+            <table className="w-full text-left text-sm text-zinc-500 rtl:text-right dark:text-zinc-400 ">
               <thead className="bg-zinc-200 uppercase text-zinc-600 dark:bg-zinc-700 dark:text-zinc-400">
                 <tr>
                   <th colSpan={8} className="px-6 py-3 text-center">

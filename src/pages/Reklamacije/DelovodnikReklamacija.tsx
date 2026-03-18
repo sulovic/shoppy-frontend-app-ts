@@ -1,9 +1,9 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { format } from "date-fns";
 import { handleCustomErrors } from "../../services/errorHandler";
 import Spinner from "../../components/Spinner";
 import useAxiosPrivate from "../../hooks/useAxiosPrivate";
-import { DownloadTableExcel } from "react-export-table-to-excel";
+import * as XLSX from "xlsx";
 import { useAuth } from "../../hooks/useAuth";
 import dataServiceBuilder from "../../services/dataService";
 import HandleFiles from "../../components/HandleFiles";
@@ -40,8 +40,6 @@ const DelovodnikReklamacija = () => {
     "Datoteke",
     "SMS je poslat",
   ];
-  const tableRef = useRef<HTMLTableElement | null>(null);
-
   const [queryParams, setQueryParams] = useState<QueryParams>({ filters: { statusReklamacije: "*", zemljaReklamacije: "*", godina: "*" }, page: 1, limit: 20, sortOrder: "desc", sortBy: "datumPrijema" });
   const filtersOptions: FiltersOptions = {
     zemljaReklamacije: ["SRBIJA", "CRNA_GORA"],
@@ -72,15 +70,56 @@ const DelovodnikReklamacija = () => {
     setShowHandleFiles(true);
   };
 
+  const exportToExcel = () => {
+    const formattedData = tableData.map((row) => ({
+      "Broj reklamacije": row.brojReklamacije,
+      "Zemlja reklamacije": row.zemljaReklamacije,
+      "Status reklamacije": row.statusReklamacije,
+      "Datum prijema": row.datumPrijema ? format(new Date(row.datumPrijema), "dd.MM.yyyy") : "",
+      "Odgovorna osoba": row.odgovornaOsoba,
+      "Ime i prezime": row.imePrezime,
+      Adresa: row.adresa,
+      Telefon: row.telefon,
+      Email: row.email,
+      "Datum kupovine": row.datumKupovine ? format(new Date(row.datumKupovine), "dd.MM.yyyy") : "",
+      "Broj računa": row.brojRacuna,
+      "Naziv proizvoda": row.nazivProizvoda,
+      "Opis reklamacije": row.opisReklamacije,
+      "Datum odgovora": row.datumOdgovora ? format(new Date(row.datumOdgovora), "dd.MM.yyyy") : "",
+      "Opis odluke": row.opisOdluke,
+      Komentar: row.komentar,
+      "Broj datoteka": row.files ? row.files.length : 0,
+      "SMS je poslat": row.smsSent ? "DA" : "NE",
+    }));
+
+    const ws = XLSX.utils.aoa_to_sheet([]);
+
+    XLSX.utils.sheet_add_aoa(ws, [["REKLAMACIJE - DELOVODNA KNJIGA"]], { origin: "A1" });
+
+    XLSX.utils.sheet_add_json(ws, formattedData, {
+      origin: "A2",
+    });
+
+    ws["!merges"] = [
+      {
+        s: { r: 0, c: 0 },
+        e: { r: 0, c: 17 },
+      },
+    ];
+
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Reklamacije");
+
+    XLSX.writeFile(wb, `Delovodnik reklamacija - ${queryParams.filters?.zemljaReklamacije} - ${queryParams.filters?.godina}.xlsx`);
+  };
+
   return (
     <>
       <h3 className="mt-4 ">Reklamacije - Delovodna knjiga</h3>
       <div className="grid grid-cols-1 justify-end gap-4 md:flex">
-        <div className=" flex justify-end gap-4">
-          <DownloadTableExcel filename="Delovodnik reklamacija" sheet="Delovodna knjiga" currentTableRef={tableRef.current}>
-            <button className="button button-sky"> Izvezi u Excel </button>
-          </DownloadTableExcel>
-        </div>
+        <button className="button button-sky" onClick={exportToExcel}>
+          Izvezi u Excel
+        </button>
       </div>
 
       <div className="my-4 flex gap-4 justify-end">
@@ -93,7 +132,7 @@ const DelovodnikReklamacija = () => {
       ) : tableData.length ? (
         <div className="relative my-4 overflow-x-auto shadow-lg sm:rounded-lg">
           <div className="table-responsive">
-            <table ref={tableRef} className="w-full text-left text-sm text-zinc-500 rtl:text-right dark:text-zinc-400 ">
+            <table className="w-full text-left text-sm text-zinc-500 rtl:text-right dark:text-zinc-400 ">
               <thead className="text-s bg-zinc-200 uppercase text-zinc-600 dark:bg-zinc-700 dark:text-zinc-400">
                 <tr>
                   {tableHeaders.map((tableKey, index) => (
