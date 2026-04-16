@@ -120,7 +120,7 @@ const ModalEdit = ({ row, setShowEditModal, fetchData }: { row: Reklamacija; set
                         <select id="zemljaReklamacije" aria-label="Odaberi zemlju" required value={updateData?.zemljaReklamacije} onChange={handleChange} disabled={updateData?.statusReklamacije !== "PRIJEM"}>
                           <option value="">Odaberite zemlju</option>
                           <option value="SRBIJA">Srbija</option>
-                          <option value="CRNAGORA">Crna Gora</option>
+                          <option value="CRNA_GORA">Crna Gora</option>
                         </select>
                       </div>
                       <div>

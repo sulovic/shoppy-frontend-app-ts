@@ -57,6 +57,7 @@ export const Priviledges = {
 
   //Racuni
   "/racuni": 1000,
+  "/racuni/slanje-sms": 1000,
 
   //Users
   "/users": 3000,
@@ -74,9 +75,9 @@ export const AppLinks: AppLink[] = [
     minRole: Priviledges["/"],
   },
   {
-    label: "Slanje računa",
+    label: "Fiskalni računi",
     image: businessImg,
-    desc: "Aplikacija za slanje fiskalnih računa putem SMS poruka",
+    desc: "Aplikacija za obradu i slanje fiskalnih računa putem SMS poruka",
     href: "/racuni",
     minRole: Priviledges["/racuni"],
   },
@@ -225,5 +226,15 @@ export const NabavkeLinks = [
     desc: "Pregled, dodavanje i izmena proizvoda",
     href: "/nabavke/proizvodi",
     minRole: Priviledges["/nabavke/proizvodi"],
+  },
+];
+
+export const RacuniLinks = [
+  {
+    label: "Slanje SMS",
+    image: businessImg,
+    desc: "Preuzimanje i slanje računa putem SMS poruke",
+    href: "/racuni/slanje-sms",
+    minRole: Priviledges["/racuni/slanje-sms"],
   },
 ];

@@ -67,6 +67,26 @@ const priviledgesConfig = {
       DELETE: 5000,
     },
   },
+  racuni: {
+    "bulk-pull": {
+      GET: 1000,
+      POST: 1000,
+      PUT: 1000,
+      DELETE: 5000,
+    },
+    "bulk-upload": {
+      GET: 1000,
+      POST: 1000,
+      PUT: 1000,
+      DELETE: 5000,
+    },
+    "racuni-admin": {
+      GET: 1000,
+      POST: 1000,
+      PUT: 1000,
+      DELETE: 5000,
+    },
+  },
 };
 
 export default priviledgesConfig;

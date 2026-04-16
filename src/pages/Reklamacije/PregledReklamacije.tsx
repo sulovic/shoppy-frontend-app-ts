@@ -177,9 +177,9 @@ const PregledReklamacije = () => {
 
                     <p></p>
                     <p>
-                      Ukoliko prodavac odbije reklamaciju, dužan je da potrošača obavesti o mogućnosti rešavanja spora vansudskim putem i o nadleženim telima za vansudsko rešavanje potrošačkih sporova. Shodno zakonu Predlog za pokretanje
+                      Ukoliko prodavac odbije reklamaciju, dužan je da potrošača obavesti o mogućnosti rešavanja spora vansudskim putem i o nadleženim telima za vansudsko rešavanje potrošačkih sporova. Shodno Zakonu Predlog za pokretanje
                       postupka vansudskog rešavanja potrošačkog spora potrošač dostavlja nadležnom Ministarstvu, neposredno, preko pošte ili elektronskim putem. Trgovac je po Zakonu obavezan da učestvuje u ovom postupku. Listu tela za
-                      vansudsko rešavanje sporova možete pronaći na web sajtu nadležnog ministarstva.
+                      vansudsko rešavanje sporova možete pronaći na web sajtu nadležnog Ministarstva.
                     </p>
                   </div>
                 </div>

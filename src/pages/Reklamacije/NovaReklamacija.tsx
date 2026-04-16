@@ -139,7 +139,7 @@ const NovaReklamacija = () => {
             <select id="zemljaReklamacije" aria-label="Odaberi zemlju" required value={novaReklamacija.zemljaReklamacije} onChange={handleChange}>
               <option value="">Odaberite zemlju</option>
               <option value="SRBIJA">Srbija</option>
-              <option value="CRNAGORA">Crna Gora</option>
+              <option value="CRNA_GORA">Crna Gora</option>
             </select>
           </div>
         </div>

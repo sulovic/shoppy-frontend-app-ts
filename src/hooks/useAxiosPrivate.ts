@@ -1,74 +1,71 @@
+// src/api/useAxiosPrivate.ts
 import { useEffect } from "react";
 import axios from "axios";
-import type { AxiosError, InternalAxiosRequestConfig, AxiosHeaders } from "axios";
+import type { AxiosError, InternalAxiosRequestConfig } from "axios";
 import { useAuth } from "../hooks/useAuth";
 import { handleApiError } from "../services/errorHandler";
 
+type RetryableRequest = InternalAxiosRequestConfig & {
+  _retry?: boolean;
+};
+
 const axiosPrivate = axios.create({
-  withCredentials: true,
   baseURL: import.meta.env.VITE_APP_API_BASE_URL,
+  withCredentials: true,
 });
 
-let isRefreshing = false;
-let refreshSubscribers: ((token: string) => void)[] = [];
-
-function subscribeTokenRefresh(cb: (token: string) => void) {
-  refreshSubscribers.push(cb);
-}
-
-function onRefreshed(token: string) {
-  refreshSubscribers.forEach((cb) => cb(token));
-  refreshSubscribers = [];
-}
+let refreshPromise: Promise<string> | null = null;
 
 const useAxiosPrivate = () => {
-  const { accessToken, refreshAccessToken } = useAuth();
+  const { accessToken, refreshAccessToken, handleLogoutOK } = useAuth();
 
   useEffect(() => {
     const requestIntercept = axiosPrivate.interceptors.request.use((config: InternalAxiosRequestConfig) => {
-      const headers: AxiosHeaders = config.headers;
+      if (!config.headers) return config;
 
-      if (accessToken && !headers.has("Authorization")) {
-        headers.set("Authorization", `Bearer ${accessToken}`);
+      if (accessToken && !config.headers["Authorization"]) {
+        config.headers["Authorization"] = `Bearer ${accessToken}`;
       }
 
       return config;
     });
 
     const responseIntercept = axiosPrivate.interceptors.response.use(
-      (response) => response,
+      (res) => res,
       async (error: AxiosError) => {
-        const prevRequest = error?.config as InternalAxiosRequestConfig & { sent?: boolean };
+        const originalRequest = error.config as RetryableRequest;
 
-        if (error?.response?.status === 403 && prevRequest && !prevRequest.sent) {
-          if (!isRefreshing) {
-            isRefreshing = true;
+        if (!originalRequest) return Promise.reject(error);
 
-            try {
-              const newAccessToken = await refreshAccessToken();
+        const status = error.response?.status;
 
-              isRefreshing = false;
+        if (status === 403 && !originalRequest._retry) {
+          originalRequest._retry = true;
 
-              onRefreshed(newAccessToken);
-
-              prevRequest.sent = true;
-              prevRequest.headers.set("Authorization", `Bearer ${newAccessToken}`);
-
-              return axiosPrivate(prevRequest);
-            } catch (err) {
-              isRefreshing = false;
-              return Promise.reject(err);
+          try {
+            if (!refreshPromise) {
+              refreshPromise = refreshAccessToken().finally(() => {
+                refreshPromise = null;
+              });
             }
-          }
 
-          // drugi requestovi čekaju refresh
-          return new Promise((resolve) => {
-            subscribeTokenRefresh((token: string) => {
-              prevRequest.sent = true;
-              prevRequest.headers.set("Authorization", `Bearer ${token}`);
-              resolve(axiosPrivate(prevRequest));
-            });
-          });
+            const newToken = await refreshPromise;
+
+            if (originalRequest.headers) {
+              originalRequest.headers["Authorization"] = `Bearer ${newToken}`;
+            }
+
+            return axiosPrivate(originalRequest);
+          } catch (refreshError) {
+            refreshPromise = null;
+
+            handleLogoutOK();
+
+            // avoid react-router dependency → hard redirect
+            window.location.href = "/login";
+
+            return Promise.reject(refreshError);
+          }
         }
 
         handleApiError(error);
@@ -80,7 +77,7 @@ const useAxiosPrivate = () => {
       axiosPrivate.interceptors.request.eject(requestIntercept);
       axiosPrivate.interceptors.response.eject(responseIntercept);
     };
-  }, [accessToken, refreshAccessToken]);
+  }, [accessToken, refreshAccessToken, handleLogoutOK]);
 
   return axiosPrivate;
 };

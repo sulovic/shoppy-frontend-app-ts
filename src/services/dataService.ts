@@ -21,11 +21,11 @@ const resolvePrivileges = (service: string) => {
 const dataServiceBuilder = <T>(
   axiosPrivate: AxiosInstance,
   authUser: AuthUser | null,
-  service: "reklamacije" | "users" | "otpad/proizvodi" | "otpad/vrste-otpada" | "otpad/jci" | "otpad/delovodnik" | "nabavke/proizvodi" | "nabavke/porudzbine"
+  service: "reklamacije" | "users" | "otpad/proizvodi" | "otpad/vrste-otpada" | "otpad/jci" | "otpad/delovodnik" | "nabavke/proizvodi" | "nabavke/porudzbine" | "racuni/bulk-pull" | "racuni/racuni-admin",
 ) => {
   const servicePriv = resolvePrivileges(service);
 
-  const getAllResources = (apiParams: QueryParams | null): Promise<{ data: { data: T[] } }> => {
+  const getAllResources = (apiParams: QueryParams | null): Promise<{ data: { data: T[]; count: number } }> => {
     if (!authUser || authUser.roleId < servicePriv.GET) {
       throw new Error("Unauthorized");
     }

@@ -10,12 +10,13 @@ import {
   ReklamacijaSchema,
   JciPodaciSchema,
   JciProizvodiSchema,
-  ProizvodiSchema,
   VrstaOtpadaSchema,
   OtpadProizvodSchema,
   NabavkeProizvodSchema,
   NabavkeSadrzajSchema,
   PorudzbinaSchema,
+  FiscalReceiptSchema,
+  UploadFRResultSchema,
 } from "../schemas/schemas";
 
 declare global {
@@ -24,11 +25,12 @@ declare global {
   type QueryParams = z.infer<typeof QueryParamsSchema>;
   type FiltersOptions = z.infer<typeof FiltersOptionsSchema>;
   type Env = z.infer<typeof EnvSchema>;
+  type FiscalReceipt = z.infer<typeof FiscalReceiptSchema>;
+  type UploadFRResult = z.infer<typeof UploadFRResultSchema>;
   type JWTPayload = z.infer<typeof JwtPayloadSchema>;
   type Reklamacija = z.infer<typeof ReklamacijaSchema>;
   type JciPodaci = z.infer<typeof JciPodaciSchema>;
   type JciProizvodi = z.infer<typeof JciProizvodiSchema>;
-  type Proizvodi = z.infer<typeof ProizvodiSchema>;
   type VrstaOtpada = z.infer<typeof VrstaOtpadaSchema>;
   type OtpadProizvod = z.infer<typeof OtpadProizvodSchema>;
   type NabavkeProizvod = z.infer<typeof NabavkeProizvodSchema>;

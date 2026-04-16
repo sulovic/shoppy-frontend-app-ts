@@ -119,7 +119,7 @@ const NewPorudzbina = () => {
                 <select id="zemlja" aria-label="Odaberi zemlju" required value={novaPorudzbina?.zemlja} onChange={handleChange}>
                   <option value="">Odaberite zemlju</option>
                   <option value="SRBIJA">Srbija</option>
-                  <option value="CRNAGORA">Crna Gora</option>
+                  <option value="CRNA_GORA">Crna Gora</option>
                 </select>
               </div>
               <div className="md:col-span-2">

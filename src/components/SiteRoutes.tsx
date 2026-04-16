@@ -27,10 +27,11 @@ import Racuni from "../pages/Racuni/Racuni";
 import NabavkeProizvodi from "../pages/Nabavke/Proizvodi";
 import NewNabavkaProizvod from "../pages/Nabavke/NewProizvod";
 import NewPorudzbina from "../pages/Nabavke/NewPorudzbina";
-import AktivnePorudzbine from "../pages/Nabavke/Porudzbine.js";
+import AktivnePorudzbine from "../pages/Nabavke/Porudzbine";
 import SuperAdmin from "../pages/User/SuperAdmin";
 import Pregled from "../pages/Nabavke/Pregled";
-import SlanjeSMS from "../pages/Reklamacije/SlanjeSMS";
+import SlanjeSMSReklamacije from "../pages/Reklamacije/SlanjeSMS";
+import SlanjeSMSRacuni from "../pages/Racuni/SlanjeSMS";
 import Login from "../pages/Login";
 
 const SiteRoutes = () => {
@@ -112,7 +113,7 @@ const SiteRoutes = () => {
               <Route path="obrada-reklamacija" element={<ObradaReklamacija />} />
             </Route>
             <Route element={<ProtectRoute minRole={Priviledges["/reklamacije/slanje-sms"]} />}>
-              <Route path="slanje-sms" element={<SlanjeSMS />} />
+              <Route path="slanje-sms" element={<SlanjeSMSReklamacije />} />
             </Route>
             <Route element={<ProtectRoute minRole={Priviledges["/reklamacije/delovodnik"]} />}>
               <Route path="delovodnik" element={<DelovodnikReklamacija />} />
@@ -125,7 +126,11 @@ const SiteRoutes = () => {
 
         {/* Računi Routes */}
         <Route element={<ProtectRoute minRole={Priviledges["/racuni"]} />}>
-          <Route path="racuni" element={<Racuni />} />
+          <Route path="racuni" element={<Racuni />}>
+            <Route element={<ProtectRoute minRole={Priviledges["/racuni/slanje-sms"]} />}>
+              <Route path="slanje-sms" element={<SlanjeSMSRacuni />} />
+            </Route>
+          </Route>
         </Route>
 
         {/* User routes */}

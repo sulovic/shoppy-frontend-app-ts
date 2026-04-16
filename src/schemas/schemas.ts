@@ -149,3 +149,23 @@ export const PorudzbinaSchema = z.object({
   sadrzaj: z.array(NabavkeSadrzajSchema),
   files: z.array(z.string().trim().min(5, "File name is required")).nullable().optional(),
 });
+
+//Fiscal receipts schemas
+export const FiscalReceiptSchema = z.object({
+  id: z.number(),
+  receiptNumber: z.string(),
+  shipmentNumber: z.string(),
+  receiptIssueDate: z.coerce.date(),
+  country: z.enum(["SRBIJA", "CRNA_GORA"]),
+  nameSurname: z.string(),
+  address: z.string(),
+  phoneNumber: z.string(),
+  externalLink: z.string(),
+  dateReceiptCollected: z.coerce.date().optional(),
+  dateSent: z.coerce.date().optional(),
+});
+
+export const UploadFRResultSchema = FiscalReceiptSchema.extend({
+  status: z.enum(["success", "duplicate", "error"]),
+  message: z.string().optional(),
+});
