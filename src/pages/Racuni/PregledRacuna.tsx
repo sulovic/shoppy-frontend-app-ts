@@ -9,9 +9,11 @@ import Filters from "../../components/Filters";
 import Search from "../../components/Search";
 import Pagination from "../../components/Pagination";
 import useRacuniApi from "../../hooks/useRacuniApi";
+import DatePicker from "react-datepicker";
 
 const PregledRacuna = () => {
   const [tableData, setTableData] = useState<FiscalReceipt[]>([]);
+  const [date, setDate] = useState<Date | null>(null);
   const [count, setCount] = useState(0);
   const [showSpinner, setShowSpinner] = useState(false);
   const { authUser } = useAuth();
@@ -52,6 +54,14 @@ const PregledRacuna = () => {
         </div>
       )}
       <div className="mb-4 flex gap-4 justify-end">
+        <DatePicker
+          selected={date}
+          onChange={(d) => {
+            setDate(d);
+            setQueryParams({ ...queryParams, filters: { ...queryParams.filters, receiptIssueDate: d ? d.toISOString().slice(0, 10) : "" } });
+          }}
+          dateFormat="dd.MM.yyyy"
+        />
         <Filters filtersOptions={filtersOptions} queryParams={queryParams} setQueryParams={setQueryParams} />
         <Search queryParams={queryParams} setQueryParams={setQueryParams} />
       </div>
