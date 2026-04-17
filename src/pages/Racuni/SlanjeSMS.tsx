@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { format } from "date-fns";
-import Modal from "../../components/Modal";
 import { toast } from "react-toastify";
 import Spinner from "../../components/Spinner";
 import useRacuniApi from "../../hooks/useRacuniApi";
@@ -8,9 +7,23 @@ import { useAuth } from "../../hooks/useAuth";
 import dataServiceBuilder from "../../services/dataService";
 import { handleCustomErrors } from "../../services/errorHandler";
 
+const smsTextGenerator = (racun: UploadFRResult) => {
+  let smsText: string;
+  switch (racun.country) {
+    case "CRNA_GORA":
+      smsText = `Pošiljka ${racun.shipmentNumber} za ${racun.nameSurname} je poslata Fiskalni račun preuzmite ovde: racuni.shoppy.rs/${racun.receiptNumber} Uslovi kupovine: shoppy-online.me/uslovimne Hvala što kupujete na Shoppy!`;
+      break;
+    case "SRBIJA":
+      smsText = `Porudžbina za ${racun.nameSurname} je poslata. Link za praćenje pošiljke: www.dexpress.rs/rs/pracenje-posiljaka/${racun.shipmentNumber}  Fiskalni račun preuzmite ovde: racuni.shoppy.rs/${racun.receiptNumber} Uslovi kupovine: shoppy.rs/uslovi Hvala što kupujete na Shoppy!`;
+      break;
+    default:
+      smsText = "";
+  }
+  return smsText;
+};
+
 const SlanjeSMS = () => {
   const [racuni, setRacuni] = useState<UploadFRResult[]>([]);
-  const [showModal, setShowModal] = useState(false);
   const [showSpinner, setShowSpinner] = useState(false);
   const axiosPrivate = useRacuniApi();
   const { authUser } = useAuth();
@@ -21,8 +34,8 @@ const SlanjeSMS = () => {
     setShowSpinner(true);
     try {
       const response: { data: { data: UploadFRResult[] } } = await bulkRacuniService.getAllResources(null);
-      console.log(response);
       setRacuni(response.data.data);
+      console.log(response.data.data);
       toast.success("Fiskalni računi preuzeti", { position: "top-center", autoClose: 1000 });
     } catch (error) {
       handleCustomErrors(error as string);
@@ -31,19 +44,21 @@ const SlanjeSMS = () => {
     }
   };
 
-  const handleSendSMS = () => {
-    setShowModal(true);
-  };
+  const handleSmsSent = async (racun: UploadFRResult) => {
+    try {
+      setShowSpinner(true);
 
-  const handleSendSMSCancel = () => {
-    setShowModal(false);
+      await racuniAdminService.updateResource(racun.receiptNumber, {
+        receiptNumber: racun.receiptNumber,
+        dateSent: new Date(),
+      });
+      setRacuni((prev) => prev.map((r) => (r.receiptNumber === racun.receiptNumber ? { ...r, dateSent: new Date() } : r)));
+    } catch (error) {
+      handleCustomErrors(error as string);
+    } finally {
+      setShowSpinner(false);
+    }
   };
-
-  const handleSendSMSOK = () => {
-    console.log("SMS poslat");
-  };
-
-  console.log(racuni);
 
   return (
     <>
@@ -57,18 +72,35 @@ const SlanjeSMS = () => {
         </>
       ) : racuni.length ? (
         <>
-          {racuni.map((racun) => (
-            <div key={racun.receiptNumber} className="my-4 items-center justify-between rounded-md border border-zinc-300 p-2">
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                <p>Kupac: {racun.nameSurname}</p>
-                <p>Zemlja: {racun.country}</p>
-                <p>Status: {racun.status}</p>
-                <p>Pošiljka: {racun.shipmentNumber}</p>
-                <p>Račun: {racun.receiptNumber}</p>
-                <p>Datum: {format(new Date(racun.receiptIssueDate), "dd.MM.yyyy.")}</p>
+          {racuni.map((racun) => {
+            const smsText = smsTextGenerator(racun);
+            return (
+              <div key={racun.receiptNumber} className="my-4 items-center justify-between rounded-md border border-zinc-300 p-2">
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                  <p>Kupac: {racun.nameSurname}</p>
+                  <p>Zemlja: {racun.country}</p>
+                  <p>Račun: {racun.receiptNumber}</p>
+                  <p>Pošiljka: {racun.shipmentNumber}</p>
+                  <p>Datum: {racun.receiptIssueDate ? format(new Date(racun.receiptIssueDate), "dd.MM.yyyy.") : "-"}</p>
+                  {racun.status == "error" ? (
+                    <p className="whitespace-nowrap text-center px-6 py-4 font-medium text-gray-800! bg-red-300">GREŠKA!: {racun.message || "Nepoznata greška"}</p>
+                  ) : racun.dateSent ? (
+                    <span>
+                      <a onClick={() => handleSmsSent(racun)} className="button button-sky" href={`sms:${racun.phoneNumber}?body=${encodeURIComponent(smsText)}`}>
+                        Pošalji ponovo
+                      </a>
+                    </span>
+                  ) : (
+                    <span>
+                      <a onClick={() => handleSmsSent(racun)} className="button button-sky" href={`sms:${racun.phoneNumber}?body=${encodeURIComponent(smsText)}`}>
+                        Pošalji poruku
+                      </a>
+                    </span>
+                  )}
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </>
       ) : (
         <div className="my-4 flex items-center justify-between rounded-md border border-zinc-300 p-2 text-zinc-600 ">
@@ -76,15 +108,11 @@ const SlanjeSMS = () => {
         </div>
       )}
 
-      <div className="grid grid-cols-2 gap-4 mt-4 ">
+      <div className="flex flex-row-reverse gap-4 mt-4 ">
         <button type="button" className="button button-sky" aria-label="Izmeni" onClick={() => fetchData()}>
           Preuzmi račune
         </button>
-        <button type="button" className="button button-red" aria-label="Obriši" disabled={racuni.length === 0} onClick={() => handleSendSMS()}>
-          Pošalji SMS
-        </button>
       </div>
-      {showModal && <Modal onOK={handleSendSMSOK} onCancel={handleSendSMSCancel} title="Potvrda slanja SMS" question={`Da li ste sigurni da želite da pošaljete SMS poruke za preuzete račune?`} />}
     </>
   );
 };

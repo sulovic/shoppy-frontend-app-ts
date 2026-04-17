@@ -39,7 +39,7 @@ const dataServiceBuilder = <T>(
     return axiosPrivate.get(`/${service}/count${createApiParams(apiParams)}`);
   };
 
-  const getResource = (id: number): Promise<{ data: { data: T } }> => {
+  const getResource = (id: number | string): Promise<{ data: { data: T } }> => {
     if (!authUser || authUser.roleId < servicePriv.GET) {
       throw new Error("Unauthorized");
     }
@@ -53,14 +53,14 @@ const dataServiceBuilder = <T>(
     return axiosPrivate.post(`/${service}`, data);
   };
 
-  const updateResource = (id: number, data: T): Promise<{ data: { message: string; data: T } }> => {
+  const updateResource = (id: number | string, data: T): Promise<{ data: { message: string; data: T } }> => {
     if (!authUser || authUser.roleId < servicePriv.PUT) {
       throw new Error("Unauthorized");
     }
     return axiosPrivate.put(`/${service}/${id}`, data);
   };
 
-  const deleteResource = (id: number): Promise<{ data: { message: string; data: T } }> => {
+  const deleteResource = (id: number | string): Promise<{ data: { message: string; data: T } }> => {
     if (!authUser || authUser.roleId < servicePriv.DELETE) {
       throw new Error("Unauthorized");
     }
