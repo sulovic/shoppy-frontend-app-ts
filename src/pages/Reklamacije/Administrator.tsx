@@ -3,7 +3,7 @@ import ReklamacijeTable from "../../components/Reklamacije/ReklamacijeTable";
 import Filters from "../../components/Filters";
 import Search from "../../components/Search";
 import Spinner from "../../components/Spinner";
-import useAxiosPrivate from "../../hooks/useAxiosPrivate";
+import useMainApi from "../../hooks/useMainApi";
 import { useAuth } from "../../hooks/useAuth";
 import Pagination from "../../components/Pagination";
 import { handleCustomErrors } from "../../services/errorHandler";
@@ -16,7 +16,7 @@ const Administrator = () => {
 
   const [showSpinner, setShowSpinner] = useState(false);
   const navigate = useNavigate();
-  const axiosPrivate = useAxiosPrivate();
+  const axiosPrivate = useMainApi();
   const { authUser } = useAuth();
   const reklamacijeService = dataServiceBuilder<Reklamacija>(axiosPrivate, authUser, "reklamacije");
   const [queryParams, setQueryParams] = useState<QueryParams>({ filters: { statusReklamacije: "*", zemljaReklamacije: "*", godina: "*" }, page: 1, limit: 20, sortOrder: "desc", sortBy: "datumPrijema" });

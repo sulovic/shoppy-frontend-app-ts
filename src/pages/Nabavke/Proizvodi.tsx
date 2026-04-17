@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import Spinner from "../../components/Spinner";
-import useAxiosPrivate from "../../hooks/useAxiosPrivate";
+import useMainApi from "../../hooks/useMainApi";
 import Modal from "../../components/Modal";
 import ModalEditProizvod from "../../components/Nabavke/ModalEditProizvod";
 import { useAuth } from "../../hooks/useAuth";
@@ -19,7 +19,7 @@ const NabavkeProizvodi = () => {
   const [showModalEdit, setShowModalEdit] = useState(false);
   const [updateData, setUpdateData] = useState<NabavkeProizvod | null>(null);
   const navigate = useNavigate();
-  const axiosPrivate = useAxiosPrivate();
+  const axiosPrivate = useMainApi();
   const { authUser } = useAuth();
   const proizvodiService = dataServiceBuilder<NabavkeProizvod>(axiosPrivate, authUser, "nabavke/proizvodi");
   const [queryParams, setQueryParams] = useState<QueryParams>({ page: 1, limit: 20, sortOrder: "asc", sortBy: "id" });

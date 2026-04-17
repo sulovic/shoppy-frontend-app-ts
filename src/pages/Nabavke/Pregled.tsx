@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import useAxiosPrivate from "../../hooks/useAxiosPrivate";
+import useMainApi from "../../hooks/useMainApi";
 import Spinner from "../../components/Spinner";
 import { useAuth } from "../../hooks/useAuth";
 import { handleCustomErrors } from "../../services/errorHandler";
@@ -13,7 +13,7 @@ export type PregledData = {
 const Pregled = () => {
   const [tableData, setTableData] = useState<PregledData | null>(null);
   const [showSpinner, setShowSpinner] = useState(false);
-  const axiosPrivate = useAxiosPrivate();
+  const axiosPrivate = useMainApi();
   const { authUser } = useAuth();
   const porudzbineService = dataServiceBuilder<Porudzbina>(axiosPrivate, authUser, "nabavke/porudzbine");
   const proizvodiService = dataServiceBuilder<NabavkeProizvod>(axiosPrivate, authUser, "nabavke/proizvodi");

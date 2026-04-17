@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import DatePicker from "react-datepicker";
 import { toast } from "react-toastify";
 import Spinner from "../Spinner";
-import useAxiosPrivate from "../../hooks/useAxiosPrivate";
+import useMainApi from "../../hooks/useMainApi";
 import Modal from "../Modal";
 import { useAuth } from "../../hooks/useAuth";
 import { handleCustomErrors } from "../../services/errorHandler";
@@ -13,7 +13,7 @@ const ModalEdit = ({ row, setShowEditModal, fetchData }: { row: Reklamacija; set
   const [updateData, setUpdateData] = useState<Reklamacija>(row);
   const [showSpinner, setShowSpinner] = useState(false);
   const [showSaveModal, setShowSaveModal] = useState(false);
-  const axiosPrivate = useAxiosPrivate();
+  const axiosPrivate = useMainApi();
   const { authUser } = useAuth();
   const reklamacijeService = reklamacijeServiceBuilder<Reklamacija>(axiosPrivate, authUser, "reklamacije");
 

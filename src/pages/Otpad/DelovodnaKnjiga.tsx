@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Spinner from "../../components/Spinner";
-import useAxiosPrivate from "../../hooks/useAxiosPrivate";
+import useMainApi from "../../hooks/useMainApi";
 import { useAuth } from "../../hooks/useAuth";
 import Filters from "../../components/Filters";
 import Search from "../../components/Search";
@@ -23,7 +23,7 @@ const DelovodnaKnjiga: React.FC = () => {
   const [tableData, setTableData] = useState<DelovodnikData[]>([]);
   const [count, setCount] = useState(0);
   const [vrsteOtpada, setVrsteOtpada] = useState<VrstaOtpada[] | null>(null);
-  const axiosPrivate = useAxiosPrivate();
+  const axiosPrivate = useMainApi();
   const [queryParams, setQueryParams] = useState<QueryParams>({ filters: { zemlja: "*", operacija: "*", vrstaOtpada: "*", godina: "*" }, page: 1, limit: 20, sortOrder: "desc", sortBy: "id" });
   const filtersOptions: FiltersOptions = {
     zemlja: ["SRBIJA", "CRNA_GORA"],

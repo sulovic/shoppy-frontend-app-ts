@@ -4,7 +4,7 @@ import Modal from "../../components/Modal";
 import { toast } from "react-toastify";
 import Spinner from "../../components/Spinner";
 import ModalEditPorudzbina from "../../components/Nabavke/ModalEditPorudzbina";
-import useAxiosPrivate from "../../hooks/useAxiosPrivate";
+import useMainApi from "../../hooks/useMainApi";
 import HandleFiles from "../../components/HandleFiles";
 import { useNavigate } from "react-router-dom";
 import SadrzajPorudzbine from "../../components/Nabavke/SadrzajPorudzbine";
@@ -26,7 +26,7 @@ const AktivnePorudzbine = () => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [showSpinner, setShowSpinner] = useState(false);
   const [updateData, setUpdateData] = useState<Porudzbina | null>(null);
-  const axiosPrivate = useAxiosPrivate();
+  const axiosPrivate = useMainApi();
   const navigate = useNavigate();
   const { authUser } = useAuth();
   const porudzbineService = dataServiceBuilder<Porudzbina>(axiosPrivate, authUser, "nabavke/porudzbine");

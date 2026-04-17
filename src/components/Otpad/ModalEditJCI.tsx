@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import Modal from "../Modal";
 import Spinner from "../Spinner";
 import DatePicker from "react-datepicker";
-import useAxiosPrivate from "../../hooks/useAxiosPrivate";
+import useMainApi from "../../hooks/useMainApi";
 import { toast } from "react-toastify";
 import { useAuth } from "../../hooks/useAuth";
 import { handleCustomErrors } from "../../services/errorHandler";
@@ -13,7 +13,7 @@ const ModalEditJCI = ({ row, setShowModalEdit, fetchData }: { row: JciPodaci; se
   const [showSpinner, setShowSpinner] = useState(false);
   const [updateData, setUpdateData] = useState<JciPodaci>(row);
   const [showSaveModal, setShowSaveModal] = useState(false);
-  const axiosPrivate = useAxiosPrivate();
+  const axiosPrivate = useMainApi();
   const { authUser } = useAuth();
   const jciService = dataServiceBuilder<JciPodaci>(axiosPrivate, authUser, "otpad/jci");
 

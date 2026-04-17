@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import Spinner from "../../components/Spinner";
-import useAxiosPrivate from "../../hooks/useAxiosPrivate";
+import useMainApi from "../../hooks/useMainApi";
 import ModalEditVrstaOtpada from "../../components/Otpad/ModalEditVrstaOtpada";
 import Modal from "../../components/Modal";
 import { useAuth } from "../../hooks/useAuth";
@@ -19,7 +19,7 @@ const VrsteOtpada: React.FC = () => {
   const [showModalEdit, setShowModalEdit] = useState(false);
   const [updateData, setUpdateData] = useState<VrstaOtpada | null>(null);
   const navigate = useNavigate();
-  const axiosPrivate = useAxiosPrivate();
+  const axiosPrivate = useMainApi();
   const { authUser } = useAuth();
   const [queryParams, setQueryParams] = useState<QueryParams>({ page: 1, limit: 20, sortOrder: "desc", sortBy: "id" });
   const vrsteOtpadaService = dataServiceBuilder<VrstaOtpada>(axiosPrivate, authUser, "otpad/vrste-otpada");

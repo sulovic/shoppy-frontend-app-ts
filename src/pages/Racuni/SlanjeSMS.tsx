@@ -6,21 +6,7 @@ import useRacuniApi from "../../hooks/useRacuniApi";
 import { useAuth } from "../../hooks/useAuth";
 import dataServiceBuilder from "../../services/dataService";
 import { handleCustomErrors } from "../../services/errorHandler";
-
-const smsTextGenerator = (racun: UploadFRResult) => {
-  let smsText: string;
-  switch (racun.country) {
-    case "CRNA_GORA":
-      smsText = `Pošiljka ${racun.shipmentNumber} za ${racun.nameSurname} je poslata Fiskalni račun preuzmite ovde: racuni.shoppy.rs/${racun.receiptNumber} Uslovi kupovine: shoppy-online.me/uslovimne Hvala što kupujete na Shoppy!`;
-      break;
-    case "SRBIJA":
-      smsText = `Porudžbina za ${racun.nameSurname} je poslata. Link za praćenje pošiljke: www.dexpress.rs/rs/pracenje-posiljaka/${racun.shipmentNumber}  Fiskalni račun preuzmite ovde: racuni.shoppy.rs/${racun.receiptNumber} Uslovi kupovine: shoppy.rs/uslovi Hvala što kupujete na Shoppy!`;
-      break;
-    default:
-      smsText = "";
-  }
-  return smsText;
-};
+import smsTextGenerator from "../../services/FiscalReceiptSMSGenerator";
 
 const SlanjeSMS = () => {
   const [racuni, setRacuni] = useState<UploadFRResult[]>([]);
@@ -46,8 +32,6 @@ const SlanjeSMS = () => {
 
   const handleSmsSent = async (racun: UploadFRResult) => {
     try {
-      setShowSpinner(true);
-
       await racuniAdminService.updateResource(racun.receiptNumber, {
         receiptNumber: racun.receiptNumber,
         dateSent: new Date(),
@@ -55,8 +39,6 @@ const SlanjeSMS = () => {
       setRacuni((prev) => prev.map((r) => (r.receiptNumber === racun.receiptNumber ? { ...r, dateSent: new Date() } : r)));
     } catch (error) {
       handleCustomErrors(error as string);
-    } finally {
-      setShowSpinner(false);
     }
   };
 

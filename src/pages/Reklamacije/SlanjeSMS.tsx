@@ -3,7 +3,7 @@ import Spinner from "../../components/Spinner";
 import dataServiceBuilder from "../../services/dataService";
 import { handleCustomErrors } from "../../services/errorHandler";
 import { useAuth } from "../../hooks/useAuth";
-import useAxiosPrivate from "../../hooks/useAxiosPrivate";
+import useMainApi from "../../hooks/useMainApi";
 import Pagination from "../../components/Pagination";
 import Filters from "../../components/Filters";
 import Search from "../../components/Search";
@@ -18,7 +18,7 @@ const SlanjeSMS = () => {
   const [count, setCount] = useState(0);
   const [showSpinner, setShowSpinner] = useState(false);
   const { authUser } = useAuth();
-  const axiosPrivate = useAxiosPrivate();
+  const axiosPrivate = useMainApi();
   const [queryParams, setQueryParams] = useState<QueryParams>({ filters: { statusReklamacije: "*" }, page: 1, limit: 20, sortOrder: "desc", sortBy: "datumPrijema" });
 
   const reklamacijeService = dataServiceBuilder<Reklamacija>(axiosPrivate, authUser, "reklamacije");

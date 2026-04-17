@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import useAxiosPrivate from "../../hooks/useAxiosPrivate";
+import useMainApi from "../../hooks/useMainApi";
 import Modal from "../../components/Modal";
 import DatePicker from "react-datepicker";
 import { toast } from "react-toastify";
@@ -23,7 +23,7 @@ const NewJCI: React.FC = () => {
   const [showModal, setShowModal] = useState(false);
   const [showSpinner, setShowSpinner] = useState(false);
   const navigate = useNavigate();
-  const axiosPrivate = useAxiosPrivate();
+  const axiosPrivate = useMainApi();
   const { authUser } = useAuth();
   const proizvodiService = dataServiceBuilder<JciProizvodi>(axiosPrivate, authUser, "otpad/proizvodi");
   const jciService = dataServiceBuilder<Omit<JciPodaci, "id">>(axiosPrivate, authUser, "otpad/jci");

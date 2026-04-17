@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { format } from "date-fns";
 import { handleCustomErrors } from "../../services/errorHandler";
 import Spinner from "../../components/Spinner";
-import useAxiosPrivate from "../../hooks/useAxiosPrivate";
+import useMainApi from "../../hooks/useMainApi";
 import * as XLSX from "xlsx";
 import { useAuth } from "../../hooks/useAuth";
 import dataServiceBuilder from "../../services/dataService";
@@ -17,7 +17,7 @@ const DelovodnikReklamacija = () => {
   const [showSpinner, setShowSpinner] = useState(false);
   const [selectedRowFiles, setSelectedRowFiles] = useState<Reklamacija | null>(null);
   const [showHandleFiles, setShowHandleFiles] = useState(false);
-  const axiosPrivate = useAxiosPrivate();
+  const axiosPrivate = useMainApi();
   const { authUser } = useAuth();
   const reklamacijeService = dataServiceBuilder<Reklamacija>(axiosPrivate, authUser, "reklamacije");
   const tableHeaders = [

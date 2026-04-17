@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import Modal from "../Modal";
 import Spinner from "../Spinner";
 import { toast } from "react-toastify";
-import useAxiosPrivate from "../../hooks/useAxiosPrivate";
+import useMainApi from "../../hooks/useMainApi";
 import { handleCustomErrors } from "../../services/errorHandler";
 import { useAuth } from "../../hooks/useAuth";
 import dataServiceBuilder from "../../services/dataService";
@@ -23,7 +23,7 @@ const SadrzajPorudzbine = ({ porudzbina, setShowSadrzaj, fetchData }: { porudzbi
   const [newSadrzaj, setNewSadrzaj] = useState(prazanSadrzaj);
   const [showSpinner, setShowSpinner] = useState(false);
   const [showSaveModal, setShowSaveModal] = useState(false);
-  const axiosPrivate = useAxiosPrivate();
+  const axiosPrivate = useMainApi();
   const { authUser } = useAuth();
   const porudzbineService = dataServiceBuilder<Porudzbina>(axiosPrivate, authUser, "nabavke/porudzbine");
   const proizvodiService = dataServiceBuilder<NabavkeProizvod>(axiosPrivate, authUser, "nabavke/proizvodi");

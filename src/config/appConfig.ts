@@ -58,6 +58,7 @@ export const Priviledges = {
   //Racuni
   "/racuni": 1000,
   "/racuni/slanje-sms": 1000,
+  "/racuni/pregled-racuna": 1000,
 
   //Users
   "/users": 3000,
@@ -236,5 +237,12 @@ export const RacuniLinks = [
     desc: "Preuzimanje i slanje računa putem SMS poruke",
     href: "/racuni/slanje-sms",
     minRole: Priviledges["/racuni/slanje-sms"],
+  },
+  {
+    label: "Pregled računa",
+    image: businessImg,
+    desc: "Pregled svih izdatih računa i ponovno slanje SMS poruka",
+    href: "/racuni/pregled-racuna",
+    minRole: Priviledges["/racuni/pregled-racuna"],
   },
 ];

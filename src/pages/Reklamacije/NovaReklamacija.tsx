@@ -7,7 +7,7 @@ import Spinner from "../../components/Spinner";
 import { handleCustomErrors } from "../../services/errorHandler";
 import dataServiceBuilder from "../../services/dataService";
 import { useAuth } from "../../hooks/useAuth";
-import useAxiosPrivate from "../../hooks/useAxiosPrivate";
+import useMainApi from "../../hooks/useMainApi";
 import { ReklamacijaSchema } from "../../schemas/schemas";
 
 const NovaReklamacija = () => {
@@ -34,7 +34,7 @@ const NovaReklamacija = () => {
   const [showSpinner, setShowSpinner] = useState(false);
   const [novaReklamacija, setNovaReklamacija] = useState<Omit<Reklamacija, "idReklamacije">>(praznaReklamacija);
   const { authUser } = useAuth();
-  const axiosPrivate = useAxiosPrivate();
+  const axiosPrivate = useMainApi();
   const reklamacijeService = dataServiceBuilder<Omit<Reklamacija, "idReklamacije">>(axiosPrivate, authUser, "reklamacije");
 
   const handleClose = () => {

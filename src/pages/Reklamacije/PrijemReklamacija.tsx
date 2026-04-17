@@ -5,7 +5,7 @@ import dataServiceBuilder from "../../services/dataService";
 import { handleCustomErrors } from "../../services/errorHandler";
 import ReklamacijeTable from "../../components/Reklamacije/ReklamacijeTable";
 import { useAuth } from "../../hooks/useAuth";
-import useAxiosPrivate from "../../hooks/useAxiosPrivate";
+import useMainApi from "../../hooks/useMainApi";
 import Filters from "../../components/Filters";
 import Search from "../../components/Search";
 import Pagination from "../../components/Pagination";
@@ -15,7 +15,7 @@ const PrijemReklamacija = () => {
   const [count, setCount] = useState(0);
   const [showSpinner, setShowSpinner] = useState(false);
   const { authUser } = useAuth();
-  const axiosPrivate = useAxiosPrivate();
+  const axiosPrivate = useMainApi();
   const reklamacijeService = dataServiceBuilder<Reklamacija>(axiosPrivate, authUser, "reklamacije");
   const navigate = useNavigate();
   const [queryParams, setQueryParams] = useState<QueryParams>({ filters: { statusReklamacije: "PRIJEM" }, search: "", page: 1, limit: 20, sortOrder: "desc", sortBy: "datumPrijema" });

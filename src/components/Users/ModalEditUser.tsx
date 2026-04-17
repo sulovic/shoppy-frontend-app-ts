@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Modal from "../../components/Modal";
 import Spinner from "../../components/Spinner";
-import useAxiosPrivate from "../../hooks/useAxiosPrivate";
+import useMainApi from "../../hooks/useMainApi";
 import { toast } from "react-toastify";
 import { useAuth } from "../../hooks/useAuth";
 import dataServiceBuilder from "../../services/dataService";
@@ -21,7 +21,7 @@ const ModalEditUser = ({
 }) => {
   const [showSpinner, setShowSpinner] = useState(false);
   const [showSaveModal, setShowSaveModal] = useState(false);
-  const axiosPrivate = useAxiosPrivate();
+  const axiosPrivate = useMainApi();
   const { authUser } = useAuth();
   const userService = dataServiceBuilder<UserData>(axiosPrivate, authUser, "users");
 

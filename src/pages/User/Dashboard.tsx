@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import useAxiosPrivate from "../../hooks/useAxiosPrivate";
+import useMainApi from "../../hooks/useMainApi";
 import Modal from "../../components/Modal";
 import ModalEditUser from "../../components/Users/ModalEditUser";
 import { toast } from "react-toastify";
@@ -20,7 +20,7 @@ const Dashboard: React.FC = () => {
   const [showModalEditUser, setShowModalEditUser] = useState(false);
   const [selectedUser, setSelectedUser] = useState<UserData | null>(null);
   const navigate = useNavigate();
-  const axiosPrivate = useAxiosPrivate();
+  const axiosPrivate = useMainApi();
   const { authUser } = useAuth();
   const tableHeaders = ["Ime i prezime", "Email", "Nivo ovlašćenja"];
   const userService = dataServiceBuilder<UserData>(axiosPrivate, authUser, "users");

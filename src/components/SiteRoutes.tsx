@@ -32,6 +32,7 @@ import SuperAdmin from "../pages/User/SuperAdmin";
 import Pregled from "../pages/Nabavke/Pregled";
 import SlanjeSMSReklamacije from "../pages/Reklamacije/SlanjeSMS";
 import SlanjeSMSRacuni from "../pages/Racuni/SlanjeSMS";
+import PregledRacuna from "../pages/Racuni/PregledRacuna";
 import Login from "../pages/Login";
 
 const SiteRoutes = () => {
@@ -41,13 +42,13 @@ const SiteRoutes = () => {
 
       {/* Reklamacije Public Route */}
       <Route path="reklamacije/pregled-reklamacije/:id" element={<PregledReklamacije />} />
+
+      {/* Login Route */}
       <Route path="login" element={<Login />} />
 
       {/* Private Rotutes */}
 
       <Route element={<PersistLogin />}>
-        {/* Odmor template za stampu */}
-
         {/* Home Route */}
 
         <Route path="/" element={<Home />} />
@@ -129,6 +130,9 @@ const SiteRoutes = () => {
           <Route path="racuni" element={<Racuni />}>
             <Route element={<ProtectRoute minRole={Priviledges["/racuni/slanje-sms"]} />}>
               <Route path="slanje-sms" element={<SlanjeSMSRacuni />} />
+            </Route>
+            <Route element={<ProtectRoute minRole={Priviledges["/racuni/pregled-racuna"]} />}>
+              <Route path="pregled-racuna" element={<PregledRacuna />} />
             </Route>
           </Route>
         </Route>

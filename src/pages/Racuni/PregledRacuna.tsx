@@ -3,31 +3,32 @@ import Spinner from "../../components/Spinner";
 import { useNavigate } from "react-router-dom";
 import dataServiceBuilder from "../../services/dataService";
 import { handleCustomErrors } from "../../services/errorHandler";
-import ReklamacijeTable from "../../components/Reklamacije/ReklamacijeTable";
+import RacuniTable from "../../components/Racuni/RacuniTable";
 import { useAuth } from "../../hooks/useAuth";
-import useMainApi from "../../hooks/useMainApi";
 import Filters from "../../components/Filters";
 import Search from "../../components/Search";
 import Pagination from "../../components/Pagination";
+import useRacuniApi from "../../hooks/useRacuniApi";
 
-const ObradaReklamacija = () => {
-  const [tableData, setTableData] = useState<Reklamacija[]>([]);
+const PregledRacuna = () => {
+  const [tableData, setTableData] = useState<FiscalReceipt[]>([]);
   const [count, setCount] = useState(0);
   const [showSpinner, setShowSpinner] = useState(false);
   const { authUser } = useAuth();
-  const axiosPrivate = useMainApi();
-  const reklamacijeService = dataServiceBuilder<Reklamacija>(axiosPrivate, authUser, "reklamacije");
+  const axiosPrivate = useRacuniApi();
+  const racuniService = dataServiceBuilder<FiscalReceipt>(axiosPrivate, authUser, "racuni/racuni-admin");
   const navigate = useNavigate();
-  const [queryParams, setQueryParams] = useState<QueryParams>({ filters: { statusReklamacije: "OBRADA" }, page: 1, limit: 20, sortOrder: "desc", sortBy: "datumPrijema" });
+  const [queryParams, setQueryParams] = useState<QueryParams>({ filters: {}, page: 1, limit: 20, sortOrder: "desc", sortBy: "receiptIssueDate" });
   const filtersOptions: FiltersOptions = {
-    zemljaReklamacije: ["SRBIJA", "CRNA_GORA"],
+    country: ["SRBIJA", "CRNA_GORA"],
   };
   const fetchData = async () => {
     setShowSpinner(true);
     try {
-      const [response, reklamacijeCount] = await Promise.all([reklamacijeService.getAllResources(queryParams), reklamacijeService.getAllResourcesCount(queryParams)]);
+      const response = await racuniService.getAllResources(queryParams);
+      console.log(response);
       setTableData(response.data.data);
-      setCount(reklamacijeCount.data.count);
+      setCount(response.data.count);
     } catch (error) {
       handleCustomErrors(error as string);
     } finally {
@@ -42,17 +43,19 @@ const ObradaReklamacija = () => {
 
   return (
     <>
-      <h3 className="mt-4">Reklamacije u prijemu</h3>
-      <div className="mb-4 flex justify-end">
-        <button type="button" className="button button-sky " aria-label="Nova Reklamacija" onClick={() => navigate("/reklamacije/nova-reklamacija")}>
-          Nova reklamacija
-        </button>
-      </div>
+      <h3 className="mt-4">Pregled Fiskalnih računa</h3>
+      {authUser && authUser.roleId > 6000 && (
+        <div className="mb-4 flex justify-end">
+          <button type="button" className="button button-sky " aria-label="Nova Reklamacija" onClick={() => navigate("/racuni/nov-racun")}>
+            Ručno dodavanje računa
+          </button>
+        </div>
+      )}
       <div className="mb-4 flex gap-4 justify-end">
         <Filters filtersOptions={filtersOptions} queryParams={queryParams} setQueryParams={setQueryParams} />
         <Search queryParams={queryParams} setQueryParams={setQueryParams} />
       </div>
-      {showSpinner ? <Spinner /> : tableData.length ? <ReklamacijeTable tableData={tableData} fetchData={fetchData} /> : <h4 className="my-4 text-zinc-600 ">Nema reklamacija koje su u obradi...</h4>}
+      {showSpinner ? <Spinner /> : tableData.length ? <RacuniTable tableData={tableData} setTableData={setTableData} /> : <h4 className="my-4 text-zinc-600 ">Nema računa za prikaz...</h4>}
       <div className="flex justify-end gap-4 mb-4">
         <Pagination queryParams={queryParams} setQueryParams={setQueryParams} count={count} />
       </div>
@@ -60,4 +63,4 @@ const ObradaReklamacija = () => {
   );
 };
 
-export default ObradaReklamacija;
+export default PregledRacuna;

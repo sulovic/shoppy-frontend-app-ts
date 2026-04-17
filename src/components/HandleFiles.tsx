@@ -2,7 +2,7 @@ import { useState, useRef } from "react";
 import Modal from "./Modal";
 import Spinner from "./Spinner";
 import { toast } from "react-toastify";
-import useAxiosPrivate from "../hooks/useAxiosPrivate";
+import useMainApi from "../hooks/useMainApi";
 import { allowedFileTypes } from "../config/appConfig";
 import { allowedExtensions } from "../config/appConfig";
 import { useAuth } from "../hooks/useAuth";
@@ -30,7 +30,7 @@ const HandleFiles = <T extends { files?: string[] | null | undefined }>({
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const axiosPrivate = useAxiosPrivate();
+  const axiosPrivate = useMainApi();
   const { authUser } = useAuth();
   const uploadService = uploadServiceBuilder(axiosPrivate, authUser, url);
   const deleteService = uploadServiceBuilder(axiosPrivate, authUser, url);

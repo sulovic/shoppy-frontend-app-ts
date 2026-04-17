@@ -1,8 +1,8 @@
 import { toast } from "react-toastify";
-import useAxiosPrivate from "../hooks/useAxiosPrivate";
+import useMainApi from "../hooks/useMainApi";
 
 const OpenFileButton = ({ filePath, buttonText }: { filePath: string; buttonText: string }) => {
-  const axiosPrivate = useAxiosPrivate();
+  const axiosPrivate = useMainApi();
 
   const handleOpen = async () => {
     try {

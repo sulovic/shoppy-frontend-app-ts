@@ -56,7 +56,7 @@ If the app needs environment-specific API URLs, set them in an `.env` file at th
 - `src/App.tsx` — main app component and route mounting
 - `src/components` — reusable UI components (Navbar, Modal, Spinner, etc.)
 - `src/Context/AuthContext.tsx` — authentication context
-- `src/hooks/useAxiosPrivate.ts` — authenticated axios instance hook
+- `src/hooks/useMainApi.ts` — authenticated axios instance hook
 - `src/pages` — feature pages grouped by domain (Users, Nabavke, Odsustva, Otpad, Reklamacije, Racuni, ...)
 - `public/` — static assets
 - `vite.config.ts`, `tsconfig.*`, `eslint.config.js` — toolchain config

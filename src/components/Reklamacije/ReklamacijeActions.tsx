@@ -6,7 +6,7 @@ import { toast } from "react-toastify";
 import reklamacijeServiceBuilder from "../../services/dataService";
 import uploadServiceBuilder from "../../services/uploadService";
 import { useAuth } from "../../hooks/useAuth";
-import useAxiosPrivate from "../../hooks/useAxiosPrivate";
+import useMainApi from "../../hooks/useMainApi";
 import { handleCustomErrors } from "../../services/errorHandler";
 import { ReklamacijaSchema } from "../../schemas/schemas";
 
@@ -35,7 +35,7 @@ const ReklamacijeActions = ({ row, fetchData }: { row: Reklamacija; fetchData: (
   const [updateData, setUpdateData] = useState<Reklamacija | null>(null);
   const [forwardData, setForwardData] = useState<Reklamacija | null>(null);
   const [showSpinner, setShowSpinner] = useState(false);
-  const axiosPrivate = useAxiosPrivate();
+  const axiosPrivate = useMainApi();
   const { authUser } = useAuth();
   const reklamacijeService = reklamacijeServiceBuilder<Reklamacija>(axiosPrivate, authUser, "reklamacije");
   const reklamacijeFilesService = uploadServiceBuilder(axiosPrivate, authUser, "reklamacije");

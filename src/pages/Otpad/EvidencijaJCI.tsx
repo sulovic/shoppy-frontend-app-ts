@@ -3,7 +3,7 @@ import { format } from "date-fns";
 import { toast } from "react-toastify";
 import Spinner from "../../components/Spinner";
 import { useNavigate } from "react-router-dom";
-import useAxiosPrivate from "../../hooks/useAxiosPrivate";
+import useMainApi from "../../hooks/useMainApi";
 import ModalEditJCI from "../../components/Otpad/ModalEditJCI";
 import Modal from "../../components/Modal";
 import { useAuth } from "../../hooks/useAuth";
@@ -28,7 +28,7 @@ const EvidencijaJCI: React.FC = () => {
   };
   const { authUser } = useAuth();
   const navigate = useNavigate();
-  const axiosPrivate = useAxiosPrivate();
+  const axiosPrivate = useMainApi();
   const jciService = dataServiceBuilder<JciPodaci>(axiosPrivate, authUser, "otpad/jci");
 
   const fetchData = async () => {
