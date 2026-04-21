@@ -27,9 +27,9 @@ const VrsteOtpada: React.FC = () => {
   const fetchData = async () => {
     setShowSpinner(true);
     try {
-      const [response, vrsteOtpdaCount] = await Promise.all([vrsteOtpadaService.getAllResources(queryParams), vrsteOtpadaService.getAllResourcesCount(queryParams)]);
-      setCount(vrsteOtpdaCount.data.count);
+      const response = await vrsteOtpadaService.getAllResources(queryParams);
       setTableData(response.data.data);
+      setCount(response.data.count);
     } catch (error) {
       handleCustomErrors(error as string);
     } finally {

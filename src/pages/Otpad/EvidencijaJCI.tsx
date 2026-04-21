@@ -34,9 +34,9 @@ const EvidencijaJCI: React.FC = () => {
   const fetchData = async () => {
     setShowSpinner(true);
     try {
-      const [response, jciCount] = await Promise.all([jciService.getAllResources(queryParams), jciService.getAllResourcesCount(queryParams)]);
+      const response = await jciService.getAllResources(queryParams);
       setTableData(response.data.data);
-      setCount(jciCount.data.count);
+      setCount(response.data.count);
     } catch (error) {
       handleCustomErrors(error as string);
     } finally {

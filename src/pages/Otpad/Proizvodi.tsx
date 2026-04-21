@@ -27,9 +27,9 @@ const Proizvodi: React.FC = () => {
   const fetchData = async () => {
     setShowSpinner(true);
     try {
-      const [response, proizvodiCount] = await Promise.all([proizvodiService.getAllResources(queryParams), proizvodiService.getAllResourcesCount(queryParams)]);
+      const response = await proizvodiService.getAllResources(queryParams);
       setTableData(response.data.data);
-      setCount(proizvodiCount.data.count);
+      setCount(response.data.count);
     } catch (error) {
       handleCustomErrors(error as string);
     } finally {

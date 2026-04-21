@@ -41,9 +41,9 @@ const AktivnePorudzbine = () => {
     setShowSpinner(true);
 
     try {
-      const [response, jciCount] = await Promise.all([porudzbineService.getAllResources(queryParams), porudzbineService.getAllResourcesCount(queryParams)]);
-      setTableData(response?.data.data);
-      setCount(jciCount.data.count);
+      const response = await porudzbineService.getAllResources(queryParams);
+      setTableData(response.data.data);
+      setCount(response.data.count);
     } catch (error) {
       handleCustomErrors(error);
     } finally {
@@ -106,7 +106,7 @@ const AktivnePorudzbine = () => {
 
   return (
     <>
-      <h3 className="my-4 ">Pregled aktivnih porudžebina</h3>
+      <h3 className="my-4 ">Pregled aktivnih porudžbina</h3>
       <div className="mb-4 flex justify-end">
         <button type="button" className="button button-sky " aria-label="Nova porudžebina" onClick={() => navigate("/nabavke/nova-porudzbina")}>
           Nova porudžbina

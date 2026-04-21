@@ -35,9 +35,9 @@ const SlanjeSMS = () => {
   const fetchData = async () => {
     setShowSpinner(true);
     try {
-      const [response, reklamacijeCount] = await Promise.all([reklamacijeService.getAllResources(queryParams), reklamacijeService.getAllResourcesCount(queryParams)]);
+      const response = await reklamacijeService.getAllResources(queryParams);
       setTableData(response.data.data);
-      setCount(reklamacijeCount.data.count);
+      setCount(response.data.count);
     } catch (error) {
       handleCustomErrors(error as string);
     } finally {

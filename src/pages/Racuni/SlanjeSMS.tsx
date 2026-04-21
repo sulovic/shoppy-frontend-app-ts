@@ -71,13 +71,13 @@ const SlanjeSMS = () => {
                   ) : racun.dateSent ? (
                     <span>
                       <a onClick={() => handleSmsSent(racun)} className="button button-sky" href={`sms:${racun.phoneNumber}?body=${encodeURIComponent(smsText)}`}>
-                        Pošalji SMS
+                        Ponovi SMS
                       </a>
                     </span>
                   ) : (
                     <span>
                       <a onClick={() => handleSmsSent(racun)} className="button button-sky" href={`sms:${racun.phoneNumber}?body=${encodeURIComponent(smsText)}`}>
-                        Ponovi SMS
+                        Pošalji SMS
                       </a>
                     </span>
                   )}

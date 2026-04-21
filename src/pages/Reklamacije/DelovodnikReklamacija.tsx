@@ -50,9 +50,9 @@ const DelovodnikReklamacija = () => {
   const fetchData = async () => {
     setShowSpinner(true);
     try {
-      const [response, reklamacijeCount] = await Promise.all([reklamacijeService.getAllResources(queryParams), reklamacijeService.getAllResourcesCount(queryParams)]);
+      const response = await reklamacijeService.getAllResources(queryParams);
       setTableData(response.data.data);
-      setCount(reklamacijeCount.data.count);
+      setCount(response.data.count);
     } catch (error) {
       handleCustomErrors(error as string);
     } finally {
@@ -122,7 +122,7 @@ const DelovodnikReklamacija = () => {
         </button>
       </div>
 
-      <div className="my-4 flex gap-4 justify-end">
+      <div className="my-4 flex flex-wrap gap-4 justify-end">
         <Filters filtersOptions={filtersOptions} queryParams={queryParams} setQueryParams={setQueryParams} />
         <Search queryParams={queryParams} setQueryParams={setQueryParams} />
       </div>

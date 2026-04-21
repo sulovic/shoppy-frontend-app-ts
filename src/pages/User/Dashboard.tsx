@@ -34,9 +34,9 @@ const Dashboard: React.FC = () => {
     setShowSpinner(true);
 
     try {
-      const [response, usersCount] = await Promise.all([userService.getAllResources(queryParams), userService.getAllResourcesCount(queryParams)]);
+      const response = await userService.getAllResources(queryParams);
       setTableData(response.data.data || []);
-      setCount(usersCount.data.count);
+      setCount(response.data.count);
     } catch (error) {
       handleCustomErrors(error as string);
     } finally {

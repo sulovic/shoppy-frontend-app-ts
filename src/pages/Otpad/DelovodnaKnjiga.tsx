@@ -38,9 +38,9 @@ const DelovodnaKnjiga: React.FC = () => {
   const fetchVrsteOtpada = async () => {
     setShowSpinner(true);
     try {
-      const [response, jciCount] = await Promise.all([vrsteOtpadaService.getAllResources(null), vrsteOtpadaService.getAllResourcesCount(null)]);
-      setVrsteOtpada(response?.data.data);
-      setCount(jciCount.data.count);
+      const response = await vrsteOtpadaService.getAllResources(null);
+      setVrsteOtpada(response.data.data);
+      setCount(response.data.count);
     } catch (error) {
       handleCustomErrors(error);
     } finally {

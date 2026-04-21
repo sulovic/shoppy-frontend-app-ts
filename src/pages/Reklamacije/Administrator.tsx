@@ -13,7 +13,6 @@ import { useNavigate } from "react-router-dom";
 const Administrator = () => {
   const [tableData, setTableData] = useState<Reklamacija[]>([]);
   const [count, setCount] = useState(0);
-
   const [showSpinner, setShowSpinner] = useState(false);
   const navigate = useNavigate();
   const axiosPrivate = useMainApi();
@@ -29,9 +28,9 @@ const Administrator = () => {
   const fetchData = async () => {
     setShowSpinner(true);
     try {
-      const [response, reklamacijeCount] = await Promise.all([reklamacijeService.getAllResources(queryParams), reklamacijeService.getAllResourcesCount(queryParams)]);
+      const response = await reklamacijeService.getAllResources(queryParams);
       setTableData(response.data.data);
-      setCount(reklamacijeCount.data.count);
+      setCount(response.data.count);
     } catch (error) {
       handleCustomErrors(error as string);
     } finally {
