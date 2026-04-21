@@ -59,8 +59,10 @@ const SlanjeSMS = () => {
             return (
               <div key={racun.receiptNumber} className="my-4 items-center justify-between rounded-md border border-zinc-300 p-2">
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                  <p>Kupac: {racun.nameSurname}</p>
-                  <p>Zemlja: {racun.country}</p>
+                  <p>{racun.nameSurname}</p>
+                  <p>
+                    {racun.country === "SRBIJA" ? "RS: " : "MNE: "} {racun.address}{" "}
+                  </p>
                   <p>Račun: {racun.receiptNumber}</p>
                   <p>Pošiljka: {racun.shipmentNumber}</p>
                   <p>Datum: {racun.receiptIssueDate ? format(new Date(racun.receiptIssueDate), "dd.MM.yyyy.") : "-"}</p>
@@ -69,13 +71,13 @@ const SlanjeSMS = () => {
                   ) : racun.dateSent ? (
                     <span>
                       <a onClick={() => handleSmsSent(racun)} className="button button-sky" href={`sms:${racun.phoneNumber}?body=${encodeURIComponent(smsText)}`}>
-                        Pošalji ponovo
+                        Pošalji SMS
                       </a>
                     </span>
                   ) : (
                     <span>
                       <a onClick={() => handleSmsSent(racun)} className="button button-sky" href={`sms:${racun.phoneNumber}?body=${encodeURIComponent(smsText)}`}>
-                        Pošalji poruku
+                        Ponovi SMS
                       </a>
                     </span>
                   )}

@@ -46,21 +46,35 @@ const PregledRacuna = () => {
   return (
     <>
       <h3 className="mt-4">Pregled Fiskalnih računa</h3>
-      {authUser && authUser.roleId > 6000 && (
+      {authUser && authUser.roleId > 5000 && (
         <div className="mb-4 flex justify-end">
           <button type="button" className="button button-sky " aria-label="Nova Reklamacija" onClick={() => navigate("/racuni/nov-racun")}>
             Ručno dodavanje računa
           </button>
         </div>
       )}
-      <div className="mb-4 flex gap-4 justify-end">
+      <div className="mb-4 flex flex-wrap gap-4 justify-end">
         <DatePicker
           selected={date}
           onChange={(d) => {
             setDate(d);
-            setQueryParams({ ...queryParams, filters: { ...queryParams.filters, receiptIssueDate: d ? d.toISOString().slice(0, 10) : "" } });
+            setQueryParams((prev) => {
+              const filters = { ...(prev.filters ?? {}) };
+              if (d) {
+                filters.receiptIssueDate = d.toISOString().slice(0, 10);
+              } else {
+                delete filters.receiptIssueDate;
+              }
+
+              return {
+                ...prev,
+                filters,
+              };
+            });
           }}
           dateFormat="dd.MM.yyyy"
+          isClearable
+          placeholderText="Odaberite datum"
         />
         <Filters filtersOptions={filtersOptions} queryParams={queryParams} setQueryParams={setQueryParams} />
         <Search queryParams={queryParams} setQueryParams={setQueryParams} />

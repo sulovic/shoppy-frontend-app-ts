@@ -111,7 +111,7 @@ const SlanjeSMS = () => {
       <div className="mb-4">
         <h3 className="mt-4">Reklamacije - Slanje SMS poruka</h3>
 
-        <div className="mb-4 flex gap-4 justify-end">
+        <div className="mb-4 flex flex-wrap gap-4 justify-end">
           <Filters filtersOptions={filtersOptions} queryParams={queryParams} setQueryParams={setQueryParams} />
           <Search queryParams={queryParams} setQueryParams={setQueryParams} />
         </div>

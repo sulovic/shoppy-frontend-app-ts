@@ -5,7 +5,7 @@ import { useAuth } from "../../hooks/useAuth";
 import dataServiceBuilder from "../../services/dataService";
 import { handleCustomErrors } from "../../services/errorHandler";
 
-const tableHeaders = ["Datum računa", "Zemlja", "Ime i prezime", "Adresa", "Telefon", "Broj pošiljke", "Broj računa", "Link računa", "SMS poslat", "Pošalji SMS"];
+const tableHeaders = ["Datum", "Ime i prezime", "Datum SMS", "Slanje SMS", "Telefon", "Adresa", "Pošiljka", "Broj računa", "Link računa", "Izmena"];
 
 const RacuniTable = ({ tableData, setTableData }: { tableData: FiscalReceipt[]; setTableData: React.Dispatch<React.SetStateAction<FiscalReceipt[]>> }) => {
   const { authUser } = useAuth();
@@ -47,10 +47,20 @@ const RacuniTable = ({ tableData, setTableData }: { tableData: FiscalReceipt[]; 
                 return (
                   <tr key={row.receiptNumber} className="border-b bg-white hover:bg-zinc-100! dark:border-zinc-700 dark:bg-zinc-800">
                     <td>{row.receiptIssueDate ? format(new Date(row.receiptIssueDate), "dd.MM.yyyy") : ""}</td>
-                    <td>{row.country}</td>
                     <td>{row.nameSurname}</td>
-                    <td>{row.address}</td>
+
+                    <td className={`whitespace-nowrap px-6 py-4 font-medium text-zinc-600 dark:text-white ${row.dateSent ? `bg-green-300` : `bg-red-300 `}`}>{row.dateSent ? format(new Date(row.dateSent), "dd.MM.yyyy") : "Nije poslat"}</td>
+                    <td className="px-6! py-4!">
+                      <span>
+                        <a onClick={() => handleSendSms(row)} className="button button-sky" href={`sms:${row.phoneNumber}?body=${encodeURIComponent(smsText)}`}>
+                          {row.dateSent ? "Ponovi SMS" : "Pošalji SMS"}
+                        </a>
+                      </span>
+                    </td>
                     <td>{row.phoneNumber}</td>
+                    <td>
+                      {row.country === "SRBIJA" ? "RS: " : "MNE: "} {row.address}
+                    </td>
                     <td>{row.shipmentNumber}</td>
                     <td>{row.receiptNumber}</td>
                     <td>
@@ -58,13 +68,17 @@ const RacuniTable = ({ tableData, setTableData }: { tableData: FiscalReceipt[]; 
                         Otvori link
                       </a>
                     </td>
-                    <td className={`whitespace-nowrap px-6 py-4 font-medium text-zinc-600 dark:text-white ${row.dateSent ? `bg-green-300` : `bg-red-300 `}`}>{row.dateSent ? format(new Date(row.dateSent), "dd.MM.yyyy") : ""}</td>
-                    <td className="px-6! py-4!">
-                      <span>
-                        <a onClick={() => handleSendSms(row)} className="button button-sky" href={`sms:${row.phoneNumber}?body=${encodeURIComponent(smsText)}`}>
-                          Pošalji poruku
-                        </a>
-                      </span>
+                    <td>
+                      <div className="flex gap-4">
+                        <button type="button" className="button button-sky" onClick={() => console.log("Izmeni")}>
+                          Izmeni
+                        </button>
+                        {authUser && authUser.roleId > 5000 && (
+                          <button type="button" className="button button-red" disabled={authUser.roleId < 5000} onClick={() => console.log("Obriši")}>
+                            Obriši
+                          </button>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 );

@@ -52,7 +52,7 @@ const Administrator = () => {
           Nova reklamacija
         </button>
       </div>
-      <div className="mb-4 flex gap-4 justify-end">
+      <div className="mb-4 flex flex-wrap gap-4 justify-end">
         <Filters filtersOptions={filtersOptions} queryParams={queryParams} setQueryParams={setQueryParams} />
         <Search queryParams={queryParams} setQueryParams={setQueryParams} />
       </div>
