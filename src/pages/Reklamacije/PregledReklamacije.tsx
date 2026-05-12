@@ -31,19 +31,27 @@ const PregledReklamacije = () => {
 
   const rokZaResavanjeSrbija = (
     <>
-      <p>Rok za rešavanje reklamacije ukoliko je reklamacija opravdana: Zakonski rok od 15 dana od dana prijema, odnosno 30 dana za tehničku robu i nameštaj, od dana podnošenja reklamacije.</p>
+      <p>
+        Rok za rešavanje reklamacije ukoliko je reklamacija opravdana: Zakonski
+        rok od 15 dana od dana prijema, odnosno 30 dana za tehničku robu i
+        nameštaj, od dana podnošenja reklamacije.
+      </p>
     </>
   );
   const rokZaResavanjeCrnaGora = (
     <>
-      <p>Rok za rešavanje reklamacije ukoliko je reklamacija opravdana: Zakonski rok od 15 dana od dana prijema.</p>
+      <p>
+        Rok za rešavanje reklamacije ukoliko je reklamacija opravdana: Zakonski
+        rok od 15 dana od dana prijema.
+      </p>
     </>
   );
 
   const fetchData = async () => {
     setShowSpinner(true);
     try {
-      const response: { data: { data: Reklamacija | null } } = await axios.get(url);
+      const response: { data: { data: Reklamacija | null } } =
+        await axios.get(url);
       if (response?.data) {
         setReklamacija(response?.data.data);
       }
@@ -79,28 +87,61 @@ const PregledReklamacije = () => {
                     <div className="grid grid-cols-1">
                       <h4>Podaci o prodavcu</h4>
 
-                      {reklamacija.zemljaReklamacije === "CRNA_GORA" ? podaciProdavcaCrnaGora : podaciProdavcaSrbija}
+                      {reklamacija.zemljaReklamacije === "CRNA_GORA"
+                        ? podaciProdavcaCrnaGora
+                        : podaciProdavcaSrbija}
 
                       <h4>Podaci o reklamaciji</h4>
 
                       <div className="mb-4 grid grid-cols-1 gap-2 md:grid-cols-2 xl:grid-cols-4">
                         <div>
-                          <label htmlFor="broj_reklamacije">Broj reklamacije</label>
-                          <input value={reklamacija.brojReklamacije} type="text" id="broj_reklamacije" aria-describedby="Broj reklamacije" disabled />
+                          <label htmlFor="broj_reklamacije">
+                            Broj reklamacije
+                          </label>
+                          <input
+                            value={reklamacija.brojReklamacije}
+                            type="text"
+                            id="broj_reklamacije"
+                            aria-describedby="Broj reklamacije"
+                            disabled
+                          />
                         </div>
                         <div>
                           <label htmlFor="datum_prijema">Datum prijema</label>
                           <div>
-                            <DatePicker id="datum_prijema" locale="sr-Latn" selected={reklamacija.datumPrijema} dateFormat="dd-MM-yyyy" aria-describedby="Datum prijema" disabled />
+                            <DatePicker
+                              id="datum_prijema"
+                              locale="sr-Latn"
+                              selected={reklamacija.datumPrijema}
+                              dateFormat="dd-MM-yyyy"
+                              aria-describedby="Datum prijema"
+                              disabled
+                            />
                           </div>
                         </div>
                         <div>
-                          <label htmlFor="tatus_reklamacije">Status reklamacije</label>
-                          <input value={reklamacija.statusReklamacije} type="text" id="status_reklamacije" aria-describedby="Status reklamacije" disabled />
+                          <label htmlFor="tatus_reklamacije">
+                            Status reklamacije
+                          </label>
+                          <input
+                            value={reklamacija.statusReklamacije}
+                            type="text"
+                            id="status_reklamacije"
+                            aria-describedby="Status reklamacije"
+                            disabled
+                          />
                         </div>
                         <div>
-                          <label htmlFor="odgovorna_osoba">Odgovorna osoba</label>
-                          <input value={reklamacija.odgovornaOsoba || ""} type="text" id="odgovorna_osoba" aria-describedby="Odgovorna osoba" disabled />
+                          <label htmlFor="odgovorna_osoba">
+                            Odgovorna osoba
+                          </label>
+                          <input
+                            value={reklamacija.odgovornaOsoba || ""}
+                            type="text"
+                            id="odgovorna_osoba"
+                            aria-describedby="Odgovorna osoba"
+                            disabled
+                          />
                         </div>
                       </div>
 
@@ -109,19 +150,43 @@ const PregledReklamacije = () => {
                       <div className="mb-4 grid grid-cols-1 gap-2 md:grid-cols-4">
                         <div>
                           <label htmlFor="ime_prezime">Ime i prezime</label>
-                          <input type="text" id="ime_prezime" aria-describedby="Ime i prezime" value={reklamacija.imePrezime} disabled />
+                          <input
+                            type="text"
+                            id="ime_prezime"
+                            aria-describedby="Ime i prezime"
+                            value={reklamacija.imePrezime}
+                            disabled
+                          />
                         </div>
                         <div>
                           <label htmlFor="adresa">Adresa</label>
-                          <input type="text" id="adresa" aria-describedby="Adresa" value={reklamacija.adresa || ""} disabled />
+                          <input
+                            type="text"
+                            id="adresa"
+                            aria-describedby="Adresa"
+                            value={reklamacija.adresa || ""}
+                            disabled
+                          />
                         </div>
                         <div>
                           <label htmlFor="telefon">Telefon</label>
-                          <input type="text" id="telefon" aria-describedby="Telefon" value={reklamacija.telefon || ""} disabled />
+                          <input
+                            type="text"
+                            id="telefon"
+                            aria-describedby="Telefon"
+                            value={reklamacija.telefon || ""}
+                            disabled
+                          />
                         </div>
                         <div>
                           <label htmlFor="email">Email</label>
-                          <input type="email" id="email" aria-describedby="Email" value={reklamacija.email || ""} disabled />
+                          <input
+                            type="email"
+                            id="email"
+                            aria-describedby="Email"
+                            value={reklamacija.email || ""}
+                            disabled
+                          />
                         </div>
                       </div>
 
@@ -131,28 +196,58 @@ const PregledReklamacije = () => {
                         <div>
                           <label htmlFor="datum_kupovine">Datum kupovine</label>
                           <div>
-                            <DatePicker id="datum_kupovine" locale="sr-Latn" selected={reklamacija.datumKupovine} aria-describedby="Datum kupovine" dateFormat="dd-MM-yyyy" disabled />
+                            <DatePicker
+                              id="datum_kupovine"
+                              locale="sr-Latn"
+                              selected={reklamacija.datumKupovine}
+                              aria-describedby="Datum kupovine"
+                              dateFormat="dd-MM-yyyy"
+                              disabled
+                            />
                           </div>
                         </div>
                         <div>
                           <label htmlFor="broj_racuna">Broj računa</label>
-                          <input type="text" id="broj_racuna" aria-describedby="Broj računa" value={reklamacija.brojRacuna || ""} disabled />
+                          <input
+                            type="text"
+                            id="broj_racuna"
+                            aria-describedby="Broj računa"
+                            value={reklamacija.brojRacuna || ""}
+                            disabled
+                          />
                         </div>
                         <div>
-                          <label htmlFor="naziv_poizvoda">Naziv proizvoda</label>
-                          <input type="text" id="naziv_poizvoda" aria-describedby="Naziv proizvoda" value={reklamacija.nazivProizvoda || ""} disabled />
+                          <label htmlFor="naziv_poizvoda">
+                            Naziv proizvoda
+                          </label>
+                          <input
+                            type="text"
+                            id="naziv_poizvoda"
+                            aria-describedby="Naziv proizvoda"
+                            value={reklamacija.nazivProizvoda || ""}
+                            disabled
+                          />
                         </div>
                       </div>
 
                       <div className="mb-2 grid grid-cols-1 gap-2">
                         <div className="mb-2">
-                          <label htmlFor="opis_reklamacije">Opis reklamacije</label>
-                          <textarea className="min-h-48 md:min-h-32" id="opis_reklamacije" aria-describedby="Opis reklamacije" value={reklamacija.opisReklamacije || ""} disabled />
+                          <label htmlFor="opis_reklamacije">
+                            Opis reklamacije
+                          </label>
+                          <textarea
+                            className="min-h-48 md:min-h-32 field-sizing-content"
+                            id="opis_reklamacije"
+                            aria-describedby="Opis reklamacije"
+                            value={reklamacija.opisReklamacije || ""}
+                            disabled
+                          />
                         </div>
                       </div>
                     </div>
 
-                    {(reklamacija.statusReklamacije === "OPRAVDANA" || reklamacija.statusReklamacije === "NEOPRAVDANA") && (
+                    {(reklamacija.statusReklamacije === "OPRAVDANA" ||
+                      reklamacija.statusReklamacije === "NEOPRAVDANA") && (
                       <>
                         <h4>Odluka o reklamaciji</h4>
 
@@ -160,26 +255,55 @@ const PregledReklamacije = () => {
                           <div className="mb-3">
                             <label htmlFor="datum_odgovora">Datum odluke</label>
                             <div className="md:col-span-1">
-                              <DatePicker id="datum_odgovora" locale="sr-Latn" selected={reklamacija.datumOdgovora && new Date(reklamacija.datumOdgovora)} dateFormat="dd-MM-yyyy" disabled />
+                              <DatePicker
+                                id="datum_odgovora"
+                                locale="sr-Latn"
+                                selected={
+                                  reklamacija.datumOdgovora &&
+                                  new Date(reklamacija.datumOdgovora)
+                                }
+                                dateFormat="dd-MM-yyyy"
+                                disabled
+                              />
                             </div>
                           </div>
                           <div className="md:col-span-3">
-                            <label htmlFor="opis_odluke">Opis odluke o reklamaciji</label>
-                            <textarea className="min-h-48 md:min-h-32" id="opis_odluke" aria-describedby="Odluka o reklamaciji" value={reklamacija.opisOdluke || ""} disabled />
+                            <label htmlFor="opis_odluke">
+                              Opis odluke o reklamaciji
+                            </label>
+                            <textarea
+                              className="min-h-48 md:min-h-32 field-sizing-content"
+                              id="opis_odluke"
+                              aria-describedby="Odluka o reklamaciji"
+                              value={reklamacija.opisOdluke || ""}
+                              disabled
+                            />
                           </div>
                         </div>
                       </>
                     )}
 
-                    <p>Rok za odgovor na izjavljenu reklamaciju: Zakonski rok od 8 dana od dana prijema.</p>
+                    <p>
+                      Rok za odgovor na izjavljenu reklamaciju: Zakonski rok od
+                      8 dana od dana prijema.
+                    </p>
 
-                    {reklamacija.zemljaReklamacije === "CRNA_GORA" ? rokZaResavanjeCrnaGora : rokZaResavanjeSrbija}
+                    {reklamacija.zemljaReklamacije === "CRNA_GORA"
+                      ? rokZaResavanjeCrnaGora
+                      : rokZaResavanjeSrbija}
 
                     <p></p>
                     <p>
-                      Ukoliko prodavac odbije reklamaciju, dužan je da potrošača obavesti o mogućnosti rešavanja spora vansudskim putem i o nadleženim telima za vansudsko rešavanje potrošačkih sporova. Shodno Zakonu Predlog za pokretanje
-                      postupka vansudskog rešavanja potrošačkog spora potrošač dostavlja nadležnom Ministarstvu, neposredno, preko pošte ili elektronskim putem. Trgovac je po Zakonu obavezan da učestvuje u ovom postupku. Listu tela za
-                      vansudsko rešavanje sporova možete pronaći na web sajtu nadležnog Ministarstva.
+                      Ukoliko prodavac odbije reklamaciju, dužan je da potrošača
+                      obavesti o mogućnosti rešavanja spora vansudskim putem i o
+                      nadleženim telima za vansudsko rešavanje potrošačkih
+                      sporova. Shodno Zakonu Predlog za pokretanje postupka
+                      vansudskog rešavanja potrošačkog spora potrošač dostavlja
+                      nadležnom Ministarstvu, neposredno, preko pošte ili
+                      elektronskim putem. Trgovac je po Zakonu obavezan da
+                      učestvuje u ovom postupku. Listu tela za vansudsko
+                      rešavanje sporova možete pronaći na web sajtu nadležnog
+                      Ministarstva.
                     </p>
                   </div>
                 </div>
